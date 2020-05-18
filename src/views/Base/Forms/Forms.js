@@ -61,7 +61,7 @@ class Forms extends Component {
                   <Col xs="12">
                     <FormGroup>
                       <Label htmlFor="name">Name</Label>
-                      <Input type="text" id="name" placeholder="Enter your name" required />
+                      <Input type="text" id="name" placeholder="Enter your full name" required />
                     </FormGroup>
                   </Col>
                 </Row>
