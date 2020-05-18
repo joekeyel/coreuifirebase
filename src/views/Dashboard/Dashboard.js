@@ -22,6 +22,7 @@ import {
 } from 'reactstrap';
 import { CustomTooltips } from '@coreui/coreui-plugin-chartjs-custom-tooltips';
 import { getStyle, hexToRgba } from '@coreui/coreui/dist/js/coreui-utilities'
+import { connect } from "react-redux";
 
 const Widget03 = lazy(() => import('../../views/Widgets/Widget03'));
 
@@ -479,7 +480,14 @@ class Dashboard extends Component {
 
   loading = () => <div className="animated fadeIn pt-1 text-center">Loading...</div>
 
+  componentDidMount() {
+    this.props.fetchUser();
+
+  }
+
   render() {
+
+   
 
     return (
       <div className="animated fadeIn">
@@ -1126,4 +1134,21 @@ class Dashboard extends Component {
   }
 }
 
-export default Dashboard;
+const mapStateToProps = state => {
+  return {
+    user: state.user,
+   
+  };
+};
+
+const mapDispachToProps = dispatch => {
+  return {
+    fetchUser: () => dispatch({ type: "FETCH_USER"}),
+  
+  };
+};
+
+export default connect(
+  mapStateToProps,mapDispachToProps
+)(Dashboard);
+
