@@ -7,6 +7,8 @@ import { AppAsideToggler, AppNavbarBrand, AppSidebarToggler } from '@coreui/reac
 import logo from '../../assets/img/brand/logo.svg'
 import sygnet from '../../assets/img/brand/sygnet.svg'
 
+import { connect } from "react-redux";
+
 const propTypes = {
   children: PropTypes.node,
 };
@@ -14,10 +16,21 @@ const propTypes = {
 const defaultProps = {};
 
 class DefaultHeader extends Component {
+
+
+  componentDidMount(){
+
+    this.props.fetchBadge()
+  }
+
   render() {
 
     // eslint-disable-next-line
     const { children, ...attributes } = this.props;
+   
+    let task = this.props.badge.Task
+   
+
 
     return (
       <React.Fragment>
@@ -41,7 +54,7 @@ class DefaultHeader extends Component {
         </Nav>
         <Nav className="ml-auto" navbar>
           <NavItem className="d-md-down-none">
-            <NavLink to="#" className="nav-link"><i className="icon-bell"></i><Badge pill color="danger">5</Badge></NavLink>
+    <NavLink to="#" className="nav-link"><i className="icon-bell"></i><Badge pill color="danger">{task}</Badge></NavLink>
           </NavItem>
           <NavItem className="d-md-down-none">
             <NavLink to="#" className="nav-link"><i className="icon-list"></i></NavLink>
@@ -67,6 +80,17 @@ class DefaultHeader extends Component {
               <DropdownItem divider />
               <DropdownItem><i className="fa fa-shield"></i> Lock Account</DropdownItem>
               <DropdownItem onClick={e => this.props.onLogout(e)}><i className="fa fa-lock"></i> Logout</DropdownItem>
+
+              {
+                this.props.items1.map(function(item,index){
+                  return(
+                    <DropdownItem key = {index}><i className="fa fa-user"></i> {item}</DropdownItem>
+                    )
+                
+                })
+
+              }
+
             </DropdownMenu>
           </UncontrolledDropdown>
         </Nav>
@@ -80,4 +104,25 @@ class DefaultHeader extends Component {
 DefaultHeader.propTypes = propTypes;
 DefaultHeader.defaultProps = defaultProps;
 
-export default DefaultHeader;
+
+const mapStateToProps = state => {
+  return {
+  
+    badge:state.badge,
+    items1:state.items1
+   
+  };
+};
+
+const mapDispachToProps = dispatch => {
+  return {
+   
+    fetchBadge: () => dispatch({ type: "FETCH_BADGE"}),
+  
+  };
+};
+
+export default connect(
+  mapStateToProps,mapDispachToProps
+)(DefaultHeader);
+

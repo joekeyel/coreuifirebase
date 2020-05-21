@@ -27,7 +27,7 @@ class ListGroups extends Component {
           <Col sm="12" xl="6">
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i><strong>List Group</strong>
+                <i className="fa fa-align-justify"></i><strong>List Task</strong>
                 <div className="card-header-actions">
                   <a href="https://reactstrap.github.io/components/listgroup/" rel="noreferrer noopener" target="_blank" className="card-header-action">
                     <small className="text-muted">docs</small>
@@ -36,11 +36,11 @@ class ListGroups extends Component {
               </CardHeader>
               <CardBody>
                 <ListGroup>
-                  <ListGroupItem>Cras justo odio</ListGroupItem>
-                  <ListGroupItem>Dapibus ac facilisis in</ListGroupItem>
-                  <ListGroupItem>Morbi leo risus</ListGroupItem>
-                  <ListGroupItem>Porta ac consectetur ac</ListGroupItem>
-                  <ListGroupItem>Vestibulum at eros</ListGroupItem>
+                  <ListGroupItem> <i className="icon-envelope-open "></i> Coordinate Proc Process (Centralized Contract) <Badge color="warning" className="float-right" pill>DC Prod</Badge></ListGroupItem>
+                  <ListGroupItem> <i className="cui-inbox icons "></i> Perform Site Prep <Badge color="success" className="float-right" pill>Technology Delivery </Badge></ListGroupItem>
+                  <ListGroupItem> <i className="icon-envelope-open "></i> Perform Service Handover <Badge color="warning" className="float-right" pill> PM </Badge></ListGroupItem>
+                  <ListGroupItem> <i className="cui-inbox icons "></i> Verify Handover Document <Badge color="success" className="float-right" pill>OTM</Badge></ListGroupItem>
+                 
                 </ListGroup>
               </CardBody>
             </Card>

@@ -463,6 +463,7 @@ class Dashboard extends Component {
     this.state = {
       dropdownOpen: false,
       radioSelected: 2,
+      user:{}
     };
   }
 
@@ -482,18 +483,25 @@ class Dashboard extends Component {
 
   componentDidMount() {
     this.props.fetchUser();
+    this.props.fetchBadge();
 
   }
 
   render() {
 
-   
+  
 
     return (
       <div className="animated fadeIn">
+      
+  
+      
         <Row>
+      
           <Col xs="12" sm="6" lg="3">
+        
             <Card className="text-white bg-info">
+           
               <CardBody className="pb-0">
                 <ButtonGroup className="float-right">
                   <ButtonDropdown id='card1' isOpen={this.state.card1} toggle={() => { this.setState({ card1: !this.state.card1 }); }}>
@@ -533,7 +541,7 @@ class Dashboard extends Component {
                   </Dropdown>
                 </ButtonGroup>
                 <div className="text-value">9.823</div>
-                <div>Members online</div>
+                <div>Members online </div>
               </CardBody>
               <div className="chart-wrapper mx-3" style={{ height: '70px' }}>
                 <Line data={cardChartData1} options={cardChartOpts1} height={70} />
@@ -1137,6 +1145,7 @@ class Dashboard extends Component {
 const mapStateToProps = state => {
   return {
     user: state.user,
+    badge:state.badge
    
   };
 };
@@ -1144,6 +1153,7 @@ const mapStateToProps = state => {
 const mapDispachToProps = dispatch => {
   return {
     fetchUser: () => dispatch({ type: "FETCH_USER"}),
+    fetchBadge: () => dispatch({ type: "FETCH_BADGE"}),
   
   };
 };

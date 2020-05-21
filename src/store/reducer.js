@@ -1,7 +1,9 @@
 
 
 const initialState = {
-    user:{}
+    user:{},
+    badge:{},
+    items1:[]
 
 };
 
@@ -14,6 +16,13 @@ const reducer = (state=initialState, action) => {
             case 'FETCH_DATA_USER': 
 
             newState.user = action.value;
+            
+            break;
+
+            case 'FETCH_BADGE_USER': 
+
+            newState.badge = action.value;
+            newState.items1 = action.value.Items1
             
             break;
         
