@@ -48,7 +48,6 @@ class DefaultLayout extends Component {
     this.props.history.push('/login')
   }
 
-  
 
   render() {
     return (
@@ -59,7 +58,7 @@ class DefaultLayout extends Component {
           </Suspense>
         </AppHeader>
         <div className="app-body">
-          <AppSidebar fixed display="lg">
+          <AppSidebar fixed display="sm">
             <AppSidebarHeader />
             <AppSidebarForm />
             <Suspense>
@@ -74,7 +73,7 @@ class DefaultLayout extends Component {
               />
             </Suspense>
             <AppSidebarFooter />
-            <AppSidebarMinimizer />
+            <AppSidebarMinimizer auto/>
           </AppSidebar>
           <main className="main">
             <AppBreadcrumb appRoutes={routeskl} router={router}/>

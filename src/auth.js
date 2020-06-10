@@ -1,10 +1,21 @@
-import app from "./firebase"
+//import app from "./firebase"
+import Swal from 'sweetalert2';
+
+//const ldap = require('ldapjs');
+// const client = ldap.createClient({
+//   url: 'ldap://10.45.236.28:636'
+// });
+// console.log('client',client);
+
+//const ldapUser = "cn=NICEldapadmin,ou=serviceAccount,o=Telekom";  //:"cn=NICEldapadmin,ou=serviceAccount,o=Telekom",
+//const ldapPass = "2Fe97Bm2";  //:"Passw0rd"
 
 class Auth {
     constructor() {
-      this.authenticated = {status:false,region:"",division:""};
+      this.authenticated = {status:false,region:"",division:"",username:"", password:""};
     }
-  
+
+
     login(cb) {
       this.authenticated.status = true;
       this.authenticated.region = "KL"
@@ -22,129 +33,44 @@ class Auth {
       return this.authenticated;
     }
 
-
-    handleLogin = (email,password,cb)   =>  {
-
-  
+    handleLogin = (username,password,cb)   =>  {
+    
       const dataForm = new FormData();
-        dataForm.append("username", email);
+        dataForm.append("username", username);
         dataForm.append("password", password);
+        this.authenticated.status = true;
+        this.authenticated.username = username;
+        this.authenticated.password = password;
 
+        if(username != ""){
 
-
-        const requestOptions = {
-          method: 'POST',
-          body: dataForm
-      };
-      var self = this
-      fetch('/spheremobile_test/loginprocess.php', requestOptions)
-          .then(response => response.json())
-          .then(data => {
-            this.authenticated.status = true
-           console.log(data)
-           if(data.result ==="ok"){
-           cb()
-
-           
-
-            app.auth().signInWithCustomToken(data.token).catch(function(error) {
-
-
-              console.log(app.auth().currentUser.uid)
-              // Handle Errors here.
-              var errorCode = error.code;
-              var errorMessage = error.message;
-              // ...
-            
-            });
-
-
-            app.auth().onAuthStateChanged(function(user) {
-              if (user) {
-                // User is signed in.
-                console.log(user)
-              } else {
-                // No user is signed in.
-              }
-            });
-          
-          
-           }
-          }
-
-        )
-      
-      
-  
-           
-  
+            fetch('/claritybqm/reportFetch/?scriptName=DC_USER&userid='+ username.toUpperCase())
+            .then(response => response.json())
+            .then((user) => //console.log('user', user.user.length)
+            {
+                if(!user.user.length){
+                    Swal.fire({
+                        width: '30%',
+                        icon: 'error',
+                        title: 'Invalid DCO User',
+                        text: 'Login error, check with DCO Administrator!',
+                        fontsize: '10px'
+                        //footer: '<a href>Why do I have this issue?</a>'
+                      })
+                }
+                else{
+                    cb();
+                }
+                
+            }
+            );
+        }
+       
+     
     }
 
-
-    handleLogin2 = (email,password,cb)   =>  {
-
-  
-      const dataForm = new FormData();
-        dataForm.append("username", email);
-        dataForm.append("password", password);
-
-
-
-        const requestOptions = {
-          method: 'POST',
-          body: dataForm
-      };
-      var self = this
-      fetch('/cas/login', requestOptions)
-          .then(response => response.json())
-          .then(data => {
-            this.authenticated.status = true
-           console.log(data)
-          
-          
-          //  if(data.result ==="ok"){
-          //  cb()
-
-           
-
-          //   app.auth().signInWithCustomToken(data.token).catch(function(error) {
-
-
-          //     console.log(app.auth().currentUser.uid)
-          //     // Handle Errors here.
-          //     var errorCode = error.code;
-          //     var errorMessage = error.message;
-          //     // ...
-            
-          //   });
-
-
-          //   app.auth().onAuthStateChanged(function(user) {
-          //     if (user) {
-          //       // User is signed in.
-          //       console.log(user)
-          //     } else {
-          //       // No user is signed in.
-          //     }
-          //   });
-          
-          
-          //  }
-          }
-
-        )
-      
-      
-  
-           
-  
-    }
 
 
 }
 
-
-
-  
   export default new Auth();
-  

@@ -36,11 +36,43 @@ const Widgets = React.lazy(() => import('./views/Widgets/Widgets'));
 const Users = React.lazy(() => import('./views/Users/Users'));
 const User = React.lazy(() => import('./views/Users/User'));
 const Gant = React.lazy(() => import('./views/Gant/Gant'));
+const RackList = React.lazy(() => import('./views/Inventory/RackList'));
+const Rack = React.lazy(() => import('./views/Inventory/Rack'));
+const NetworkPort = React.lazy(() => import('./views/Inventory/NetworkPort'));
+const NetworkBandwidth = React.lazy(() => import('./views/Inventory/NetworkBandwidth'));
+const UPS = React.lazy(() => import('./views/Inventory/UPS'));
+const UPSList = React.lazy(() => import('./views/Inventory/UPSList'));
+const CRAC = React.lazy(() => import('./views/Inventory/CRAC'));
+const CRACList = React.lazy(() => import('./views/Inventory/CRACList'));
+const PDU = React.lazy(() => import('./views/Inventory/PDU'));
+const PDUList = React.lazy(() => import('./views/Inventory/PDUList'));
+const ResourceCheck = React.lazy(() => import('./views/Resource Checking/ResourceCheck'));
+const ResourceDetails = React.lazy(() => import('./views/Resource Checking/ResourceDetails'));
+const TaskList = React.lazy(() => import('./views/TaskList/taskList'));
+const PendingApproval = React.lazy(() => import('./views/TaskList/pendingApproval'));
+const myTask = React.lazy(() => import('./views/TaskList/myTask'));
+
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
+  { path: '/inventory', exact: true, name: 'Inventory', component: RackList },
+  { path: '/rackList', name: 'Rack List', component: RackList },
+  { path: '/rack', name: 'Rack', component: Rack },
+  { path: '/network_port', name: 'Ntework Port', component: NetworkPort },
+  { path: '/network_bandwidth', name: 'Network Bandwidth', component: NetworkBandwidth },
+  { path: '/UPS', name: 'UPS', component: UPS },
+  { path: '/upsList', name: 'UPS List', component: UPSList },
+  { path: '/pdu', name: 'PDU', component: PDU },
+  { path: '/pduList', name: 'PDU List', component: PDUList },
+  { path: '/CRAC', name: 'CRAC', component: CRAC },
+  { path: '/CRACList', name: 'CRAC List', component: CRACList },
+  { path: '/resourceChecking', name: 'Resource Checking', component: ResourceCheck },
+  { path: '/resourceDetails', name: 'Resource Details', component: ResourceDetails },
+  { path: '/taskList', name: 'Task List', component: TaskList },
+  { path: '/pendingApproval', name: 'Waiting Approval', component: PendingApproval },
+  { path: '/myTask', name: 'My Task', component: myTask },
   { path: '/theme', exact: true, name: 'Theme', component: Colors },
   { path: '/theme/colors', name: 'Colors', component: Colors },
   { path: '/theme/typography', name: 'Typography', component: Typography },
