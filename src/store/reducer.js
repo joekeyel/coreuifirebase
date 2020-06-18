@@ -4,7 +4,9 @@ const initialState = {
     badge:{},
     items1:[],
     rack:{},
-    rackItems:[],
+    rackID:[],
+    site:{},
+    location:{},
 
 };
 
@@ -30,8 +32,20 @@ const reducer = (state=initialState, action) => {
             case 'FETCH_DATA_RACK': 
 
             newState.rack = action.value;
-            //newState.rackItems = action.value.RACK_ID
+            newState.rackID = action.value.RACK_ID
 
+            break;
+
+            case 'FETCH_DATA_DCSITE': 
+
+            newState.site = action.value;
+           
+            break;
+
+            case 'FETCH_DATA_DCLOCATION': 
+
+            newState.location = action.value;
+           
             break;
             
         

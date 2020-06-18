@@ -18,9 +18,11 @@ import {
 // sidebar nav config
 import navigation from '../../_nav';
 import navigationkl from '../../_navkl';
+import navigationAdmin from '../../_navDCOAdmin';
 // routes config
 import routes from '../../routes';
-import routeskl from '../../routesKL';
+//import routeskl from '../../routesKL';
+import routesAdmin from '../../routeDCOadmin';
 
 
 //authenticate
@@ -36,9 +38,14 @@ class DefaultLayout extends Component {
     super(props);
 
     this.state = {
-      usergroup:"KL"
+      usergroup: auth.isAuthenticated().username
     }
 
+  }
+
+  componentDidMount(){
+   // console.log('layout', auth.isAuthenticated());
+    
   }
 
   loading = () => <div className="animated fadeIn pt-1 text-center">Loading...</div>
@@ -63,10 +70,9 @@ class DefaultLayout extends Component {
             <AppSidebarForm />
             <Suspense>
             <AppSidebarNav navConfig={
-              
-              auth.isAuthenticated().region == "KL"?navigation:navigationkl
-              
-              
+
+              this.state.usergroup == "dcoadmin" ? navigationAdmin : navigation
+
               } 
               {...this.props} 
               router={router}
@@ -76,11 +82,11 @@ class DefaultLayout extends Component {
             <AppSidebarMinimizer auto/>
           </AppSidebar>
           <main className="main">
-            <AppBreadcrumb appRoutes={routeskl} router={router}/>
+            <AppBreadcrumb appRoutes={routesAdmin} router={router}/>
             <Container fluid>
               <Suspense fallback={this.loading()}>
                 <Switch>
-                  {routeskl.map((route, idx) => {
+                  {routesAdmin.map((route, idx) => {
                     return route.component ? (
                       <Route
                         key={idx}

@@ -62,7 +62,7 @@ class DefaultHeader extends Component {
           <UncontrolledDropdown nav direction="down">
             <DropdownToggle nav>
               <span id={auth.authenticated.username.toUpperCase()} >{auth.authenticated.username.toUpperCase()}</span>
-              <img src={'../../assets/img/avatars/Telekom.png'} className="img-avatar" alt="admin@bootstrapmaster.com" />
+              <img src={'../../assets/img/avatars/telekom.png'} className="img-avatar" />
             </DropdownToggle>
             <DropdownMenu right>
               <DropdownItem header tag="div" className="text-center"><strong>Account</strong></DropdownItem>

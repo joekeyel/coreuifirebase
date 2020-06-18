@@ -36,11 +36,34 @@ function* fetchRack() {
   console.log(json)
 }
 
+function* fetchSite() {
+  //console.log("getSite");
+    const json = yield call(() =>
+    fetch("/claritybqm/reportFetch/?scriptName=DC_SITE")
+      .then(response => response.json())
+      .then(data => data )
+  );
+  yield put({ type: "FETCH_DATA_DCSITE", value: json });
+  console.log('site',json)
+}
+
+function* fetchLocation() {
+  //console.log("getLOC");
+    const json = yield call(() =>
+    fetch("/claritybqm/reportFetch/?scriptName=DC_LOCATION")
+      .then(response => response.json())
+      .then(data => data )
+  );
+  yield put({ type: "FETCH_DATA_DCLOCATION", value: json });
+  console.log('loc',json)
+}
+
 
 
 export function* watchFetchData() {
   yield takeEvery("FETCH_USER", fetchUpAsync);
  // yield takeEvery("FETCH_BADGE", fetchBadge);
   yield takeEvery("FETCH_RACK", fetchRack);
- 
+  yield takeEvery("FETCH_DCSITE", fetchSite);
+  yield takeEvery("FETCH_DCLOCATION", fetchLocation);
 }

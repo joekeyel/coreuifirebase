@@ -28,10 +28,10 @@ import {
 import {Snackbar,IconButton } from '@material-ui/core';
 //import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 //import CloseIcon from '@material-ui/icons/Close';
-import TableCRAC from './sub-component/tableCRAC';
+import TablePDU from '../sub-containers/tablePDU';
 
 
-class CRACList extends Component {
+class PDUList extends Component {
   constructor(props) {
     super(props);
     //this.handleInputChange = this.handleInputChange.bind(this);
@@ -65,11 +65,11 @@ return(
         <Col xs="12">
             <Card>
                 <CardHeader>
-                    <strong>CRAC List</strong>
+                    <strong>PDU List</strong>
                     {/* <small> Form</small> */}
                 </CardHeader>
                 <CardBody>
-                    <TableCRAC data={data} />
+                    <TablePDU data={data} />
                 </CardBody>
             </Card>
         </Col>
@@ -79,4 +79,4 @@ return(
 }
 }
 
-export default CRACList;
+export default PDUList;

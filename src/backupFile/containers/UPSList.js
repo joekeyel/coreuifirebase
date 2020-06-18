@@ -28,7 +28,7 @@ import {
 import {Snackbar,IconButton } from '@material-ui/core';
 //import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 //import CloseIcon from '@material-ui/icons/Close';
-import TablePDU from './sub-component/tablePDU';
+import TableUPS from '../sub-containers/tableUPS';
 
 
 class PDUList extends Component {
@@ -57,6 +57,7 @@ class PDUList extends Component {
     this.setState({data : json})
     );
   }
+
 render(){
     const data = this.state.data
 return(
@@ -65,11 +66,11 @@ return(
         <Col xs="12">
             <Card>
                 <CardHeader>
-                    <strong>PDU List</strong>
+                    <strong>UPS List</strong>
                     {/* <small> Form</small> */}
                 </CardHeader>
                 <CardBody>
-                    <TablePDU data={data} />
+                    <TableUPS data={data} />
                 </CardBody>
             </Card>
         </Col>
