@@ -26,14 +26,14 @@ function* fetchUpAsync() {
 // }
 
 function* fetchRack() {
-  console.log("getRack");
+  //console.log("getRack");
     const json = yield call(() =>
     fetch("/claritybqm/reportFetch/?scriptName=DC_RACK")
       .then(response => response.json())
       .then(data => data )
   );
   yield put({ type: "FETCH_DATA_RACK", value: json });
-  console.log(json)
+  //console.log(json)
 }
 
 function* fetchSite() {
@@ -44,7 +44,7 @@ function* fetchSite() {
       .then(data => data )
   );
   yield put({ type: "FETCH_DATA_DCSITE", value: json });
-  console.log('site',json)
+ // console.log('site',json)
 }
 
 function* fetchLocation() {
@@ -55,7 +55,7 @@ function* fetchLocation() {
       .then(data => data )
   );
   yield put({ type: "FETCH_DATA_DCLOCATION", value: json });
-  console.log('loc',json)
+ // console.log('loc',json)
 }
 
 

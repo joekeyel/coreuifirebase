@@ -7,9 +7,9 @@ import auth from '../../../auth';
 const FormRack = (props) => {
 
     const [backgcolor, setbackgcolor] = useState("#b3d9ff");
-    const [action, setAction] = useState(props.actionForm);
-    const [actionCreateBtn, setActionCreateBtn] = useState(false);
-    const [actionSaveBtn, setActionSaveBtn] = useState(false);
+    const [actionForm, setactionForm] = useState(props.actionForm);
+    const [actionCreateBtn, setactionCreateBtn] = useState(false);
+    const [actionSaveBtn, setactionSaveBtn] = useState(false);
     const [RackIdFlag, setRackIdFlag] = useState(true);
     const [optionSite, setOptionSite] = useState({});
     const [optionLocation, setoptionLocation] = useState({});
@@ -22,14 +22,14 @@ const FormRack = (props) => {
   
     useEffect(() => {
         console.log('propsForm', props);
-        if (action == 'CREATE') {
-            setActionSaveBtn(true);
+        if (actionForm == 'CREATE') {
+            setactionSaveBtn(true);
             setOptionSite(props.optionSite)
             setoptionLocation(props.optionLocation)
         }
-        if (action == 'EDIT') {
+        if (actionForm == 'EDIT') {
 
-            setActionCreateBtn(true);
+            setactionCreateBtn(true);
             setRackIdFlag(false);
             //getRackDetail();
         }
@@ -130,7 +130,7 @@ const FormRack = (props) => {
       <Row>
 <Col xs='12'>
     <Card>
-        <CardHeader>Rack <strong>({action})</strong></CardHeader>
+        <CardHeader>Rack <strong>({actionForm})</strong></CardHeader>
         <Form name="formRack" id="formRack" onSubmit={props.onSubmit}>
             <CardBody>
                 <Row style={{ marginLeft: '250px' }}>

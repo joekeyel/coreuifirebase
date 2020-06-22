@@ -39,7 +39,7 @@ return(
         <Col xs="12">
             <Card>
                 <CardHeader>
-                    <strong>Rack List</strong>
+                    <strong>DC Site List</strong>
                     {/* <small> Form</small> */}
                 </CardHeader>
                 <CardBody>
@@ -48,7 +48,7 @@ return(
                       <Button color="primary" href="#/dcSiteCreate"><i className="fa fa-plus-square"></i>&nbsp; Add New DC Site</Button>
                         </CardHeader>
                         <CardBody>
-                              <TableDCSite id="tableSite" data={data} props={()=> this.props.fetcSite()}/>
+                              <TableDCSite id="tableSite" data={data}/>
                           </CardBody>
                       </Card>
                 </CardBody>

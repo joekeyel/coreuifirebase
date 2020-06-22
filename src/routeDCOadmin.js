@@ -86,12 +86,12 @@ const routes = [
   //dc site
   { path: '/dcSite', name: 'DC Site', component: DCSiteForm },
   { path: '/dcSiteListAll', name: 'DC Site List', component: DCSiteList },
-  { path: '/dcSiteCreate', name: 'DC Site', component: DCLocCreate },
+  { path: '/dcSiteCreate', name: 'DC Site', component: DCSiteCreate },
   { path: '/dcSiteEdit/:id', name: 'DC Site', component: DCSiteEdit },
   //dc location
   { path: '/dcLocation', name: 'DC Location', component: DCLocForm },
-  { path: '/dcLocationListAll', name: 'DC Location List', component: DCLocList },
-  { path: '/dcLocationCreate', name: 'DC Location', component: DCSiteCreate },
+  { path: '/dcLocationListAll', name: 'DC Location List', component: DCLocList},
+  { path: '/dcLocationCreate', name: 'DC Location', component: DCLocCreate },
   { path: '/dcLocationEdit/:id', name: 'DC Location', component: DCLocEdit },
   //rack
   { path: '/rackForm', name: 'Rack Form', component: RackForm },

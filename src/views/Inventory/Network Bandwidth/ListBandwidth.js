@@ -45,10 +45,10 @@ return(
                 <CardBody>
                 <Card>
                     <CardHeader>
-                      <Button color="primary" href="#/dcSiteCreate"><i className="fa fa-plus-square"></i>&nbsp; Add New DC Site</Button>
+                      <Button color="primary" href="#/BandwidthCreate"><i className="fa fa-plus-square"></i>&nbsp; Add New Network Bandwidth</Button>
                         </CardHeader>
                         <CardBody>
-                              <TableBandwidth id="tableSite" data={data} props={()=> this.props.fetcSite()}/>
+                              <TableBandwidth id="tableSite" data={data}/>
                           </CardBody>
                       </Card>
                 </CardBody>

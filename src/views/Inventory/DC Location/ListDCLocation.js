@@ -48,7 +48,7 @@ return(
                       <Button color="primary" href="#/dcLocationCreate"><i className="fa fa-plus-square"></i>&nbsp; Add New DC Location</Button>
                         </CardHeader>
                         <CardBody>
-                              <TableDCLocation id="tableLocation" data={data} props={()=> this.props.fetchLocation()}/>
+                              <TableDCLocation id="tableLocation" data={data}/>
                           </CardBody>
                       </Card>
                 </CardBody>

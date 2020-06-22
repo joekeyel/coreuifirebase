@@ -11,8 +11,25 @@ const EditForm = (props) => {
 
     const [formValues, setformValues]= useState({});
     const [openSnackBar, setopenSnackBar] = useState(false);
- 
+    const [siteData, setsiteData] = useState({});
 
+  useEffect(()=>{
+
+    if(props.match.params.id){
+
+      var id= props.match.params.id;
+        
+      fetch('/claritybqm/reportFetch/?scriptName=DC_SITE')
+      .then(response => response.json())
+      .then((site) => 
+      {  
+        var filter = Object.values(site).filter(site => site.SITE_ID == id);
+        setsiteData(filter[0]);       
+      }
+      );
+
+  }
+  },[props])
   //to handle form submit validation
   const onSubmit = (e)=> 
   {
@@ -84,8 +101,9 @@ const handleChange = (e) => {
   <FormComponent 
     actionForm={'EDIT'} 
     values={formValues}
-    rackid={props.match.params.id}
+    siteID={props.match.params.id}
     props={props.rack}
+    data={siteData}
     onSubmit={onSubmit} 
     onChange={handleChange}
   />

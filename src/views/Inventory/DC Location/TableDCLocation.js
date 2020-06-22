@@ -1,251 +1,152 @@
-import React, { useState, useEffect } from 'react';
-import BootstrapTable from 'react-bootstrap-table-next';
-import paginationFactory from 'react-bootstrap-table2-paginator';
+import React from 'react';
 import { Route, Redirect, Link } from "react-router-dom";
-import ToolkitProvider, { Search, CSVExport } from 'react-bootstrap-table2-toolkit';
-import '../css/style.css';
-import { Badge, Button, Card, CardBody, CardFooter, CardHeader, Col, Form, FormGroup, Label, Row, Input } from 'reactstrap';
-import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
+import MaterialTable, { MTableToolbar } from 'material-table';
+import { Button, Tooltip } from '@material-ui/core';
+import Icon from '@material-ui/core/Icon';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-import { connect } from "react-redux";
 
+export default function TableDCLocation(props) {
+  console.log('table',props);
 
-const TableDCLocation = (props) => {
+  //to handle delete row function
+  const handleDelete = (row) => {
+    //console.log('handlDelete',row);
 
-    // const [ DataDCSite , setDataDCSite ] = useState(props.DCSite);
-    console.log('useeffect', props);
+    Swal.fire({
+        title: 'Are you sure to delete this DC Location id ' + row.LOCN_NAME + '?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.value) {
 
+            axios.post('/claritybqm/reportFetchJ/?scriptName=DC_LOCATION_DELETE', row
+            ).then((res) => {
 
-    //to handle delete row function
-    const handleDelete = (row) => {
-        //console.log('handlDelete',row);
+                if (res.data == "success") {
+                    Swal.fire(
+                        'Deleted!',
+                        'Your file has been deleted.',
+                        'success'
+                    )
+                    props.props();
+                }
 
-        Swal.fire({
-            title: 'Are you sure to delete this DCSite no ' + row.DCSite_NO + '?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.value) {
+            })
+                .catch((err) => {
+                    console.log('failed to delete : ', err);
+                });
 
-                axios.post('/claritybqm/reportFetchJ/?scriptName=DC_Site_DELETE', row
-                ).then((res) => {
-
-                    if (res.data == "success") {
-                        Swal.fire(
-                            'Deleted!',
-                            'Your file has been deleted.',
-                            'success'
-                        )
-                        props.props();
-                    }
-
-                })
-                    .catch((err) => {
-                        console.log('failed to save : ', err);
-                    });
-
-            }
-        })
+        }
+    })
 
     }
 
-    const columns = [
+  
+  const [state, setState] = React.useState({
+    columns: [
+      {
+        title: '#',
+        field: 'row',
+        render: (cell) => <p>{cell.tableData.id + 1}</p>
+      },
+      {
+        title: 'DC Location ID',
+        field: 'LOCN_ID',
+      },
+      {
+        title: 'DC Location',
+        field: 'LOCN_NAME',
+      },
+      {
+        title: 'DC Site',
+        field: 'SITE_NAME',
+      },
+      {
+        title: 'DC Type',
+        field: 'LOCN_TYPE',
+      },
+      {
+        title: 'State',
+        field: 'LOCN_STATE',
+      },
+      {
+        title: 'Status',
+        field: 'LOCN_STATUS',
+      },
+
+      {
+        title: 'Commission Date',
+        field: 'LOCN_CREATED_DT',
+      },
+      {
+        title: 'Decommission Date',
+        field: 'LOCN_UPDATED_DT',
+      },
+    ],
+  });
+
+  return (
+    <MaterialTable
+      title='DC Location'
+      hover={true}
+      columns={state.columns}
+      data={props.data}
+      actions={[
         {
-            dataField: 'id',
-            text: '#',
-            key: 'id',
-            formatter: (cell, row, rowIndex) => { return (<p key={rowIndex}>{rowIndex + 1}</p>) },
-            sort: true,
+          icon: 'edit',
+          tooltip: 'Edit data',
+          onClick: (event, rowData) => console.log(rowData)
+          //(event, rowData) => alert("You saved " + rowData.LOCN_ID)
         },
         {
-            dataField: 'LOCN_ID',
-            text: 'DC Location ID',
-            key: 'LOCN_ID',
-            sort: true,
-            filter: textFilter(),
-        },
-        {
-            dataField: 'LOCN_NAME',
-            text: 'DC Location',
-            key: 'LOCN_NAME',
-            sort: true,
-            filter: textFilter(),
-        },
-        {
-            dataField: 'SITE_NAME',
-            text: 'DC Site',
-            key: 'SITE_NAME',
-            sort: true,
-            filter: textFilter(),
-            // headerStyle: { width: '30%' },
-        },
-        {
-            dataField: 'LOCN_TYPE',
-            text: 'DC Type',
-            key: 'LOCN_TYPE',
-            sort: true,
-            filter: textFilter(),
-
-        },
-        {
-            dataField: 'LOCN_STATE',
-            text: 'State',
-            key: 'LOCN_STATE',
-            sort: true,
-            filter: textFilter(),
-
-        },
-        {
-            dataField: 'LOCN_STATUS',
-            text: 'Status',
-            key: 'LOCN_STATUS',
-            sort: true,
-            filter: textFilter(),
-
-        },
-        {
-            dataField: 'LOCN_CREATED_DT',
-            text: 'Commission Date',
-            key: 'LOCN_CREATED_DT',
-            sort: true,
-            filter: textFilter(),
-
-        },
-        {
-            dataField: 'LOCN_UPDATED_DT',
-            text: 'Decommission Date',
-            key: 'LOCN_UPDATED_DT',
-            sort: true,
-            filter: textFilter()
-        },
-        {
-            dataField: 'action',
-            text: 'Action',
-            key: 'Action',
-            isDummyField: true,
-            formatter: (cell, row) => {
-                return (<div key={row.SITE_ID}>
-                    <Link to={"/dcLocationEdit/" + row.SITE_ID} >
-                        <Button color="primary" className="btn-pill" size="sm">Edit</Button>
-                    </Link>
-                    <Button color="danger" className="btn-pill" size="sm" onClick={() => handleDelete(row)}> Delete</Button>
-                </div>)
-            },
-            //formatExtraData: { hoverIdx: this.state.hoverIdx },
-            headerStyle: { width: '10%' },
-            // style: { height: '30px' }
-        },
-
-    ]
-
-    const customTotal = (from, to, size) => (
-        <span className="react-bootstrap-table-pagination-total">
-            Showing { from} to { to} of { size} Results
-        </span>
-    );
-
-    const options = {
-        paginationSize: 4,
-        pageStartIndex: 1,
-        // alwaysShowAllBtns: true, // Always show next and previous button
-        // withFirstAndLast: false, // Hide the going to First and Last page button
-        // hideSizePerPage: true, // Hide the sizePerPage dropdown always
-        // hidePageListOnlyOnePage: true, // Hide the pagination list when only one page
-        firstPageText: 'First',
-        prePageText: 'Back',
-        nextPageText: 'Next',
-        lastPageText: 'Last',
-        nextPageTitle: 'First page',
-        prePageTitle: 'Pre page',
-        firstPageTitle: 'Next page',
-        lastPageTitle: 'Last page',
-        showTotal: true,
-        paginationTotalRenderer: customTotal,
-        disablePageTitle: true,
-        sizePerPageList: [{
-            text: '10', value: 10
-        }, {
-            text: '20', value: 20
-        }, {
-            text: 'All', value: props.data.length
-        }] // A numeric array is also available. the purpose of above example is custom the text
-    };
-
-
-    const noDataFound = () => {
-        return (
-            <div id="noDataFound" style={{ marginLeft: '400px' }}>
-                <i className="fa fa-database"></i>
-                <span>&nbsp;No Data Found</span>&nbsp;&nbsp;
-            </div>
-
-        )
-    }
-
-    //search filter
-    const MySearch = (props) => {
-        let input;
-        const handleClick = () => {
-            props.onSearch(input.value);
-        };
-
-        return (
-            <div className="form-group has-search">
-                <span className="fa fa-search form-control-feedback"></span>
-                <input
-                    id="search"
-                    className="form-control"
-                    placeholder="Search"
-                    //style={ { backgroundColor: 'pink' } }
-                    onChange={handleClick}
-                    ref={n => input = n}
-                    type="text"
-                />
-            </div>
-        );
-    };
-    return (
-
-        <ToolkitProvider
-            keyField='id'
-            data={props.data}
-            columns={columns}
-            search
-        >
-            {
-                props => (        // console.log('propsddd',...props.baseProps.data)                 
-                    <div id='table'>
-                        {/* <h3>Input something at below input field:</h3> */}
-
-                        <MySearch key='id' {...props.searchProps} />
-
-                        <hr />
-                        <div className="expanded-container">
-                        <BootstrapTable
-                            bootstrap4
-                            //key={props['key']}
-                            {...props.baseProps}
-                            pagination={paginationFactory(options)}
-                            noDataIndication={noDataFound}
-                            filter={filterFactory()}
-                            striped
-                            hover
-                            condensed
-                            size="sm"
-                        />
-                    </div>
-                    </div>
-                )
+          icon: 'delete',
+          tooltip: 'Delete data',
+          onClick: (event, rowData) => console.log('delete',rowData)
+          //(event, rowData) => alert("You saved " + rowData.LOCN_ID)
+       }
+      ]}
+      components={{
+        Action: (props) => {
+           //console.log('propsaction',props.data);
+            
+            //display button based on action edit/delete
+            if( props.action.icon == 'edit'){                               
+                return(<Link to={"/dcLocationEdit/" + props.data.LOCN_ID} >
+                <Tooltip title="Edit" >
+                <Icon
+                  //onClick={ }
+                  color="primary"
+                  variant="contained"
+                  //style={{textTransform: 'none', tooltip: 'Edit'}}
+                  size="small"
+                >
+                  edit
+                </Icon>
+                </Tooltip>
+                </Link>)
             }
-        </ToolkitProvider>
-    )
-
-
+            if( props.action.icon == 'delete'){
+                return(
+                <Tooltip title="Delete" >
+                <Icon
+                  onClick={() => handleDelete(props.data)}
+                  color="primary"
+                  variant="contained"
+                  //style={{textTransform: 'none', tooltip: 'Delete'}}
+                  size="small"
+                >
+                  delete
+                </Icon>
+                </Tooltip>)
+            }
+          
+        }
+      }}
+    />
+  );
 }
-
-export default (TableDCLocation)
