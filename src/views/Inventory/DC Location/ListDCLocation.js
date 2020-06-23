@@ -45,7 +45,7 @@ return(
                 <CardBody>
                 <Card>
                     <CardHeader>
-                      <Button color="primary" href="#/dcLocationCreate"><i className="fa fa-plus-square"></i>&nbsp; Add New DC Location</Button>
+                      <Button color="primary" href="#/CreateDCLocation"><i className="fa fa-plus-square"></i>&nbsp; Add New DC Location</Button>
                         </CardHeader>
                         <CardBody>
                               <TableDCLocation id="tableLocation" data={data}/>

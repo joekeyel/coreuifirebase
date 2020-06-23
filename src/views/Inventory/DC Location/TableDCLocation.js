@@ -116,7 +116,7 @@ export default function TableDCLocation(props) {
             
             //display button based on action edit/delete
             if( props.action.icon == 'edit'){                               
-                return(<Link to={"/dcLocationEdit/" + props.data.LOCN_ID} >
+                return(<Link to={"/EditDCLocation/" + props.data.LOCN_ID} >
                 <Tooltip title="Edit" >
                 <Icon
                   //onClick={ }

@@ -16,42 +16,42 @@ export default {
         children: [
           {
             name: 'DC Site',
-            url: '/dcSiteListAll',
+            url: '/ListDCSite',
             icon: 'icon-layers',
           },
           {
             name: 'DC Location',
-            url: '/dcLocationListAll',
+            url: '/ListDCLocation',
             icon: 'icon-layers',
           },
           {
             name: 'Rack',
-            url: '/rackListAll',
+            url: '/ListRack',
             icon: 'icon-layers',
           },
           {
             name: 'Network Bandwidth',
-            url: '/BandwidthListAll',
+            url: '/ListBandwidth',
             icon: 'icon-layers',
           },
           {
             name: 'Netwrok Port',
-            url: '/NEPortListAll',
+            url: '/ListNEPort',
             icon: 'icon-layers',
           },
           {
             name: 'UPS',
-            url: '/UPSListAll',
+            url: '/ListUPS',
             icon: 'icon-layers',
           },
           {
             name: 'PDU',
-            url: '/PDUListAll',
+            url: '/ListPDU',
             icon: 'icon-layers',
           },
           {
             name: 'CRAC',
-            url: '/CRACListAll',
+            url: '/ListCRAC',
             icon: 'icon-layers',
           },
         ]

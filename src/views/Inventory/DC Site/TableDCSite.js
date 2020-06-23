@@ -132,7 +132,7 @@ export default function TableDCSite(props) {
             
             //display button based on action edit/delete
             if( props.action.icon == 'edit'){                               
-                return(<Link to={"/dcSiteEdit/" + props.data.SITE_ID}>
+                return(<Link to={"/EditSite/" + props.data.SITE_ID}>
                 <Tooltip title="Edit" >
                 <Icon
                   //onClick={ }

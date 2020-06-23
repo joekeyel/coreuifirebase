@@ -45,10 +45,10 @@ return(
                 <CardBody>
                 <Card>
                     <CardHeader>
-                      <Button color="primary" href="#/rackCreate"><i className="fa fa-plus-square"></i>&nbsp; Add New Rack</Button>
+                      <Button color="primary" href="#/CreateRack"><i className="fa fa-plus-square"></i>&nbsp; Add New Rack</Button>
                         </CardHeader>
                         <CardBody>
-                              <TableRack id="tableRack" data={data} props={()=> this.props.fetchRack()}/>
+                              <TableRack id="tableRack" data={data}/>
                           </CardBody>
                       </Card>
                 </CardBody>
