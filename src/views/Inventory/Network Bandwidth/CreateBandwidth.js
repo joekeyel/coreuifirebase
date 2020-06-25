@@ -9,9 +9,10 @@ import Alert from '@material-ui/lab/Alert';
 
 const CreateForm = (props) => {
 
+
     return (<div className="animated fadeIn">
             <FormComponent 
-              actionForm={'CREATE'} 
+              actionForm={'CREATE'}
             />
             {/* <Snackbar
                   open={openSnackBar} autoHideDuration={1500} onClose={handleClose} 

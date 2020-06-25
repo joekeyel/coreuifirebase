@@ -94,6 +94,10 @@ export default function TableDCLocation(props) {
     <MaterialTable
       title='DC Location'
       hover={true}
+      options={{    
+        //hover: true,
+        filtering: true,
+    }}
       columns={state.columns}
       data={props.data}
       actions={[

@@ -11,7 +11,7 @@ const EditForm = (props) => {
 
     const [formValues, setformValues]= useState({});
     const [openSnackBar, setopenSnackBar] = useState(false);
- 
+    const [NtwIDFlag, setNtwIDFlag] = useState(false);
 
   //to handle form submit validation
   const onSubmit = (e)=> 
@@ -88,6 +88,7 @@ const handleChange = (e) => {
     props={props.rack}
     onSubmit={onSubmit} 
     onChange={handleChange}
+    NtwIDFlag={NtwIDFlag}
   />
   <Snackbar
         open={openSnackBar} autoHideDuration={1500} onClose={handleClose} 

@@ -77,7 +77,7 @@ class ResourceCheck extends Component {
 
   LOVsite(){
 
-    fetch('/claritybqm/reportFetch/?scriptName=DC_LOV&type=SITE')
+    fetch('/claritybqm/reportFetch/?scriptName=DC_SITE')
     .then(response => response.json())
     .then((site) => 
     {
@@ -294,7 +294,7 @@ class ResourceCheck extends Component {
    
   }
   render() {
-   //console.log('RACK_UTILIZATION',this.state.rack_util.RACK_UTILIZATION);
+   //console.log('RACK_UTILIZATION',Object.values(this.state.dcLocation));
    
     return (
       <div className="animated fadeIn">
@@ -309,8 +309,8 @@ class ResourceCheck extends Component {
                             <Input  type="select" name="lovSite" id="lovSite" onChange={this.handleChangeSite}>
                                 {
                                     Object.values(this.state.SiteOption).map(function(lov) {
-                                    // console.log('lov',lov.LOV_VALUE);
-                                        return <option key={lov.LOV_VALUE} value={lov.LOV_VALUE}>{lov.LOV_VALUE}</option>
+                                     //console.log('lov',lov);
+                                      return <option key={lov.SITE_ID} value={lov.SITE_NAME}>{lov.SITE_NAME}</option>
                                     })
                                 }
                             
@@ -323,8 +323,8 @@ class ResourceCheck extends Component {
                             <Input type="select" name="lovLoc" id="lovLoc" >
                                 {
                                         Object.values(this.state.dcLocation).map(function(lov) {
-                                        // console.log('lov',lov.LOV_VALUE);
-                                            return <option key={lov.LOCATION} value={lov.LOCATION}>{lov.LOCATION}</option>
+                                        // console.log('lov',lov);
+                                           return <option key={lov.LOCN_ID} value={lov.LOCN_NAME}>{lov.LOCN_NAME}</option>
                                         })
                                 }
                             

@@ -23,6 +23,7 @@ const ButtonGroups = React.lazy(() => import('./views/Buttons/ButtonGroups'));
 const Buttons = React.lazy(() => import('./views/Buttons/Buttons'));
 const Charts = React.lazy(() => import('./views/Charts'));
 const Dashboard = React.lazy(() => import('./views/Dashboard'));
+//const Menu = React.lazy(() => import('./containers/DefaultLayout/MainMenu'));
 const CoreUIIcons = React.lazy(() => import('./views/Icons/CoreUIIcons'));
 const Flags = React.lazy(() => import('./views/Icons/Flags'));
 const FontAwesome = React.lazy(() => import('./views/Icons/FontAwesome'));
@@ -76,12 +77,19 @@ const CRACForm = React.lazy(() => import('./views/Inventory/CRAC/FormComponent')
 const CRACList = React.lazy(() => import('./views/Inventory/CRAC/ListCRAC'));
 const CRACCreate = React.lazy(() => import('./views/Inventory/CRAC/CreateCRAC'));
 const CRACEdit = React.lazy(() => import('./views/Inventory/CRAC/EditCRAC'));
+//resource checking
+const ResourceCheck = React.lazy(() => import('./views/Resource Checking/ResourceCheck'));
+const ResourceDetails = React.lazy(() => import('./views/Resource Checking/ResourceDetails'));
+const TaskList = React.lazy(() => import('./views/TaskList/taskList'));
+const PendingApproval = React.lazy(() => import('./views/TaskList/pendingApproval'));
+const myTask = React.lazy(() => import('./views/TaskList/myTask'));
 
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
+ // { path: '/main-menu', name: 'Menu', component: Menu },
   { path: '/inventory', exact: true, name: 'Inventory', component: DCSiteForm },
   //dc site
   { path: '/dcSite', name: 'DC Site', component: DCSiteForm },
@@ -123,7 +131,12 @@ const routes = [
   { path: '/ListCRAC', name: 'CRAC List', component: CRACList },
   { path: '/CreateCRAC', name: 'CRAC', component: CRACCreate },
   { path: '/EditCRAC/:id', name: 'CRAC', component: CRACEdit },
-
+//resource checking
+  { path: '/resourceChecking', name: 'Resource Checking', component: ResourceCheck },
+  { path: '/resourceDetails', name: 'Resource Details', component: ResourceDetails },
+  { path: '/taskList', name: 'Task List', component: TaskList },
+  { path: '/pendingApproval', name: 'Waiting Approval', component: PendingApproval },
+  { path: '/myTask', name: 'My Task', component: myTask },
   { path: '/theme', exact: true, name: 'Theme', component: Colors },
   { path: '/theme/colors', name: 'Colors', component: Colors },
   { path: '/theme/typography', name: 'Typography', component: Typography },

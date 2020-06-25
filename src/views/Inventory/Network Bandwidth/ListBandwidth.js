@@ -3,7 +3,7 @@ import { Badge, Button, Card, CardBody, CardFooter, CardHeader, Col, Form, FormG
 import TableBandwidth from './TableBandwidth';
 import { connect } from "react-redux";
 
-class DCSiteList extends Component {
+class Bandwidth extends Component {
   constructor(props) {
     super(props);
     this.state={
@@ -18,13 +18,14 @@ class DCSiteList extends Component {
    
   componentDidMount(){
     //console.log('componentDidMount',this.props);
-    this.props.fetchSite();
+    this.props.fetchBandwidth();
   }
 
   componentWillReceiveProps(props){
+    props.fetchBandwidth();
     //console.log('componentWillReceiveProps',props);
     this.setState({
-      data: props.site,
+      data: props.bandwidth,
     })
 
   }
@@ -39,16 +40,16 @@ return(
         <Col xs="12">
             <Card>
                 <CardHeader>
-                    <strong>Rack List</strong>
+                    <strong>Network Bandwidth</strong>
                     {/* <small> Form</small> */}
                 </CardHeader>
                 <CardBody>
                 <Card>
                     <CardHeader>
-                      <Button color="primary" href="#/BandwidthCreate"><i className="fa fa-plus-square"></i>&nbsp; Add New Network Bandwidth</Button>
+                      <Button color="primary" href="#/CreateBandwidth"><i className="fa fa-plus-square"></i>&nbsp; Add New Network Bandwidth</Button>
                         </CardHeader>
                         <CardBody>
-                              <TableBandwidth id="tableSite" data={data}/>
+                              <TableBandwidth id="tableBandwidth" data={data}/>
                           </CardBody>
                       </Card>
                 </CardBody>
@@ -62,16 +63,16 @@ return(
 
 const mapStateToProps = state => {
   return {
-    site: state.site
+    bandwidth: state.bandwidth
   };
 };
 
 const mapDispachToProps = dispatch => {
   return {
 
-    fetchSite: () => dispatch({ type: "FETCH_DCSITE"}),
+    fetchBandwidth: () => dispatch({ type: "FETCH_BANDWIDTH"}),
   
   };
 };
   
-export default connect(mapStateToProps,mapDispachToProps)(DCSiteList);
+export default connect(mapStateToProps,mapDispachToProps)(Bandwidth);

@@ -58,3 +58,22 @@
     margin-top: 0;
   }
   */
+
+  .img-upload{
+    transform: scale(1);
+  }
+  .img-upload:hover{
+    transform: scale(3.5);
+    position:absolute;
+    z-index:1;
+  }
+
+  .MuiDropzonePreviewList-image{
+    transform: scale(1);
+  }
+
+  .MuiDropzonePreviewList-image:hover{
+    transform: scale(3.5);
+    position:absolute;
+    z-index:1;
+  }

@@ -14,7 +14,7 @@ export default function TableDCLocation(props) {
     //console.log('handlDelete',row);
 
     Swal.fire({
-        title: 'Are you sure to delete this Network Bandwidth ' + row.NTW_NAME + '?',
+        title: 'Are you sure to delete this Network Port ' + row.PORT_NO + '?',
         text: "You won't be able to revert this!",
         icon: 'warning',
         showCancelButton: true,
@@ -24,7 +24,7 @@ export default function TableDCLocation(props) {
     }).then((result) => {
         if (result.value) {
 
-            axios.post('/claritybqm/reportFetchJ/?scriptName=DC_NETWORK_BANDWIDTH_DELETE', row
+            axios.post('/claritybqm/reportFetchJ/?scriptName=DC_NETWORK_PORT_DELETE', row
             ).then((res) => {
 
                 if (res.data === "success") {
@@ -55,43 +55,51 @@ export default function TableDCLocation(props) {
         render: (cell) => <p>{cell.tableData.id + 1}</p>
       },
       {
-        title: 'Network Ref ID',
-        field: 'NTW_ID',
+        title: 'Port No.',
+        field: 'PORT_NO',
       },
       {
         title: 'Network Name',
         field: 'NTW_NAME',
       },
       {
-        title: 'Bandwidth',
-        field: 'NTW_BANDWIDTH',
-      },
-      {
         title: 'DC Site',
         field: 'SITE_NAME',
       },
       {
+        title: 'Network Type',
+        field: 'PORT_NTW_TYPE',
+      },
+      {
+        title: 'Data Cable Prelaid',
+        field: 'PORT_CAB_PRELAID',
+      },
+      {
         title: 'Status',
-        field: 'NTW_STATUS',
+        field: 'PORT_STATUS',
       },
       {
         title: 'Description',
-        field: 'NTW_DESC',
+        field: 'PORT_DESC',
       },
       {
         title: 'Commision Date',
-        field: 'NTW_COMM_DT',
+        field: 'PORT_COMM_DT',
       },
       {
         title: 'Decommision Date',
-        field: 'NTW_DECOMM_DT',
+        field: 'PORT_DECOMM_DT',
+      },
+      {
+        title: 'Customer Name',
+        field: 'CUSTOMER_NAME',
       },
     ],
   });
 
   return (
     <MaterialTable
-      title='Network Bandwidth'
+      title='Network Port'
       hover={true}
       options={{    
         //hover: true,
@@ -119,7 +127,7 @@ export default function TableDCLocation(props) {
             
             //display button based on action edit/delete
             if( props.action.icon === 'edit'){                               
-                return(<Link to={"/EditBandwidth/" + props.data.NTW_ID} >
+                return(<Link to={"/EditNEPort/" + props.data.PORT_ID} >
                 <Tooltip title="Edit" >
                 <Icon
                   //onClick={ }

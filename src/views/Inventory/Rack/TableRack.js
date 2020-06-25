@@ -14,7 +14,7 @@ export default function TableDCLocation(props) {
     //console.log('handlDelete',row);
 
     Swal.fire({
-        title: 'Are you sure to delete this DC Location id ' + row.LOCN_NAME + '?',
+        title: 'Are you sure to delete this Rack No ' + row.RACK_NO + '?',
         text: "You won't be able to revert this!",
         icon: 'warning',
         showCancelButton: true,
@@ -24,7 +24,7 @@ export default function TableDCLocation(props) {
     }).then((result) => {
         if (result.value) {
 
-            axios.post('/claritybqm/reportFetchJ/?scriptName=DC_LOCATION_DELETE', row
+            axios.post('/claritybqm/reportFetchJ/?scriptName=DC_RACK_DELETE', row
             ).then((res) => {
 
                 if (res.data == "success") {
@@ -96,7 +96,7 @@ export default function TableDCLocation(props) {
         field: 'RACK_CUSTOMER',
       },
       {
-        title: 'Service I',
+        title: 'Service ID',
         field: 'RACK_SERVICEID',
       },
     ],
@@ -106,6 +106,10 @@ export default function TableDCLocation(props) {
     <MaterialTable
       title='Rack'
       hover={true}
+      options={{    
+        //hover: true,
+        filtering: true,
+    }}
       columns={state.columns}
       data={props.data}
       actions={[

@@ -3,10 +3,64 @@ import { Badge, Button, Card, CardBody, CardFooter, CardHeader, Col, Form, FormG
 import '../css/style.css';
 import $ from 'jquery';
 import auth from '../../../auth';
+import Swal from 'sweetalert2';
 import { connect } from "react-redux";
 import axios from 'axios';
-import {TextField} from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import { makeStyles, useTheme, TextField, Select, MenuItem, Chip } from '@material-ui/core';
+import DateFnsUtils from '@date-io/date-fns';
+import { MuiPickersUtilsProvider, KeyboardTimePicker, KeyboardDatePicker } from '@material-ui/pickers';
+
+
+const useStyles = makeStyles((theme) => ({
+    formControl: {
+      margin: theme.spacing(1),
+      minWidth: 120,
+      maxWidth: 300,
+    },
+    chips: {
+      display: 'flex',
+      flexWrap: 'wrap',
+    },
+    chip: {
+      margin: 2,
+    },
+    noLabel: {
+      marginTop: theme.spacing(3),
+    },
+    selected: {
+        //backgroundColor: "turquoise",
+        color: "blue",
+        fontWeight: 600
+    }
+  }));
+  
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 250,
+      },
+    },
+  };
+  
+  // verified field option array
+  const workgroupOption = [
+    'DC PROD',
+    'OTM',
+    'PM',
+    'TM ONE',
+  ];
+  
+  function getStyles(name, optionVerified, theme) {
+    return {
+      fontWeight:
+      optionVerified.indexOf(name) === -1
+          ? theme.typography.fontWeightRegular
+          : theme.typography.fontWeightMedium,
+    };
+  }
 
 const FormDCSite = (props) => {
 
@@ -24,16 +78,16 @@ const FormDCSite = (props) => {
     const [collapse, setcollapse] = useState(false);
     const [iconCollapse, setIconCollapse] = useState("icon-arrow-down");
     const [flagSubmit, setflagSubmit] = useState(props.flagSubmit);
+    const [selectedCommDate, setSelectedCommDate] = useState(null)
+    const [selectedDecommDate, setSelectedDecommDate] = useState(null)
+    const [optionVerified, setOptionVerified] = useState([]);
+    const classes = useStyles();
+    const theme = useTheme();
 
     useEffect(() => {
 
         console.log('propsFormComponent', props);
         //console.log('propsFormComponenStatet', PostcodeErrorMsg);
-
-        setBorderColor(props.validateStyle.borderColor);
-        setSiteErrorMsg(props.validateStyle.siteErrorMsg);
-        setPostcodeErrorMsg(props.validateStyle.PostcodeErrorMsg);
-        setborderColorPostcode(props.validateStyle.borderColorPostcode);
 
         if (actionForm == 'CREATE') {
             setActionSaveBtn(true);
@@ -41,6 +95,10 @@ const FormDCSite = (props) => {
                 setcollapse(props.validateStyle.collapse);
                 createSite(props.data);
             }
+            setBorderColor(props.validateStyle.borderColor);
+            setSiteErrorMsg(props.validateStyle.siteErrorMsg);
+            setPostcodeErrorMsg(props.validateStyle.PostcodeErrorMsg);
+            setborderColorPostcode(props.validateStyle.borderColorPostcode);
         }
         if (actionForm == 'EDIT') {
 
@@ -53,21 +111,29 @@ const FormDCSite = (props) => {
     }, [props]);
 
     const createSite = (formValues) =>{
-        setflagSubmit(false);
+        //setflagSubmit(false);
         console.log('createSite',formValues);
-        
-        // axios.post('/claritybqm/reportFetchJ/?scriptName=DC_SITE_CREATE', formValues
-        // ).then((res) => {
-        //   //console.log('success to create : ', res.data);   
-        //     if(res.data == "success"){
-        //       this.setState({ openSnackBar: true, alertMsg: 'Data has been Crerated.' });
-        //     }
 
-        // })
-        // .catch((err) => {
-        //   console.log('failed to create : ', err);
-        // });
-  
+        Swal.fire({
+            text: 'Are you sure to Create this DCSite ' + formValues.SITE_NAME + '?',
+        }).then((result) => {
+
+            if(result.value){
+                axios.post('/claritybqm/reportFetchJ/?scriptName=DC_SITE_CREATE', formValues
+                ).then((res) => {
+                  //console.log('success to create : ', res.data);   
+                    if(res.data == "success"){
+                      this.setState({ openSnackBar: true, alertMsg: 'Data has been Crerated.' });
+                    }
+        
+                })
+                .catch((err) => {
+                  console.log('failed to create : ', err);
+                });
+          
+            }
+
+        })
         
     }
 
@@ -86,13 +152,10 @@ const FormDCSite = (props) => {
         //setIconCollapse("icon-arrow-up")
       }
     
-    // Top 100 films as rated by IMDb users. http://www.imdb.com/chart/top
-const varifiedOption = [
-    { workgroup: 'DC PROD'},
-    { workgroup: 'OTM'},
-    { workgroup: 'PM'},
-    ]
- 
+    const handleChange = (event) => {
+        setOptionVerified(event.target.value);
+        };
+    
     return (
         <div className="animated fadeIn" >
             <Row>
@@ -110,7 +173,7 @@ const varifiedOption = [
                                             <Col xs="4">
                                                 <FormGroup hidden={SideIDFlag}>
                                                     <Label>DC Site ID :</Label>
-                                                    <Input type="text" id="SITE_ID" name="SITE_ID" defaultValue={props.data.siteID} style={{ backgroundColor: backgcolor }} readOnly/>
+                                                    <Input type="text" id="SITE_ID" name="SITE_ID" defaultValue={props.siteID} style={{ backgroundColor: backgcolor }} readOnly/>
                                                 </FormGroup>
                                                 <FormGroup>
                                                     <Label>DC Site :</Label>
@@ -177,11 +240,45 @@ const varifiedOption = [
                                                 <Label>DC Manager :</Label>
                                                 <Input type="text" id="SITE_MGR" name="SITE_MGR" value={props.data.SITE_MGR } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
                                                 <Label>Telephone No. :</Label>
-                                                <Input type="text" id="SITE_MGR_NO" name="SITE_MGR_NO" value={props.data.SITE_MGR_NO } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
-                                                <Label> Commission Date </Label>
-                                                <Input type="date" id="SITE_COMM_DT" name="SITE_COMM_DT" value={props.data.SITE_COMM_DT } onChange={props.onChange} style={{ backgroundColor: backgcolor }}/>
-                                                <Label> Decommission Date </Label>
-                                                <Input type="date" id="SITE_DECOMM_DT" name="SITE_DECOMM_DT" value={props.data.SITE_DECOMM_DT } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
+                                                <Input type="text" id="SITE_MGR_NO" name="SITE_MGR_NO" value={props.data.SITE_MGR_NO} onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
+                                                <FormGroup>
+                                                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                    <KeyboardDatePicker
+                                                        id="SITE_COMM_DT" 
+                                                        name="SITE_COMM_DT"
+                                                        margin="normal"
+                                                        //id="date-picker-dialog"
+                                                        //filterDate={date => date.getDay() !== 6 && date.getDay() !== 0}
+                                                        label="Commission Date"
+                                                        format="dd/MM/yyyy"
+                                                        margin="normal"
+                                                        value={selectedCommDate}
+                                                        onChange={date => setSelectedCommDate(date)}
+                                                        KeyboardButtonProps={{
+                                                            'aria-label': 'change date',
+                                                        }}
+                                                        />
+                                                    </MuiPickersUtilsProvider>
+                                                 </FormGroup>
+                                                 <FormGroup>
+                                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                    <KeyboardDatePicker
+                                                        id="SITE_DECOMM_DT" 
+                                                        name="SITE_DECOMM_DT"
+                                                        margin="normal"
+                                                        //id="date-picker-dialog"
+                                                        label="Decommission Date"
+                                                        format="dd/MM/yyyy"
+                                                        margin="normal"
+                                                        placeholder="dd/mm/yyyy"
+                                                        value={selectedDecommDate}
+                                                        onChange={date => setSelectedDecommDate(date)}
+                                                        KeyboardButtonProps={{
+                                                            'aria-label': 'change date',
+                                                        }}
+                                                        />
+                                                    </MuiPickersUtilsProvider>
+                                                 </FormGroup>
                                             </Col>
                                             <Col xs="4">
                                                 <Label>Status :</Label>
@@ -193,28 +290,35 @@ const varifiedOption = [
                                                 </Input>
                                                 <Label>Description :</Label>
                                                 <Input type="textarea" rows="4" id="SITE_DESC" name="SITE_DESC" value={props.data.SITE_DESC } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
-                                                {/* <Label>Verified By :</Label> */}
+                                                <Label>Verified By (workgroup):</Label><br/>
                                                 {/* <Input type="text" id="SITE_VERIFIED_BY" name="SITE_VERIFIED_BY" value={props.data.SITE_VERIFIED_BY } onChange={props.onChange} style={{ backgroundColor: backgcolor }} /> */}
-                                                <Autocomplete
-                                                    multiple
-                                                    id="SITE_VERIFIED_BY" 
-                                                    name="SITE_VERIFIED_BY" 
-                                                    options={varifiedOption}
-                                                    getOptionLabel={(option) => option.workgroup}
-                                                    //defaultValue={props.data.SITE_VERIFIED_BY}
-                                                    onChange={props.onChange} 
-                                                    getOptionSelected={(option, value) => option.workgroup === value.workgroup}
-                                                     renderInput={(params) =>  (
-                                                    <TextField
-                                                        // id="SITE_VERIFIED_BY" 
-                                                        // name="SITE_VERIFIED_BY" 
-                                                        {...params}
-                                                        variant="standard"
-                                                        label="Verified By"
-                                                        placeholder="Select Workgroup"
-                                                    />
-                                                    )}
-                                                />
+                                                <FormGroup className={classes.formControl}>
+                                                    <Select
+                                                        //labelId="demo-mutiple-name-label"
+                                                        id="demo-mutiple-name"
+                                                        name="SITE_VERIFIED_BY"
+                                                        label="Verified by (workgroup)"
+                                                        multiple
+                                                        value={optionVerified}
+                                                        onChange={handleChange}
+                                                        //input={<Input />}
+                                                        MenuProps={MenuProps}
+                                                        fullWidth
+                                                        renderValue={(selected) => (
+                                                            <div className={classes.chips}>
+                                                              {selected.map((value) => (
+                                                                <Chip key={value} label={value} className={classes.chip} />
+                                                              ))}
+                                                            </div>
+                                                          )}
+                                                        >
+                                                        {workgroupOption.map((name) => (
+                                                            <MenuItem key={name} value={name} classes={{ selected: classes.selected }} style={getStyles(name, optionVerified, theme)}>
+                                                            {name}
+                                                            </MenuItem>
+                                                        ))}
+                                                    </Select>
+                                                </FormGroup>
                                             </Col>
                                         </Row>
                                     </CardBody>

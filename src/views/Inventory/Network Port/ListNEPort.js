@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { Badge, Button, Card, CardBody, CardFooter, CardHeader, Col, Form, FormGroup, Label, Row, Input } from 'reactstrap';
-import TableNEPort from './TableNEPort';
+import TableNTWPort from './TableNTWPort';
 import { connect } from "react-redux";
+import '../css/style.css'
 
-class DCSiteList extends Component {
+class Port extends Component {
   constructor(props) {
     super(props);
     this.state={
@@ -18,13 +19,13 @@ class DCSiteList extends Component {
    
   componentDidMount(){
     //console.log('componentDidMount',this.props);
-    this.props.fetchSite();
+    this.props.fetchPort();
   }
 
   componentWillReceiveProps(props){
     //console.log('componentWillReceiveProps',props);
     this.setState({
-      data: props.site,
+      data: props.port,
     })
 
   }
@@ -39,16 +40,16 @@ return(
         <Col xs="12">
             <Card>
                 <CardHeader>
-                    <strong>Rack List</strong>
+                    <strong>Network Port List</strong>
                     {/* <small> Form</small> */}
                 </CardHeader>
                 <CardBody>
                 <Card>
                     <CardHeader>
-                      <Button color="primary" href="#/dcSiteCreate"><i className="fa fa-plus-square"></i>&nbsp; Add New DC Site</Button>
+                      <Button color="primary" href="#/CreateNEPort"><i className="fa fa-plus-square"></i>&nbsp; Add New DC Site</Button>
                         </CardHeader>
                         <CardBody>
-                              <TableNEPort id="tableSite" data={data} props={()=> this.props.fetcSite()}/>
+                              <TableNTWPort id="tablePort" data={data} props={()=> this.props.fetcSite()}/>
                           </CardBody>
                       </Card>
                 </CardBody>
@@ -62,16 +63,16 @@ return(
 
 const mapStateToProps = state => {
   return {
-    site: state.site
+    port: state.port
   };
 };
 
 const mapDispachToProps = dispatch => {
   return {
 
-    fetchSite: () => dispatch({ type: "FETCH_DCSITE"}),
+    fetchPort: () => dispatch({ type: "FETCH_PORT"}),
   
   };
 };
   
-export default connect(mapStateToProps,mapDispachToProps)(DCSiteList);
+export default connect(mapStateToProps,mapDispachToProps)(Port);

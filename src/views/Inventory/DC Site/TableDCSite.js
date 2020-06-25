@@ -25,7 +25,7 @@ export default function TableDCSite(props) {
     }).then((result) => {
         if (result.value) {
 
-            axios.post('/claritybqm/reportFetchJ/?scriptName=DC_Site_DELETE', row
+            axios.post('/claritybqm/reportFetchJ/?scriptName=DC_SITE_DELETE', row
             ).then((res) => {
 
                 if (res.data == "success") {
@@ -34,7 +34,6 @@ export default function TableDCSite(props) {
                         'Your file has been deleted.',
                         'success'
                     )
-                    props.props();
                 }
 
             })

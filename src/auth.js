@@ -1,6 +1,7 @@
 //import app from "./firebase"
 import Swal from 'sweetalert2';
-
+// var express =require('express');
+// const app = express();
 //const ldap = require('ldapjs');
 // const client = ldap.createClient({
 //   url: 'ldap://10.45.236.28:636'
@@ -21,6 +22,7 @@ class Auth {
       this.authenticated.username = username;
       //this.handleLogin();
       cb();
+      
     }
   
     logout(cb) {

@@ -7,6 +7,8 @@ const initialState = {
     rackID:[],
     site:{},
     location:{},
+    bandwidth:{},
+    port:{},
 
 };
 
@@ -48,7 +50,19 @@ const reducer = (state=initialState, action) => {
            
             break;
             
-        
+            case 'FETCH_DATA_BANDWIDTH': 
+
+            newState.bandwidth = action.value;
+           
+            break;
+
+            case 'FETCH_DATA_PORT': 
+
+            newState.port = action.value;
+            
+            break;
+
+         
         
     }
     return newState;

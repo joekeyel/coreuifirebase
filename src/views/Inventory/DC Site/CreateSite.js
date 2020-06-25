@@ -37,7 +37,6 @@ const CreateForm = (props) => {
                //values['RACK_ID'] = '';
                //values['SITE_VERIFIED_BY'] = '';
                values['SITE_CREATED_BY'] = auth.authenticated.username ? auth.authenticated.username.toUpperCase() : "TMIMS";
-
            });
 
            //console.log('values',values);
@@ -69,13 +68,12 @@ const CreateForm = (props) => {
            formIsValid = false;
            setPostcodeErrorMsg("Postcode cannot be empty!");
            setborderColorPostcode("solid red");
-           setcollapse(true);
+           setcollapse(false);
          
         }if(values.ADDE_POSTCODE){
             formIsValid = true;
             setPostcodeErrorMsg("");
             setborderColorPostcode("");
-            setcollapse(true);
         }
 
         setformIsValid(formIsValid);
@@ -90,8 +88,7 @@ const CreateForm = (props) => {
         var $inputs = $('#formSite :input');//get form values
 
         var values = {};
-        var verifidBy = document.getElementById('SITE_VERIFIED_BY');
-
+      
         $inputs.each(function () {
             if ($(this).is(':radio') == true || $(this).is(':checkbox') == true){
               values[this.name] = $('input[name=' + $(this).attr('name') + ']:checked').val() == undefined ? "" : $('input[name=' + $(this).attr('name') + ']:checked').val();
@@ -102,7 +99,7 @@ const CreateForm = (props) => {
          });
 
         setformValues(values); // save form value to state
-        console.log('handleChange',verifidBy);
+        console.log('handleChange',values);
 
     };
 

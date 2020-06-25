@@ -4,14 +4,14 @@ import auth from '../../src/auth';
 
 function* fetchUpAsync() {
   var username =  auth.authenticated.username.toUpperCase();
-   console.log("getData");
+   //console.log("getData");
    const json = yield call(() =>
      fetch("/claritybqm/reportFetch/?scriptName=DC_USER&userid=" + username)
        .then(response => response.json())
        .then(myJson => myJson)
    );
    yield put({ type: "FETCH_DATA_USER", value: json });
-   console.log(json,username)
+  // console.log(json,username)
  }
 
 //  function* fetchBadge() {
@@ -58,6 +58,28 @@ function* fetchLocation() {
  // console.log('loc',json)
 }
 
+function* fetchBandwidth() {
+  //console.log("getBandwidth");
+    const json = yield call(() =>
+    fetch("/claritybqm/reportFetch/?scriptName=DC_NETWORK_BANDWIDTH")
+      .then(response => response.json())
+      .then(data => data )
+  );
+  yield put({ type: "FETCH_DATA_BANDWIDTH", value: json });
+ // console.log('getBandwidth',json)
+}
+
+
+function* fetchPort() {
+  //console.log("port");
+    const json = yield call(() =>
+    fetch("/claritybqm/reportFetch/?scriptName=DC_NETWORK_PORT")
+      .then(response => response.json())
+      .then(data => data )
+  );
+  yield put({ type: "FETCH_DATA_PORT", value: json });
+  //console.log('port',json)
+}
 
 
 export function* watchFetchData() {
@@ -66,4 +88,6 @@ export function* watchFetchData() {
   yield takeEvery("FETCH_RACK", fetchRack);
   yield takeEvery("FETCH_DCSITE", fetchSite);
   yield takeEvery("FETCH_DCLOCATION", fetchLocation);
+  yield takeEvery("FETCH_BANDWIDTH", fetchBandwidth);
+  yield takeEvery("FETCH_PORT", fetchPort);
 }
