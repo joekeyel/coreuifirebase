@@ -46,10 +46,10 @@ return(
                 <CardBody>
                 <Card>
                     <CardHeader>
-                      <Button color="primary" href="#/CreateNEPort"><i className="fa fa-plus-square"></i>&nbsp; Add New DC Site</Button>
+                      <Button color="primary" href="#/CreateNEPort"><i className="fa fa-plus-square"></i>&nbsp; Add New Network Port</Button>
                         </CardHeader>
                         <CardBody>
-                              <TableNTWPort id="tablePort" data={data} props={()=> this.props.fetcSite()}/>
+                              <TableNTWPort id="tablePort" data={data}/>
                           </CardBody>
                       </Card>
                 </CardBody>

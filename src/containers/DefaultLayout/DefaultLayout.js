@@ -71,7 +71,7 @@ class DefaultLayout extends Component {
             <Suspense>
             <AppSidebarNav navConfig={
 
-              this.state.usergroup == "dcoadmin" ? navigationAdmin : navigation
+              this.state.usergroup == "kl" ? navigation : navigationAdmin
 
               } 
               {...this.props} 

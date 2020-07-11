@@ -6,6 +6,8 @@ import {
   CardBody,
   CardFooter,
   CardHeader,
+  CardText,
+  CardTitle,
   Col,
   Collapse,
   DropdownItem,
@@ -24,6 +26,9 @@ import {
   Label,
   Row, Progress,Table,Alert,
 } from 'reactstrap';
+import { makeStyles, useTheme, FormHelperText, Select, MenuItem, Chip,FormControl, InputLabel } from '@material-ui/core';
+import Swal from 'sweetalert2';
+import '../Inventory/css/style.css';
 
 class ResourceCheck extends Component {
   constructor(props) {
@@ -31,16 +36,21 @@ class ResourceCheck extends Component {
 
     this.resourceSummary = this.resourceSummary.bind(this);
     this.handleChangeSite = this.handleChangeSite.bind(this);
+    this.handleChangeLocation = this.handleChangeLocation.bind(this);
     this.state = {
       SiteOption: {},
-      selectedSite: "",
+      selectedSite: {},
       openContainer: false,
       rack_util: {},
-      total_util: '',
-      space_util: '80',
+      allData: '',
+      space_util: '',
+      power_util: '',
+      network_util: '',
+      bandwidth_util: '',
       colorBadge: "",
       alertFlag: true,
       dcLocation: {},
+      selectedLocation: {},
     };
   }
 
@@ -74,6 +84,11 @@ class ResourceCheck extends Component {
     }
 
   }
+  handleChangeLocation(e){
+    this.setState({
+        selectedLocation: e.target.value
+    })
+  }
 
   LOVsite(){
 
@@ -91,46 +106,58 @@ class ResourceCheck extends Component {
   }
   resourceSummary(e){
     
-    this.setState({openContainer : true})
-    fetch('/claritybqm/reportFetch/?scriptName=DC_NE_UTILIZATION&siteName=' + this.state.selectedSite)
+    //this.setState({openContainer : true})
+    fetch('/claritybqm/reportFetch/?scriptName=DC_DASHBOARD_INFO&site=' + this.state.selectedSite +'&location='+this.state.selectedLocation)
     .then(response => response.json())
     .then((util) => 
     {
         console.log('util',util)
-        this.setState({ rack_util : util})    
-        Object.values(util).map((d)=>
-        {
-            this.setState({ total_util : d.RACK_UTILIZATION})    
-        })
+        if(util.length){
+            this.setState({ allData : util})    
+            Object.values(util).map((d)=>
+            {
+                this.setState({ rack_util : d.RACK_UTILIZATION,
+                                space_util : '80%',//d.SPACE_UTILIZATION, 
+                                power_util: d.POWER_UTILIZATION,
+                                network_util: '',
+                                bandwidth_util: d.POWER_UTILIZATION, })    
+            })
+            this.setState({openContainer : true})
+            this.createSummaryPanel(this.state.openContainer);
+        }
+        else{
+            Swal.fire({
+                icon: 'error',
+                text: 'No record found',
+              })
+              this.setState({openContainer : false})
+        }
        
     }
     );
-
-    this.createSummaryPanel();
     
   }
   createSummaryPanel(){
     var alertShow = this.state.alertFlag
     if(this.state.openContainer == true){
         if(this.state.rack_util.length){
-            if(this.state.total_util >= "80" ){
+            if(this.state.rack_util >= "80%" ){
                var color = "danger"
             }
-            if(this.state.total_util  < "80"){
+            if(this.state.rack_util  < "80%"){
                 var color = "primary"
              }
-             if(this.state.space_util  >= "70" && alertShow == true){
+             if(this.state.space_util  >= "70%" && alertShow == true){
                 var colorSpace = "danger";
                 alertShow = false
              }
-            return(<Card outline color="primary">
+            return(<div>
+            <Card outline color="primary">
                 <CardHeader>
                     <Row>
-                    Summary
-                    <Col xs='4' style={{marginLeft: '600px'}}>
-                        <Button block color="info" className="btn-pill" href="#/resourceDetails"> Resource Details</Button>
-                    </Col>
+                      <div><h5> Summary: <strong>{this.state.selectedSite} - ( {this.state.selectedLocation} )</strong></h5></div>
                     </Row>
+
                 </CardHeader>
                     <CardBody>
                     <Row>
@@ -139,19 +166,27 @@ class ResourceCheck extends Component {
                             <CardHeader>
                                 Rack
                                 <div className="card-header-actions">
-                                  <Badge pill color={color} className="float-right">Rack Utilization: {this.state.total_util}%</Badge>
+                                  <Badge pill color={color} className="float-right">Rack Utilization: {this.state.rack_util}</Badge>
                                 </div>
                             </CardHeader>
                             <CardBody>
                                <Row>
                                    <Col>
                                         {
-                                            Object.values(this.state.rack_util).map((d)=>
+                                            Object.values(this.state.allData).map((d)=>
                                             {
                                                 return(<div>
-                                                    <Label>Rack Utilized : <Badge pill color="warning" >  {d.RACK_UTILIZED}</Badge></Label>
-                                                    <Label>Rack Available : <Badge pill color="success">  {d.RACK_AVAILABLE}</Badge></Label>
-                                                    <Label>Total Rack Capacity : <Badge pill color="primary" >  {d.TOTAL_RACK}</Badge></Label>
+                                                    <CardBody>
+                                                        <Row>
+                                                            <Label>Rack Utilized : <Badge pill color="warning" >  {d.RACK_UTILIZED}</Badge></Label>
+                                                        </Row>
+                                                        <Row>
+                                                            <Label>Rack Available : <Badge pill color="success">  {d.RACK_AVAILABLE}</Badge></Label>
+                                                        </Row>
+                                                        <Row>
+                                                            <Label>Total Rack Capacity : <Badge pill color="primary" > {d.RACK_CAPACITY}</Badge></Label>
+                                                        </Row>
+                                                    </CardBody>
                                                     </div>)
                                             })
                                         }
@@ -162,48 +197,64 @@ class ResourceCheck extends Component {
                         </Col>
                         <Col xs="4" sm="6" md="4">
                         <Card>
-                            <CardHeader>
+                            <CardHeader color={colorSpace} >
                                 Space
                                 <div className="card-header-actions">
-                                  <Badge pill color={colorSpace} className="float-right">Space Utilization: {this.state.space_util}%</Badge>
+                                  <Badge pill color={colorSpace} className="float-right">Space Utilization: {this.state.space_util}</Badge>
                                 </div>
                             </CardHeader>
-                            <CardBody>
+                            <Card body  color={colorSpace} style={{marginBottom: '0px'}}>
                                <Row>
                                    <Col>
                                         {
-                                            Object.values(this.state.rack_util).map((d)=>
+                                            Object.values(this.state.allData).map((d)=>
                                             {
                                                 return(<div>
-                                                    <Label>Space Utilized : <Badge pill color="warning" >  {d.RACK_UTILIZED} sqft</Badge></Label>
-                                                    <Label>Space Available : <Badge pill color="success">  {d.RACK_AVAILABLE} sqft</Badge></Label>
-                                                    <Label>Total Space Capacity : <Badge pill color="primary" >  {d.TOTAL_RACK} sqft</Badge></Label>
+                                                    <CardBody>
+                                                        <Row>
+                                                            <Label>Space Utilized : <Badge pill color="warning" >  {d.SPACE_UTILIZED} sqft</Badge></Label>
+                                                        </Row>
+                                                        <Row>
+                                                             <Label>Space Available : <Badge pill color="success">  {d.SPACE_AVAILABLE} sqft</Badge></Label>
+                                                        </Row>
+                                                        <Row>
+                                                             <Label>Total Space Capacity : <Badge pill color="primary" >  {d.SPACE_CAPACITY} sqft</Badge></Label>
+                                                        </Row>
+                                                    </CardBody>
                                                     </div>)
                                             })
                                         }
                                    </Col>
                                </Row>
-                            </CardBody>
                             </Card>
+                         </Card>
                         </Col>
                         <Col xs="4" sm="6" md="4">
                         <Card>
                             <CardHeader>
                                 Power
                                 <div className="card-header-actions">
-                                  <Badge pill color={color} className="float-right">Power Utilization: {this.state.total_util}%</Badge>
+                                  <Badge pill color={color} className="float-right">Power Utilization: {this.state.power_util}</Badge>
                                 </div>
                             </CardHeader>
                             <CardBody>
                                <Row>
                                    <Col>
                                         {
-                                            Object.values(this.state.rack_util).map((d)=>
+                                            Object.values(this.state.allData).map((d)=>
                                             {
                                                 return(<div>
-                                                    <Label>Power Utilized : <Badge pill color="warning" >  {d.RACK_UTILIZED} KW</Badge></Label>
-                                                    <Label>Power Available : <Badge pill color="success">  {d.RACK_AVAILABLE} KW</Badge></Label>
-                                                    <Label>Total Power Capacity : <Badge pill color="primary" >  {d.TOTAL_RACK} KW</Badge></Label>
+                                                    <CardBody>
+                                                        <Row>
+                                                            <Label>Power Utilized : <Badge pill color="warning" >  {d.POWER_UTILIZED} KW</Badge></Label>
+                                                        </Row>
+                                                        <Row>
+                                                            <Label>Power Available : <Badge pill color="success">  {d.POWER_AVAILABLE} KW</Badge></Label>
+                                                        </Row>
+                                                        <Row>
+                                                             <Label>Total Power Capacity : <Badge pill color="primary" >  {d.POWER_CAPACITY} KW</Badge></Label>
+                                                        </Row>
+                                                    </CardBody>
                                                     </div>)
                                             })
                                         }
@@ -219,19 +270,27 @@ class ResourceCheck extends Component {
                             <CardHeader>
                                 Network Port
                                 <div className="card-header-actions">
-                                  <Badge pill color={color} className="float-right">Network Port Utilization: {this.state.total_util}%</Badge>
+                                  <Badge pill color={color} className="float-right">Network Port Utilization: {this.state.total_util}</Badge>
                                 </div>
                             </CardHeader>
                             <CardBody>
                                <Row>
                                    <Col>
                                         {
-                                            Object.values(this.state.rack_util).map((d)=>
+                                            Object.values(this.state.allData).map((d)=>
                                             {
                                                 return(<div>
-                                                    <Label>Network Port Utilized : <Badge pill color="warning" >  {d.RACK_UTILIZED}</Badge></Label>
-                                                    <Label>Network Port Available : <Badge pill color="success">  {d.RACK_AVAILABLE}</Badge></Label>
-                                                    <Label>Total Network Port Capacity : <Badge pill color="primary" >  {d.TOTAL_RACK}</Badge></Label>
+                                                    <CardBody>
+                                                        <Row>
+                                                            <Label>Network Port Utilized : <Badge pill color="warning" >  {d.RACK_UTILIZED}</Badge></Label>
+                                                       </Row>
+                                                        <Row>
+                                                            <Label>Network Port Available : <Badge pill color="success">  {d.RACK_AVAILABLE}</Badge></Label>
+                                                        </Row>
+                                                        <Row>
+                                                            <Label>Total Network Port Capacity : <Badge pill color="primary" >  {d.TOTAL_RACK}</Badge></Label>
+                                                        </Row>
+                                                    </CardBody>
                                                     </div>)
                                             })
                                         }
@@ -245,20 +304,28 @@ class ResourceCheck extends Component {
                             <CardHeader>
                                 Bandwidth
                                 <div className="card-header-actions">
-                                  <Badge pill color={color} className="float-right">Bandwidth Utilization: {this.state.total_util}%</Badge>
+                                  <Badge pill color={color} className="float-right">Bandwidth Utilization: {this.state.bandwidth_util}</Badge>
                                 </div>
                             </CardHeader>
                             <CardBody>
                                <Row>
                                    <Col>
                                         {
-                                            Object.values(this.state.rack_util).map((d)=>
+                                            Object.values(this.state.allData).map((d)=>
                                             {
                                                 return(<div>
-                                                    <Label>Bandwidth Utilized : <Badge pill color="warning" >  {d.RACK_UTILIZED} MB</Badge></Label>
-                                                    <Label>Bandwidth Available : <Badge pill color="success">  {d.RACK_AVAILABLE} MB</Badge></Label>
-                                                    <Label>Total Bandwidth Capacity : <Badge pill color="primary" >  {d.TOTAL_RACK} MB</Badge></Label>
-                                                    </div>)
+                                                     <CardBody>
+                                                        <Row>
+                                                            <Label>Bandwidth Utilized : <Badge pill color="warning" >  {d.BANDWIDTH_UTILIZED} MB</Badge></Label>
+                                                        </Row>
+                                                        <Row>
+                                                            <Label>Bandwidth Available : <Badge pill color="success">  {d.RACK_AVAILABLE} MB</Badge></Label>
+                                                        </Row>
+                                                        <Row>
+                                                            <Label>Total Bandwidth Capacity : <Badge pill color="primary" >  {d.BANDWIDTH_CAPACITY} MB</Badge></Label>
+                                                          </Row>
+                                                        </CardBody>
+                                                   </div>)
                                             })
                                         }
                                    </Col>
@@ -267,34 +334,46 @@ class ResourceCheck extends Component {
                             </Card>
                         </Col>
                      </Row>
-                     <Alert color="danger" hidden={alertShow}>
+                     <Alert id='alertMsg' color="danger" hidden={alertShow}>
                         {/*eslint-disable-next-line*/}
                         Space Utilization more than 70%, please contact <a href={"mailto:azura.abubakar@tm.com.my?subject=Space Utilization more than 70%"} target='_blank' className="alert-link"> DC Manager</a> to confirm availability.
                     </Alert>
+                    <hr/>
+                        <Row>
+                            <Col xs='3' style={{marginLeft: '900px'}}>
+                                <Button block color="info" className="btn-pill" href="#/resourceDetails"> Resource Details</Button>
+                            </Col>
+                        </Row>
                     </CardBody>
                     <CardFooter>
+                     <h4>ATTACHMENT: </h4>
                         <div>
                             <Row>
                                 <Col>
                                  <h6>Floor Plan:</h6>
-                                    <img src={'../../assets/img/avatars/floorPlan.png'}/>
+                                    <img id="imgView" src={'../../assets/img/avatars/floorPlan.png'} style={{width: '100%', height: '350px'}}/>
                                 </Col>
-                            </Row>
-                            <Row>
                                 <Col>
                                  <h6>Rack Utilization:</h6>
-                                    <img src={'../../assets/img/avatars/rackUtil.png'}/>
+                                    <img id="imgView2" src={'../../assets/img/avatars/rackUtil.png'} style={{width: '100%', height: '350px'}}/>
                                 </Col>
-                           </Row>
+                            </Row>
                         </div>
                     </CardFooter>
-                 </Card>)
+                 </Card></div>)
+        }
+        else{
+            Swal.fire({
+                icon: 'error',
+                text: 'No record found',
+            })
+            this.setState({openContainer : false})   
         }
     }
    
   }
   render() {
-   //console.log('RACK_UTILIZATION',Object.values(this.state.dcLocation));
+   console.log('RACK_UTILIZATION',this.state);
    
     return (
       <div className="animated fadeIn">
@@ -307,31 +386,37 @@ class ResourceCheck extends Component {
                         <Col xs="4">
                             <Label>DC Site</Label>
                             <Input  type="select" name="lovSite" id="lovSite" onChange={this.handleChangeSite}>
+                            <option value="">Please Select Location</option>
                                 {
+                                    this.state.SiteOption ? 
                                     Object.values(this.state.SiteOption).map(function(lov) {
                                      //console.log('lov',lov);
                                       return <option key={lov.SITE_ID} value={lov.SITE_NAME}>{lov.SITE_NAME}</option>
                                     })
+                                    :
+                                    <option value="">Please Select Location</option>
                                 }
-                            
                             </Input>
                         </Col>
-                    </Row>
-                    <Row  style={{marginLeft: "50px", marginTop: "10px"}}>
                         <Col xs="4">
                             <Label>DC Location</Label>
-                            <Input type="select" name="lovLoc" id="lovLoc" >
+                            <Input type="select" name="lovLoc" id="lovLoc"  onChange={this.handleChangeLocation}>
+                            <option  value="">Please Select Location</option>
                                 {
+                                        this.state.dcLocation ?
                                         Object.values(this.state.dcLocation).map(function(lov) {
                                         // console.log('lov',lov);
                                            return <option key={lov.LOCN_ID} value={lov.LOCN_NAME}>{lov.LOCN_NAME}</option>
                                         })
+                                        :
+                                    <option  value="">No Location found for site {this.state.selectedSite}</option>
                                 }
-                            
                             </Input>
                         </Col>
                         <Col xs='2'>
-                            <Button block color="success" onClick={this.resourceSummary}> Check Resource</Button>
+                            <div style={{marginTop: '26px'}}>
+                            <Button outline color="primary" onClick={this.resourceSummary}> Check Resource</Button>
+                            </div>
                         </Col>
                     </Row>
                     <Row style={{marginLeft: "50px", marginTop: "10px"}}>

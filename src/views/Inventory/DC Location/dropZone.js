@@ -1,48 +1,25 @@
-import React, { Component } from 'react';
-import '../css/style.css';
-import {DropzoneArea} from 'material-ui-dropzone';
+import * as React from 'react';
+import { DropzoneArea } from 'material-ui-dropzone';
 
-export default class DropzoneExample extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            open: false,
-            files: []
-        };
-    }
- 
-    handleClose() {
-        this.setState({
-            open: false
-        });
-    }
- 
-    handleSave(files) {
-        //Saving files to state for further use and closing Modal.
-        this.setState({
-            files: files,
-            open: false
-        });
-    }
- 
-    handleOpen() {
-        this.setState({
-            open: true,
-        });
-    }
- 
-    render() {
-        return (
-            <div>
-                <DropzoneArea
-                    open={this.state.open}
-                    onSave={this.handleSave.bind(this)}
-                    //acceptedFiles={['image/jpeg', 'image/png', 'image/bmp']}
-                    //showPreviews={true}
-                    maxFileSize={5000000}
-                    onClose={this.handleClose.bind(this)}
-                />
-            </div>
-        );
-    }
+const UploadFile = (props) =>{
+
+  const file = new File(["foo"], "foo.txt", {
+    type: "text/plain",
+  });
+  
+
+return(<div>
+    <DropzoneArea
+      id="RACK_UTIL" 
+      name="RACK_UTIL"
+      initialFiles = {[file]}
+      onChange={(files) => console.log('Files:', files)}
+      filesLimit={1}
+      //showPreviews={true}
+      //showPreviewsInDropzone={false}
+    />
+</div>)
+
 }
+
+export default UploadFile;

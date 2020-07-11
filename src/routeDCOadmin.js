@@ -37,6 +37,7 @@ const Widgets = React.lazy(() => import('./views/Widgets/Widgets'));
 const Users = React.lazy(() => import('./views/Users/Users'));
 const User = React.lazy(() => import('./views/Users/User'));
 const Gant = React.lazy(() => import('./views/Gant/Gant'));
+//const Inv_homepage = React.lazy(() => import('./views/Inventory/Inv_homepage'));
 //DC SITE
 const DCSiteForm = React.lazy(() => import('./views/Inventory/DC Site/FormComponent'));
 const DCSiteList = React.lazy(() => import('./views/Inventory/DC Site/ListDCSite'));
@@ -83,14 +84,16 @@ const ResourceDetails = React.lazy(() => import('./views/Resource Checking/Resou
 const TaskList = React.lazy(() => import('./views/TaskList/taskList'));
 const PendingApproval = React.lazy(() => import('./views/TaskList/pendingApproval'));
 const myTask = React.lazy(() => import('./views/TaskList/myTask'));
-
+//dashboard
+const SummarySpace = React.lazy(() => import('./views/Dashboard/Summary'));
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
+  { path: '/summary', name: 'Summary', component: SummarySpace },
  // { path: '/main-menu', name: 'Menu', component: Menu },
-  { path: '/inventory', exact: true, name: 'Inventory', component: DCSiteForm },
+  // { path: '/inventory', exact: true, name: 'Inventory', component: Inv_homepage },
   //dc site
   { path: '/dcSite', name: 'DC Site', component: DCSiteForm },
   { path: '/ListDCSite', name: 'DC Site List', component: DCSiteList },
@@ -119,7 +122,7 @@ const routes = [
   //UPS
   { path: '/UPSForm', name: 'UPS Form', component: UPSForm },
   { path: '/ListUPS', name: 'UPS List', component: UPSList },
-  { path: '/CreateCRAC', name: 'UPS', component: UPSCreate },
+  { path: '/CreateUPS', name: 'UPS', component: UPSCreate },
   { path: '/EditUPS/:id', name: 'UPS', component: UPSEdit },
   //PDU
   { path: '/PDUForm', name: 'PDU Form', component: PDUForm },

@@ -169,7 +169,7 @@ const FormDCSite = (props) => {
                             <CardBody>
                                 <Card>
                                     <CardBody>
-                                        <Row>
+                                         <Row>
                                             <Col xs="4">
                                                 <FormGroup hidden={SideIDFlag}>
                                                     <Label>DC Site ID :</Label>
@@ -180,16 +180,21 @@ const FormDCSite = (props) => {
                                                     <Input type="text" id="SITE_NAME" name="SITE_NAME" value={props.data.SITE_NAME} onChange={props.onChange} style={{ backgroundColor: backgcolor, border: borderColor }} />
                                                     <span style={{ color: "red" }}>{siteErrorMsg}</span>
                                                 </FormGroup>
-                                            <Fade timeout={timeout} in={fadeIn}>
+                                                </Col>
+                                            </Row>
+                                            <Row>
+                                            <Col xs="6">
+                                            {/* <Fade timeout={timeout} in={fadeIn}> */}
                                                 <Card>
                                                     <CardHeader>Address Details: <font color="red">*</font>
-                                                    <div className="card-header-actions">
+                                                    {/* <div className="card-header-actions"> */}
                                                             {/*eslint-disable-next-line*/}
-                                                            <a className="card-header-action btn btn-minimize" data-target="#collapseAddressDetails" onClick={toggle}><i className={iconCollapse}></i></a>
-                                                        </div>
+                                                            {/* <a className="card-header-action btn btn-minimize" data-target="#collapseAddressDetails" onClick={toggle}><i className={iconCollapse}></i></a>
+                                                        </div> */}
                                                     </CardHeader>
-                                                    <Collapse isOpen={collapse} id="collapseAddressDetails">
+                                                    {/* <Collapse isOpen={collapse} id="collapseAddressDetails"> */}
                                                     <CardBody>
+                                                        <Row style={{marginLeft: '5px'}}>
                                                         <FormGroup>
                                                             <Label>House No. :</Label>
                                                             <Input type="text" id="ADDE_NO" name="ADDE_NO" value={props.data.ADDE_NO } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
@@ -199,21 +204,23 @@ const FormDCSite = (props) => {
                                                             <Input type="text" id="ADDE_FLOOR" name="ADDE_FLOOR" value={props.data.ADDE_FLOOR } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
                                                         </FormGroup>
                                                         <FormGroup>
-                                                            <Label>Building No. :</Label>
-                                                            <Input type="text" id="ADDE_BUILDING" name="ADDE_BUILDING" value={props.data.ADDE_BUILDING } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
-                                                        </FormGroup>
-                                                        <FormGroup>
                                                             <Label>Street Type :</Label>
                                                             <Input type="text" id="ADDE_STTYPE" name="ADDE_STTYPE" value={props.data.ADDE_STTYPE } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
                                                         </FormGroup>
+                                                        </Row>
                                                         <FormGroup>
                                                             <Label>Street Name :</Label>
                                                             <Input type="text" id="ADDE_STNAME" name="ADDE_STNAME" value={props.data.ADDE_STNAME } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
                                                         </FormGroup>
                                                         <FormGroup>
+                                                            <Label>Building No. :</Label>
+                                                            <Input type="text" id="ADDE_BUILDING" name="ADDE_BUILDING" value={props.data.ADDE_BUILDING } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
+                                                        </FormGroup>
+                                                        <FormGroup>
                                                             <Label>Section :</Label>
                                                             <Input type="text" id="ADDE_SECTION" name="ADDE_SECTION" value={props.data.ADDE_SECTION} onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
                                                         </FormGroup>
+                                                        <Row style={{marginLeft: '5px'}}>
                                                         <FormGroup>
                                                             <Label>Postcode :</Label>
                                                             <Input type="text" id="ADDE_POSTCODE" name="ADDE_POSTCODE" value={props.data.ADDE_POSTCODE} onChange={props.onChange} style={{ backgroundColor: backgcolor,border : borderColorPostcode }} />
@@ -227,12 +234,13 @@ const FormDCSite = (props) => {
                                                             <Label>State :</Label>
                                                             <Input type="text" id="ADDE_STATE" name="ADDE_STATE" value={props.data.ADDE_STATE } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
                                                         </FormGroup>
+                                                        </Row>
                                                     </CardBody>
-                                                    </Collapse>
+                                                    {/* </Collapse> */}
                                                 </Card>
-                                                </Fade>
+                                                {/* </Fade> */}
                                             </Col>
-                                            <Col xs="4">
+                                            <Col xs="2">
                                                 <Label>Total Space Capacity :</Label>
                                                 <Input type="text" id="SITE_TOTAL_SPACE_CAP" name="SITE_TOTAL_SPACE_CAP" value={props.data.SITE_TOTAL_SPACE_CAP } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
                                                 <Label>Total Power Capacity :</Label>
@@ -280,8 +288,8 @@ const FormDCSite = (props) => {
                                                     </MuiPickersUtilsProvider>
                                                  </FormGroup>
                                             </Col>
-                                            <Col xs="4">
-                                                <Label>Status :</Label>
+                                            <Col xs='4'>
+                                            <Label>Status :</Label>
                                                 <Input type="select" name="SITE_STATUS" id="SITE_STATUS" value={props.data.SITE_STATUS } onChange={props.onChange} style={{ backgroundColor: backgcolor }} >
                                                     <option value="">Please select</option>
                                                     <option value="Active">Active</option>

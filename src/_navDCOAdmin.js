@@ -1,19 +1,31 @@
 export default {
     items: [
+      // {
+      //   name: 'Dashboard',
+      //   url: '/dashboard',
+      //   icon: 'icon-speedometer',
+      //   // badge: {
+      //   //   variant: 'info',
+      //   //   text: 'NEW',
+      //   // },
+      //   children: [
+      //     {
+      //       name: 'Summary',
+      //       url: '/summarySpace',
+      //       icon: 'icon-chart',
+      //     },
+      //   ],
+      // },
       {
         name: 'Dashboard',
-        url: '/dashboard',
-        icon: 'icon-speedometer',
-        badge: {
-          variant: 'info',
-          text: 'NEW',
-        },
+        url: '/summary',
+        icon: 'icon-chart',
       },
-      {
-        name: 'Inventory',
-        url: '/inventory',
-        icon: 'icon-puzzle',
-        children: [
+      //{
+        // name: 'Inventory',
+        // url: '/inventory',
+        // icon: 'icon-puzzle',
+        // children: [],
           {
             name: 'DC Site',
             url: '/ListDCSite',
@@ -54,8 +66,6 @@ export default {
             url: '/ListCRAC',
             icon: 'icon-layers',
           },
-        ]
-      },
       // {
       //   name: 'Resource Checking',
       //   url: '/resourceChecking',

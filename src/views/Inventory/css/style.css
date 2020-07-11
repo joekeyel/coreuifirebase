@@ -63,17 +63,46 @@
     transform: scale(1);
   }
   .img-upload:hover{
-    transform: scale(3.5);
+    transform: scale(2);
     position:absolute;
     z-index:1;
   }
 
-  .MuiDropzonePreviewList-image{
-    transform: scale(1);
-  }
+/* Resource check component css */
+#alertMsg{
+  animation: pulse 5s infinite;
+}
 
-  .MuiDropzonePreviewList-image:hover{
-    transform: scale(3.5);
-    position:absolute;
-    z-index:1;
-  }
+@keyframes pulse {
+0% {
+  background-color: #e8f355;
+}
+100% {
+  background-color: #FF4136;
+}
+}
+
+/* end resource check css*/
+
+/*Login css*/
+.swiper-container {
+  width: 600px;
+  height: 300px;
+}
+
+.wrap {
+	perspective: 800px;
+	perspective-origin: 50% 100px;
+}
+.cube {
+	position: relative;
+	width: 200px;
+	transform-style: preserve-3d;
+}
+.cube div {
+	position: absolute;
+	width: 200px;
+	height: 200px;
+}
+
+/*end login*/

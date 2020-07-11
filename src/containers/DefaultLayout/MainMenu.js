@@ -115,7 +115,7 @@ export default function MediaCard(props) {
             </CardActionArea>
             <CardActions>
             <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                        <Button block color="primary" className="btn-pill" href="#/dashboard"> Click Here</Button>
+                        <Button block color="primary" className="btn-pill" href="#/summary"> Click Here</Button>
                </Col>
             </CardActions>
             </Card>

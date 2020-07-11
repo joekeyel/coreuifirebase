@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import { Button, Card, CardBody, CardGroup, Col, Container, Form, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap';
 import auth from "../../../auth";
+import Slider from './slider';
+import {Typography, Box} from '@material-ui/core';
+
 class Login extends Component {
 
 
@@ -38,6 +41,18 @@ class Login extends Component {
     this.setState({password: event.target.value});
   }
 
+  Copyright() {
+    return (
+      <Typography variant="body2" color="textSecondary" align="center">
+        <img src="/assets/img/Telekom.png" style={{width: '10%'}} />
+        {'Copyright © '}
+          DC Portal
+        {' '}
+        {new Date().getFullYear()}
+        {'.'}
+      </Typography>
+    );
+  }
 
   render() {
    // console.log('auth',auth.isAuthenticated());
@@ -52,8 +67,10 @@ class Login extends Component {
                   <CardBody>
                   {/* <span>{auth.isAuthenticated().ldapSearch}</span> */}
                     <Form /*action="/dco/login" method="post" */>
-                      <h1>Login</h1>
-                      <p className="text-muted">Sign In to your account</p>
+                      <center><img src="/assets/img/dcLogo.png" style={{width: '80%'}} />
+                      {/* <h3>Login</h3> */}
+                      {/* <p className="text-muted">Sign In to your account</p> */}
+                      </center>
                       <InputGroup className="mb-3">
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>
@@ -83,19 +100,18 @@ class Login extends Component {
                           <Button color="link" className="px-0">Forgot password?</Button>
                         </Col>
                       </Row>
+                      <Row>
+                      <Box mt={5}>
+                        {this.Copyright()}
+                        </Box>
+                      </Row>
                     </Form>
                   </CardBody>
                 </Card>
-                <Card className="text-white bg-primary py-5 d-md-down-none" style={{ width: '44%' }}>
+                <Card className="text-white py-5 d-md-down-none">
                   <CardBody className="text-center">
                     <div>
-                    <img src="/assets/img/avatars/telekom.png"/>
-                    <h2>TM iSHIELDs</h2><h4>New USER</h4>
-                      {/* <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut
-                        labore et dolore magna aliqua.</p> */}
-                      <a href="https://idss.tm.com.my/idss/">
-                        <Button color="primary" className="mt-3" active tabIndex={-1}>Register Now!</Button>
-                      </a>
+                    <Slider />
                     </div>
                   </CardBody>
                 </Card>

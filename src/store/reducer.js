@@ -9,6 +9,10 @@ const initialState = {
     location:{},
     bandwidth:{},
     port:{},
+    ups:{},
+    pdu:{},
+    crac:{},
+    dashboard:{},
 
 };
 
@@ -62,6 +66,29 @@ const reducer = (state=initialState, action) => {
             
             break;
 
+            case 'FETCH_DATA_UPS': 
+
+            newState.ups = action.value;
+            
+            break;
+
+            case 'FETCH_DATA_PDU': 
+
+            newState.pdu = action.value;
+            
+            break;
+
+            case 'FETCH_DATA_CRAC': 
+
+            newState.crac = action.value;
+            
+            break;
+
+            case 'FETCH_DATA_DASHBOARD': 
+
+            newState.dashboard = action.value;
+            
+            break;
          
         
     }

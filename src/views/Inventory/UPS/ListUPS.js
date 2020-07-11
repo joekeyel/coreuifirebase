@@ -3,7 +3,7 @@ import { Badge, Button, Card, CardBody, CardFooter, CardHeader, Col, Form, FormG
 import TableUPS from './TableUPS';
 import { connect } from "react-redux";
 
-class DCSiteList extends Component {
+class ListUPS extends Component {
   constructor(props) {
     super(props);
     this.state={
@@ -18,13 +18,13 @@ class DCSiteList extends Component {
    
   componentDidMount(){
     //console.log('componentDidMount',this.props);
-    this.props.fetchSite();
+    this.props.fetchUPS();
   }
 
   componentWillReceiveProps(props){
     //console.log('componentWillReceiveProps',props);
     this.setState({
-      data: props.site,
+      data: props.ups,
     })
 
   }
@@ -34,21 +34,21 @@ render(){
     //console.log('render', this.state);
     const data =  this.state.data
 return(
-    <div className="animated fadeIn" >
+    <div className="animated fadeIn">
         <Row>
         <Col xs="12">
             <Card>
                 <CardHeader>
-                    <strong>Rack List</strong>
+                    <strong>UPS List</strong>
                     {/* <small> Form</small> */}
                 </CardHeader>
                 <CardBody>
                 <Card>
                     <CardHeader>
-                      <Button color="primary" href="#/dcSiteCreate"><i className="fa fa-plus-square"></i>&nbsp; Add New DC Site</Button>
+                      <Button color="primary" href="#/CreateUPS"><i className="fa fa-plus-square"></i>&nbsp; Add New UPS</Button>
                         </CardHeader>
                         <CardBody>
-                              <TableUPS id="tableSite" data={data} props={()=> this.props.fetcSite()}/>
+                              <TableUPS id="tableUPS" data={data} />
                           </CardBody>
                       </Card>
                 </CardBody>
@@ -62,16 +62,16 @@ return(
 
 const mapStateToProps = state => {
   return {
-    site: state.site
+    ups: state.ups
   };
 };
 
 const mapDispachToProps = dispatch => {
   return {
 
-    fetchSite: () => dispatch({ type: "FETCH_DCSITE"}),
+    fetchUPS: () => dispatch({ type: "FETCH_UPS"}),
   
   };
 };
   
-export default connect(mapStateToProps,mapDispachToProps)(DCSiteList);
+export default connect(mapStateToProps,mapDispachToProps)(ListUPS);

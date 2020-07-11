@@ -3,7 +3,7 @@ import { Badge, Button, Card, CardBody, CardFooter, CardHeader, Col, Form, FormG
 import TablePDU from './TablePDU';
 import { connect } from "react-redux";
 
-class DCSiteList extends Component {
+class PDUList extends Component {
   constructor(props) {
     super(props);
     this.state={
@@ -18,13 +18,13 @@ class DCSiteList extends Component {
    
   componentDidMount(){
     //console.log('componentDidMount',this.props);
-    this.props.fetchSite();
+    this.props.fetchPDU();
   }
 
   componentWillReceiveProps(props){
     //console.log('componentWillReceiveProps',props);
     this.setState({
-      data: props.site,
+      data: props.pdu,
     })
 
   }
@@ -39,16 +39,16 @@ return(
         <Col xs="12">
             <Card>
                 <CardHeader>
-                    <strong>Rack List</strong>
+                    <strong>PDU List</strong>
                     {/* <small> Form</small> */}
                 </CardHeader>
                 <CardBody>
                 <Card>
                     <CardHeader>
-                      <Button color="primary" href="#/dcSiteCreate"><i className="fa fa-plus-square"></i>&nbsp; Add New DC Site</Button>
+                      <Button color="primary" href="#/CreatePDU"><i className="fa fa-plus-square"></i>&nbsp; Add New PDU</Button>
                         </CardHeader>
                         <CardBody>
-                              <TablePDU id="tableSite" data={data} props={()=> this.props.fetcSite()}/>
+                              <TablePDU id="tableSite" data={data} />
                           </CardBody>
                       </Card>
                 </CardBody>
@@ -62,16 +62,16 @@ return(
 
 const mapStateToProps = state => {
   return {
-    site: state.site
+    pdu: state.pdu
   };
 };
 
 const mapDispachToProps = dispatch => {
   return {
 
-    fetchSite: () => dispatch({ type: "FETCH_DCSITE"}),
+    fetchPDU: () => dispatch({ type: "FETCH_PDU"}),
   
   };
 };
   
-export default connect(mapStateToProps,mapDispachToProps)(DCSiteList);
+export default connect(mapStateToProps,mapDispachToProps)(PDUList);

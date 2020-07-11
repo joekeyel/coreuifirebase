@@ -485,7 +485,7 @@ class Dashboard extends Component {
     this.props.fetchUser();
     this.props.fetchBadge();
     this.props.fetchRack();
-
+    this.props.fetchDashboard();
   }
 
   render() {
@@ -1147,7 +1147,8 @@ const mapStateToProps = state => {
   return {
     user: state.user,
     badge:state.badge,
-    rack: state.rack
+    rack: state.rack,
+    dashboard: state.dashboard,
   };
 };
 
@@ -1156,7 +1157,7 @@ const mapDispachToProps = dispatch => {
     fetchUser: () => dispatch({ type: "FETCH_USER"}),
     fetchBadge: () => dispatch({ type: "FETCH_BADGE"}),
     fetchRack: () => dispatch({ type: "FETCH_RACK"}),
-  
+    fetchDashboard: () => dispatch({ type: "FETCH_DASHBOARD"}),
   };
 };
 

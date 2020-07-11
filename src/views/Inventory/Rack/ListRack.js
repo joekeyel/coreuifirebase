@@ -24,7 +24,7 @@ class RackList extends Component {
   componentWillReceiveProps(props){
     //console.log('props',props);
     this.setState({
-      data: this.props.rack,
+      data: props.rack,
     })
 
   }

@@ -6,7 +6,7 @@ import Icon from '@material-ui/core/Icon';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 
-export default function TableDCLocation(props) {
+export default function TableRack(props) {
   console.log('table',props);
 
   //to handle delete row function
@@ -85,7 +85,7 @@ export default function TableDCLocation(props) {
       },
       {
         title: 'Commision Date',
-        field: 'RACK_INSERT_DT',
+        field: 'RACK_COMM_DT',
       },
       {
         title: 'Decommision Date',

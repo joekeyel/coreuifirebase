@@ -81,6 +81,49 @@ function* fetchPort() {
   //console.log('port',json)
 }
 
+function* fetchUPS() {
+  //console.log("port");
+    const json = yield call(() =>
+    fetch("/claritybqm/reportFetch/?scriptName=DC_UPS")
+      .then(response => response.json())
+      .then(data => data )
+  );
+  yield put({ type: "FETCH_DATA_UPS", value: json });
+  //console.log('port',json)
+}
+
+function* fetchPDU() {
+  //console.log("port");
+    const json = yield call(() =>
+    fetch("/claritybqm/reportFetch/?scriptName=DC_PDU")
+      .then(response => response.json())
+      .then(data => data )
+  );
+  yield put({ type: "FETCH_DATA_PDU", value: json });
+  //console.log('pdu',json)
+}
+
+function* fetchCRAC() {
+  //console.log("port");
+    const json = yield call(() =>
+    fetch("/claritybqm/reportFetch/?scriptName=DC_CRAC")
+      .then(response => response.json())
+      .then(data => data )
+  );
+  yield put({ type: "FETCH_DATA_CRAC", value: json });
+  //console.log('pdu',json)
+}
+
+function* fetchDashboard() {
+  //console.log("port");
+    const json = yield call(() =>
+    fetch("/claritybqm/reportFetch/?scriptName=DC_DASHBOARD_INFO")
+      .then(response => response.json())
+      .then(data => data )
+  );
+  yield put({ type: "FETCH_DATA_DASHBOARD", value: json });
+  console.log('fetchDashboard',json)
+}
 
 export function* watchFetchData() {
   yield takeEvery("FETCH_USER", fetchUpAsync);
@@ -90,4 +133,8 @@ export function* watchFetchData() {
   yield takeEvery("FETCH_DCLOCATION", fetchLocation);
   yield takeEvery("FETCH_BANDWIDTH", fetchBandwidth);
   yield takeEvery("FETCH_PORT", fetchPort);
+  yield takeEvery("FETCH_UPS", fetchUPS);
+  yield takeEvery("FETCH_PDU", fetchPDU);
+  yield takeEvery("FETCH_CRAC", fetchCRAC);
+  yield takeEvery("FETCH_DASHBOARD", fetchDashboard);
 }
