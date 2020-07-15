@@ -1,22 +1,22 @@
 import React, { Component, useState, useEffect } from 'react';
 import { Badge, Button, Card, CardBody, CardFooter, CardHeader, Col, Form, FormGroup, Label, Row, Input, Collapse, Fade } from 'reactstrap';
 import '../css/style.css';
-import $ from 'jquery';
+import 'date-fns';
 import auth from '../../../auth';
 import Swal from 'sweetalert2';
 import { connect } from "react-redux";
 import axios from 'axios';
-import { makeStyles, useTheme, TextField, Select, MenuItem, Chip } from '@material-ui/core';
+import { makeStyles, useTheme, TextField, Select, MenuItem, Chip ,Grid,FormHelperText} from '@material-ui/core';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardTimePicker, KeyboardDatePicker } from '@material-ui/pickers';
 
-
+ 
 const useStyles = makeStyles((theme) => ({
-    formControl: {
-      margin: theme.spacing(1),
-      minWidth: 120,
-      maxWidth: 300,
-    },
+    // formControl: {
+    //   margin: theme.spacing(1),
+    //   minWidth: 120,
+    //   maxWidth: 300,
+    // },
     chips: {
       display: 'flex',
       flexWrap: 'wrap',
@@ -45,13 +45,6 @@ const useStyles = makeStyles((theme) => ({
     },
   };
   
-  // verified field option array
-  const workgroupOption = [
-    'DC PROD',
-    'OTM',
-    'PM',
-    'TM ONE',
-  ];
   
   function getStyles(name, optionVerified, theme) {
     return {
@@ -70,35 +63,48 @@ const FormDCSite = (props) => {
     const [actionSaveBtn, setActionSaveBtn] = useState(false);
     const [SideIDFlag, setSideIDFlag] = useState(true);
     const [borderColor, setBorderColor] = useState('');
-    const [borderColorPostcode, setborderColorPostcode] = useState('');
-    const [siteErrorMsg, setSiteErrorMsg] = useState('');
-    const [PostcodeErrorMsg, setPostcodeErrorMsg] = useState("");
-    const [timeout, setTimeout] = useState(300);
-    const [fadeIn, setFadeIn] = useState(true);
-    const [collapse, setcollapse] = useState(false);
-    const [iconCollapse, setIconCollapse] = useState("icon-arrow-down");
-    const [flagSubmit, setflagSubmit] = useState(props.flagSubmit);
     const [selectedCommDate, setSelectedCommDate] = useState(null)
     const [selectedDecommDate, setSelectedDecommDate] = useState(null)
     const [optionVerified, setOptionVerified] = useState([]);
+    const [dataUSer, setDataUser] = useState([]);
+    const [userWorkgroup, setUserWorkgroup] = useState([]);
+    const [approverList, setapproverList] = useState([]);
     const classes = useStyles();
     const theme = useTheme();
 
-    useEffect(() => {
+    
+  useEffect(() => {
+    var username = auth.authenticated.username.toUpperCase();
 
+    //get user(creator) detail
+    fetch(`/claritybqm/reportFetch/?scriptName=DC_USER&userid=${username}`)
+    .then(response => response.json())
+    .then((user) => {
+        //console.log('workgroup',user);
+        getWorkgroup(user);
+        
+    })
+
+    //get approver detail
+    fetch('/claritybqm/reportFetch/?scriptName=DC_USER').
+    then(response => response.json()).
+    then((user) => {
+      
+        var approver = Object.values(user.user).filter(u => u.USER_APPROVE === 'Y');
+        //console.log('filter',filter); 
+        setapproverList(approver);
+    })
+    
+
+  },[]);
+
+    useEffect(() => {
         console.log('propsFormComponent', props);
         //console.log('propsFormComponenStatet', PostcodeErrorMsg);
 
         if (actionForm == 'CREATE') {
             setActionSaveBtn(true);
-            if(props.formIsValid === true && flagSubmit === true){
-                setcollapse(props.validateStyle.collapse);
-                createSite(props.data);
-            }
-            setBorderColor(props.validateStyle.borderColor);
-            setSiteErrorMsg(props.validateStyle.siteErrorMsg);
-            setPostcodeErrorMsg(props.validateStyle.PostcodeErrorMsg);
-            setborderColorPostcode(props.validateStyle.borderColorPostcode);
+            
         }
         if (actionForm == 'EDIT') {
 
@@ -110,48 +116,19 @@ const FormDCSite = (props) => {
 
     }, [props]);
 
-    const createSite = (formValues) =>{
-        //setflagSubmit(false);
-        console.log('createSite',formValues);
-
-        Swal.fire({
-            text: 'Are you sure to Create this DCSite ' + formValues.SITE_NAME + '?',
-        }).then((result) => {
-
-            if(result.value){
-                axios.post('/claritybqm/reportFetchJ/?scriptName=DC_SITE_CREATE', formValues
-                ).then((res) => {
-                  //console.log('success to create : ', res.data);   
-                    if(res.data == "success"){
-                      this.setState({ openSnackBar: true, alertMsg: 'Data has been Crerated.' });
-                    }
+    const getWorkgroup = (user) => {
         
-                })
-                .catch((err) => {
-                  console.log('failed to create : ', err);
-                });
-          
-            }
-
-        })
+        if(user){
+            console.log('dataUSer',user.workgroups);
+        }
         
     }
+
 
     const handleBackBtn = () => {
         window.history.back();
     }
 
-    const toggle = ()  =>{
-        setcollapse(!collapse);
-        if(collapse == true){
-            setIconCollapse("icon-arrow-down")
-        }
-        if(collapse == false){
-            setIconCollapse("icon-arrow-up")
-        }
-        //setIconCollapse("icon-arrow-up")
-      }
-    
     const handleChange = (event) => {
         setOptionVerified(event.target.value);
         };
@@ -167,18 +144,19 @@ const FormDCSite = (props) => {
                     {/* <small> Form</small> */}
                             </CardHeader>
                             <CardBody>
+                                <Grid item>
                                 <Card>
                                     <CardBody>
                                          <Row>
                                             <Col xs="4">
                                                 <FormGroup hidden={SideIDFlag}>
-                                                    <Label>DC Site ID :</Label>
+                                                    <Label>DC Site ID</Label>
                                                     <Input type="text" id="SITE_ID" name="SITE_ID" defaultValue={props.siteID} style={{ backgroundColor: backgcolor }} readOnly/>
                                                 </FormGroup>
-                                                <FormGroup>
-                                                    <Label>DC Site :</Label>
+                                                <FormGroup error={props.hasError1} >
+                                                    <Label>DC Site</Label>
                                                     <Input type="text" id="SITE_NAME" name="SITE_NAME" value={props.data.SITE_NAME} onChange={props.onChange} style={{ backgroundColor: backgcolor, border: borderColor }} />
-                                                    <span style={{ color: "red" }}>{siteErrorMsg}</span>
+                                                    {props.hasError1 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
                                                 </FormGroup>
                                                 </Col>
                                             </Row>
@@ -195,45 +173,93 @@ const FormDCSite = (props) => {
                                                     {/* <Collapse isOpen={collapse} id="collapseAddressDetails"> */}
                                                     <CardBody>
                                                         <Row style={{marginLeft: '5px'}}>
+                                                        <Col>
                                                         <FormGroup>
-                                                            <Label>House No. :</Label>
+                                                            <Label>House No.</Label>
                                                             <Input type="text" id="ADDE_NO" name="ADDE_NO" value={props.data.ADDE_NO } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
                                                         </FormGroup>
+                                                        </Col>
+                                                        <Col>
                                                         <FormGroup>
-                                                            <Label>Floor No. :</Label>
+                                                            <Label>Floor No.</Label>
                                                             <Input type="text" id="ADDE_FLOOR" name="ADDE_FLOOR" value={props.data.ADDE_FLOOR } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
                                                         </FormGroup>
+                                                        </Col>
+                                                        <Col>
                                                         <FormGroup>
-                                                            <Label>Street Type :</Label>
-                                                            <Input type="text" id="ADDE_STTYPE" name="ADDE_STTYPE" value={props.data.ADDE_STTYPE } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
+                                                            <Label>Street Type</Label>
+                                                            <Input type="select" 
+                                                            id="ADDE_STTYPE" 
+                                                            name="ADDE_STTYPE" value={props.data.ADDE_STTYPE } 
+                                                            onChange={props.onChange} 
+                                                            style={{ backgroundColor: backgcolor }} 
+                                                            >
+                                                                 <option id="null" value="">Select Street Type</option>
+                                                            {
+                                                                props.LovStreeType ? props.LovStreeType.map((d)=>{
+                                                                     return(<option id={d.LOV_VALUE} value={d.LOV_DESC}>{d.LOV_DESC}</option>)
+                                                                })
+                                                                :
+                                                                <option id="None" value="">None</option>
+                                                            }
+                                                            </Input>
                                                         </FormGroup>
+                                                        </Col>
                                                         </Row>
+                                                        <Col>
                                                         <FormGroup>
-                                                            <Label>Street Name :</Label>
+                                                            <Label>Street Name</Label>
                                                             <Input type="text" id="ADDE_STNAME" name="ADDE_STNAME" value={props.data.ADDE_STNAME } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
                                                         </FormGroup>
+                                                        </Col>
+                                                        <Col>
                                                         <FormGroup>
-                                                            <Label>Building No. :</Label>
+                                                            <Label>Building No.</Label>
                                                             <Input type="text" id="ADDE_BUILDING" name="ADDE_BUILDING" value={props.data.ADDE_BUILDING } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
                                                         </FormGroup>
+                                                        </Col>
+                                                        <Col>
                                                         <FormGroup>
-                                                            <Label>Section :</Label>
+                                                            <Label>Section</Label>
                                                             <Input type="text" id="ADDE_SECTION" name="ADDE_SECTION" value={props.data.ADDE_SECTION} onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
                                                         </FormGroup>
+                                                        </Col>
                                                         <Row style={{marginLeft: '5px'}}>
-                                                        <FormGroup>
-                                                            <Label>Postcode :</Label>
-                                                            <Input type="text" id="ADDE_POSTCODE" name="ADDE_POSTCODE" value={props.data.ADDE_POSTCODE} onChange={props.onChange} style={{ backgroundColor: backgcolor,border : borderColorPostcode }} />
-                                                            <span style={{ color: "red" }}>{PostcodeErrorMsg}</span>
+                                                        <Col>
+                                                        <FormGroup error={props.hasError2} >
+                                                            <Label>Postcode</Label>
+                                                            <Input type="number" id="ADDE_POSTCODE" name="ADDE_POSTCODE" value={props.data.ADDE_POSTCODE} onChange={props.onChange} style={{ backgroundColor: backgcolor,}} />
+                                                            {props.hasError2 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
                                                         </FormGroup>
+                                                        </Col>
+                                                        <Col>
                                                         <FormGroup>
-                                                            <Label>City  :</Label>
+                                                            <Label>City </Label>
                                                             <Input type="text" id="ADDE_CITY" name="ADDE_CITY" value={props.data.ADDE_CITY } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
                                                         </FormGroup>
-                                                        <FormGroup>
-                                                            <Label>State :</Label>
-                                                            <Input type="text" id="ADDE_STATE" name="ADDE_STATE" value={props.data.ADDE_STATE } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
+                                                        </Col>
+                                                        <Col>
+                                                        <FormGroup error={props.hasError3} >
+                                                            <Label>State</Label>
+                                                            <Input type="select" 
+                                                            id="ADDE_STATE" 
+                                                            name="ADDE_STATE" 
+                                                            value={props.data.ADDE_STATE } 
+                                                            onChange={props.onChange} 
+                                                            style={{ backgroundColor: backgcolor }} 
+                                                            >
+                                                              <option id="null" value="">Select State</option>
+                                                            {
+                                                                props.LovState ? props.LovState.map((d)=>{
+                                                                     return(<option id={d.LOV_VALUE} value={d.LOV_DESC}>{d.LOV_DESC}</option>)
+                                                                })
+                                                                :
+                                                                <option id="none" value="">None</option>
+                                                            }
+                                                            </Input>
+                                                            {props.hasError3 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
                                                         </FormGroup>
+                                                        </Col>
                                                         </Row>
                                                     </CardBody>
                                                     {/* </Collapse> */}
@@ -241,15 +267,16 @@ const FormDCSite = (props) => {
                                                 {/* </Fade> */}
                                             </Col>
                                             <Col xs="2">
-                                                <Label>Total Space Capacity :</Label>
-                                                <Input type="text" id="SITE_TOTAL_SPACE_CAP" name="SITE_TOTAL_SPACE_CAP" value={props.data.SITE_TOTAL_SPACE_CAP } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
-                                                <Label>Total Power Capacity :</Label>
-                                                <Input type="text" id="SITE_TOTAL_POWER_CAP" name="SITE_TOTAL_POWER_CAP" value={props.data.SITE_TOTAL_POWER_CAP } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
-                                                <Label>DC Manager :</Label>
+                                                <Label>Total Space Capacity</Label>
+                                                <Input type="number" id="SITE_TOTAL_SPACE_CAP" name="SITE_TOTAL_SPACE_CAP" value={props.data.SITE_TOTAL_SPACE_CAP } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
+                                                <Label>Total Power Capacity</Label>
+                                                <Input type="number" id="SITE_TOTAL_POWER_CAP" name="SITE_TOTAL_POWER_CAP" value={props.data.SITE_TOTAL_POWER_CAP } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
+                                                <Label>DC Manager</Label>
                                                 <Input type="text" id="SITE_MGR" name="SITE_MGR" value={props.data.SITE_MGR } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
-                                                <Label>Telephone No. :</Label>
-                                                <Input type="text" id="SITE_MGR_NO" name="SITE_MGR_NO" value={props.data.SITE_MGR_NO} onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
-                                                <FormGroup>
+                                                <Label>Telephone No.</Label>
+                                                <Input type="telephone" id="SITE_MGR_NO" name="SITE_MGR_NO" value={props.data.SITE_MGR_NO} onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
+                                                <FormGroup error={props.hasError4} >
+                                                <Label>Commission Date</Label>
                                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                                     <KeyboardDatePicker
                                                         id="SITE_COMM_DT" 
@@ -257,7 +284,7 @@ const FormDCSite = (props) => {
                                                         margin="normal"
                                                         //id="date-picker-dialog"
                                                         //filterDate={date => date.getDay() !== 6 && date.getDay() !== 0}
-                                                        label="Commission Date"
+                                                        //label="Commission Date"
                                                         format="dd/MM/yyyy"
                                                         margin="normal"
                                                         value={selectedCommDate}
@@ -266,16 +293,19 @@ const FormDCSite = (props) => {
                                                             'aria-label': 'change date',
                                                         }}
                                                         />
+                                                   
                                                     </MuiPickersUtilsProvider>
+                                                    {props.hasError4 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
                                                  </FormGroup>
-                                                 <FormGroup>
+                                                 <FormGroup  hidden={props.flagDecommDate}>
+                                                 <Label>Decommission Date</Label>
                                                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                                     <KeyboardDatePicker
                                                         id="SITE_DECOMM_DT" 
                                                         name="SITE_DECOMM_DT"
                                                         margin="normal"
                                                         //id="date-picker-dialog"
-                                                        label="Decommission Date"
+                                                       // label="Decommission Date"
                                                         format="dd/MM/yyyy"
                                                         margin="normal"
                                                         placeholder="dd/mm/yyyy"
@@ -289,66 +319,68 @@ const FormDCSite = (props) => {
                                                  </FormGroup>
                                             </Col>
                                             <Col xs='4'>
-                                            <Label>Status :</Label>
+                                            <Label>Status</Label>
                                                 <Input type="select" name="SITE_STATUS" id="SITE_STATUS" value={props.data.SITE_STATUS } onChange={props.onChange} style={{ backgroundColor: backgcolor }} >
                                                     <option value="">Please select</option>
                                                     <option value="Active">Active</option>
                                                     <option value="Not Active">Not Active</option>
                                                     <option value="KIV">KIV</option>
                                                 </Input>
-                                                <Label>Description :</Label>
+                                                <Label>Description</Label>
                                                 <Input type="textarea" rows="4" id="SITE_DESC" name="SITE_DESC" value={props.data.SITE_DESC } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
-                                                <Label>Verified By (workgroup):</Label><br/>
-                                                {/* <Input type="text" id="SITE_VERIFIED_BY" name="SITE_VERIFIED_BY" value={props.data.SITE_VERIFIED_BY } onChange={props.onChange} style={{ backgroundColor: backgcolor }} /> */}
-                                                <FormGroup className={classes.formControl}>
+                                                <Label>Verified by:</Label><br/>
+                                                <FormGroup className={classes.formControl} error={props.hasError5}>
                                                     <Select
                                                         //labelId="demo-mutiple-name-label"
-                                                        id="demo-mutiple-name"
+                                                        id="SITE_VERIFIED_BY"
                                                         name="SITE_VERIFIED_BY"
-                                                        label="Verified by (workgroup)"
-                                                        multiple
+                                                        label="Verified by"
+                                                        //multiple
                                                         value={optionVerified}
                                                         onChange={handleChange}
                                                         //input={<Input />}
                                                         MenuProps={MenuProps}
                                                         fullWidth
                                                         renderValue={(selected) => (
-                                                            <div className={classes.chips}>
-                                                              {selected.map((value) => (
-                                                                <Chip key={value} label={value} className={classes.chip} />
-                                                              ))}
-                                                            </div>
+                                                            <MenuItem key={selected} value={selected}>{selected}</MenuItem>
                                                           )}
                                                         >
-                                                        {workgroupOption.map((name) => (
-                                                            <MenuItem key={name} value={name} classes={{ selected: classes.selected }} style={getStyles(name, optionVerified, theme)}>
-                                                            {name}
+                                                        { approverList ?
+                                                            approverList.map((user) => (
+                                                            <MenuItem key={user.ID} value={user.ID} classes={{ selected: classes.selected }} style={getStyles(user.NAME, optionVerified, theme)}>
+                                                            {user.NAME}
                                                             </MenuItem>
-                                                        ))}
+                                                        ))
+                                                        :
+                                                        <MenuItem key="null" value="null">Select Verified by</MenuItem>
+                                                    }
                                                     </Select>
+                                                    {props.hasError5 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
                                                 </FormGroup>
                                             </Col>
                                         </Row>
                                     </CardBody>
                                 </Card>
+                                </Grid>
+                                <div className="form-button" style={{ marginTop: '20px' }}>
+                                    <Row >
+                                        <Col>
+                                            <Button color="info" onClick={handleBackBtn}>
+                                                <i className="fa fa-history"></i>&nbsp; Back
+                                            </Button>&nbsp;&nbsp;&nbsp;
+                                            <Button color="success" type="submit" hidden={actionCreateBtn}>
+                                                <i className="fa fa-send"></i>&nbsp; Submit
+                                            </Button>&nbsp;
+                                            <Button color="success" type="submit" hidden={actionSaveBtn}>
+                                                <i className="fa fa-save"></i>&nbsp; Save
+                                            </Button>&nbsp;
+                                            <Button color="warning" type='reset' hidden={props.btnReset}>
+                                                <i className="fa fa-refresh"></i>&nbsp; Reset
+                                            </Button>
+                                        </Col>
+                                    </Row>
+                                 </div>
                             </CardBody>
-                            <div className="form-button">
-                                <Row style={{ marginBottom: '20px' }}>
-                                    <Col>
-                                        <Button color="info" onClick={handleBackBtn}>
-                                            <i className="fa fa-history"></i>&nbsp; Back</Button>
-                                        &nbsp;&nbsp;&nbsp;
-                                        <Button color="primary" type="submit" hidden={actionCreateBtn}>
-                                            <i className="fa fa-plus"></i>&nbsp; Create </Button>
-                                        &nbsp;
-                                        <Button color="primary" type="submit" hidden={actionSaveBtn}>
-                                            <i className="fa fa-save"></i>&nbsp; Save </Button
-                                        >&nbsp;
-                                        <Button color="success" type="submit" >
-                                            <i className="fa fa-send"></i>&nbsp; Submit </Button>
-                                    </Col>
-                                </Row>
-                            </div>
                         </Form>
                     </Card>
                 </Col>

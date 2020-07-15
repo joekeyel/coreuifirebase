@@ -1,9 +1,11 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
+import { Redirect, Link , Switch } from 'react-router-dom';
 import { Row, Col, Button,Container } from 'reactstrap';
 import { makeStyles, Card, CardActionArea, CardActions, CardContent, CardMedia, Typography} from '@material-ui/core';
 import ImgInventory from './inventory.jpg';
 import ImgResource from './resource.jpg';
 import ImgDashboard from './dashboard.png';
+import auth from '../../auth';
 import {
     AppAside,
     AppFooter,
@@ -28,10 +30,39 @@ const useStyles = makeStyles({
   },
 });
 
-export default function MediaCard(props) {
+
+ function MediaCard(props) {
   const classes = useStyles();
 
   const loading = () => <div className="animated fadeIn pt-1 text-center">Loading...</div>
+  const [userID, setUserID] = useState(""); 
+  const [disableInventory, setDisableInventory] = useState(true); 
+  const [disabledResource, setDisabledResource] = useState(true);
+  const [disabledDashboard, setDisabledDashboard] = useState(true);
+
+  useEffect(()=>{
+    var user = auth.authenticated.username.toUpperCase();
+    setUserID(user)
+    //console.log('user',user);
+    fetch(`/claritybqm/reportFetch/?scriptName=DC_USER&userid=${user}`)
+    .then(resp => resp.json())
+    .then((user)=>{
+        //console.log('user',user.rights);
+        user.rights.map((rights) =>{
+            if(rights === "CAN_VIEW_INVENTORY"){
+                setDisableInventory(false);
+            }
+            if(rights === "CAN_VIEW_RESOURCE"){
+                setDisabledResource(false);
+            }
+            if(rights === "CAN_VIEW_DASHBOARD"){
+                setDisabledDashboard(false);
+            }
+        })
+
+    })
+
+  },[]);
 
   const signOut = (e) => {
     e.preventDefault()
@@ -48,7 +79,7 @@ export default function MediaCard(props) {
  <div className="app flex-row align-items-center">
     <Container>
         <Row className="justify-content-center">
-        <Col xs='4'>
+            <Col xs='4' hidden={disableInventory}>
             <Card className={classes.root}>
             <CardActionArea>
                 <CardMedia
@@ -67,12 +98,23 @@ export default function MediaCard(props) {
             </CardActionArea>
             <CardActions>
                     <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                        <Button block color="primary" className="btn-pill" href="#/ListDCSite"> Click Here</Button>
+                        <Button 
+                        block 
+                        color="primary" 
+                        className="btn-pill"  
+                        //href="#/inventoryLayout" 
+                        onClick={() => {
+                            auth.MenuSelected('inventory',userID,() => {
+                            props.history.push("/");
+                            });
+                        }} 
+                        >
+                        Click Here</Button>
                     </Col>
             </CardActions>
             </Card>
             </Col>
-            <Col xs='4'>
+            <Col xs='4' hidden={disabledResource}>
             <Card className={classes.root}>
             <CardActionArea>
             <CardMedia
@@ -91,12 +133,22 @@ export default function MediaCard(props) {
             </CardActionArea>
             <CardActions>
                <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                        <Button block color="primary" className="btn-pill" href="#/resourceChecking"> Click Here</Button>
+                        <Button 
+                        block 
+                        color="primary" 
+                        className="btn-pill" 
+                        onClick={() => {
+                            auth.MenuSelected('resource check',userID,() => {
+                            props.history.push("/");
+                            });
+                        }} 
+                        >
+                        Click Here</Button>
                </Col>
             </CardActions>
             </Card>
-            </Col>
-            <Col xs='4'>
+        </Col>
+            <Col xs='4' hidden={disabledDashboard}>
             <Card className={classes.root}>
             <CardActionArea>
                 <CardMedia
@@ -115,7 +167,16 @@ export default function MediaCard(props) {
             </CardActionArea>
             <CardActions>
             <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                        <Button block color="primary" className="btn-pill" href="#/summary"> Click Here</Button>
+                        <Button 
+                        block 
+                        color="primary" 
+                        className="btn-pill" 
+                         onClick={() => {
+                            auth.MenuSelected('dashboard',userID,() => {
+                            props.history.push("/");
+                            });
+                        }} 
+                        > Click Here</Button>
                </Col>
             </CardActions>
             </Card>
@@ -126,3 +187,4 @@ export default function MediaCard(props) {
         </div>
   </>);
 }
+export default MediaCard;

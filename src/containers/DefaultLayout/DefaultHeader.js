@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { Badge, UncontrolledDropdown, DropdownItem, DropdownMenu, DropdownToggle, Nav, NavItem } from 'reactstrap';
+import { Badge,Row, UncontrolledDropdown, DropdownItem, DropdownMenu, DropdownToggle, Nav, NavItem } from 'reactstrap';
 import PropTypes from 'prop-types';
-
+import Snackbar from '@material-ui/core/Snackbar'; 
+import Alert from '@material-ui/lab/Alert';
 import { AppAsideToggler, AppNavbarBrand, AppSidebarToggler } from '@coreui/react';
-import logo from '../../assets/img/brand/logo.svg'
+import logo from '../../assets/img/brand/telekom.png'
 import sygnet from '../../assets/img/brand/sygnet.svg'
 import auth from '../../../src/auth';
-import { connect } from "react-redux";
+import Avatar from 'react-avatar';
 
 const propTypes = {
   children: PropTypes.node,
@@ -16,24 +17,86 @@ const propTypes = {
 const defaultProps = {};
 
 class DefaultHeader extends Component {
-  componentDidMount() {
+  constructor(props) {
+    super(props);
 
-    this.props.fetchBadge();
-    this.props.fetchUser();
+    this.state = {
+      PendingApproval: [],
+      PendingTask: [],
+      openSnackBar: false,
+      userFullName: ""
+    };
+  }
+  componentDidMount() {
+  
+    var username = auth.authenticated.username.toUpperCase();
+
+    fetch(`claritybqm/reportFetch/?scriptName=DC_INBOX_LIST&userid=${username}`)
+    .then(response => response.json())
+    .then((inbox) => {
+        //var approver = Object.values(user.user).filter(u => u.USER_APPROVE === 'Y');
+        //console.log('inbox',inbox); 
+        inbox.map((i)=>{
+         
+          if(i.TYPE === 'INVENTORY'){
+            var dataInventory = Object.values(inbox).filter(u => u.TYPE === 'INVENTORY');
+            this.setState({
+              PendingApproval: dataInventory,
+              openSnackBar: true
+            })
+          }
+          if(i.TYPE === 'TASK'){
+            var dataTask = Object.values(inbox).filter(u => u.TYPE === 'TASK');
+            this.setState({
+              PendingTask: dataTask,
+              openSnackBar: true
+            })
+          }
+
+        })
+       
+    })
+
+    fetch(`/claritybqm/reportFetch/?scriptName=DC_USER&userid=${username}`)
+    .then(response => response.json())
+    .then((user) => {
+        //console.log('user',user);
+        if(user.user){
+          user.user.map((u)=>{
+            this.setState({
+              userFullName: u.NAME
+            })
+          })
+        }
+       
+    })
 
   }
 
-  render() {
+  handleClose(event, reason){
 
+    if (reason === 'clickaway') {
+      return;
+    }
+  
+    this.setState({
+      openSnackBar: false
+    })
+   
+  
+  };
+  render() {
+    //console.log('render',this.state);
+    
     // eslint-disable-next-line
     const { children, ...attributes } = this.props;
-    const task = this.props.badge.Task
-
+    const task = this.state.PendingTask ? this.state.PendingTask.length : 0;
+    var pendingApproval = this.state.PendingApproval ? this.state.PendingApproval.length : 0;
     return (
       <React.Fragment>
         <AppSidebarToggler className="d-lg-none" display="md" mobile />
         <AppNavbarBrand
-          full={{ src: logo, width: 89, height: 25, alt: 'CoreUI Logo' }}
+          full={{ src: logo, width: 75, height: 25, alt: 'CoreUI Logo' }}
           minimized={{ src: sygnet, width: 30, height: 30, alt: 'CoreUI Logo' }}
         />
         <AppSidebarToggler className="d-md-down-none" display="lg" />
@@ -51,25 +114,27 @@ class DefaultHeader extends Component {
         </Nav>
         <Nav className="ml-auto" navbar>
           <NavItem className="d-md-down-none">
-            <NavLink to="#" className="nav-link"><i className="icon-bell"></i><Badge pill color="danger">{task}</Badge></NavLink>
+            <NavLink to="#" className="nav-link"><i className="icon-bell"></i><Badge pill color="danger">{pendingApproval}</Badge></NavLink>
           </NavItem>
-          <NavItem className="d-md-down-none">
+          
+          {/* <NavItem className="d-md-down-none">
             <NavLink to="#" className="nav-link"><i className="icon-list"></i></NavLink>
           </NavItem>
           <NavItem className="d-md-down-none">
             <NavLink to="#" className="nav-link"><i className="icon-location-pin"></i></NavLink>
-          </NavItem>
+          </NavItem> */}
           <UncontrolledDropdown nav direction="down">
             <DropdownToggle nav>
-              <span id={auth.authenticated.username.toUpperCase()} >{auth.authenticated.username.toUpperCase()}</span>
-              <img src={'../../assets/img/avatars/telekom.png'} className="img-avatar" />
+              <span id={auth.authenticated.username.toUpperCase()} >{this.state.userFullName}</span>
+              {/* <img src={'../../assets/img/avatars/telekom.png'} className="img-avatar" /> */}
+              <Avatar name={this.state.userFullName} value={this.state.userFullName ? this.state.userFullName : 'TM'} color={Avatar.getRandomColor('sitebase', ['red', 'green', 'blue'])} size="50" round={true} />
             </DropdownToggle>
             <DropdownMenu right>
               <DropdownItem header tag="div" className="text-center"><strong>Account</strong></DropdownItem>
               {/* <DropdownItem><i className="fa fa-bell-o"></i> Updates<Badge color="info">42</Badge></DropdownItem>
               <DropdownItem><i className="fa fa-envelope-o"></i> Messages<Badge color="success">42</Badge></DropdownItem> */}
-              <DropdownItem action tag="a" href="#/taskList"><i className="fa fa-tasks"></i> Tasks<Badge color="danger">{task}</Badge></DropdownItem>
-              <DropdownItem action tag="a" href="#/myTask"><i className="fa fa-bell-o"></i> Waiting Approval<Badge color="warning"> 42</Badge></DropdownItem>
+              <DropdownItem action tag="a" href="#/taskList"><i className="fa fa-tasks"></i> Tasks<Badge color="danger">0</Badge></DropdownItem>
+              <DropdownItem action tag="a" href="#/pendingApproval"><i className="fa fa-bell-o"></i>Pending Approval<Badge color="warning"> {pendingApproval}</Badge></DropdownItem>
                {/*<DropdownItem header tag="div" className="text-center"><strong>Settings</strong></DropdownItem>
               <DropdownItem><i className="fa fa-user"></i> Profile</DropdownItem>
               <DropdownItem><i className="fa fa-wrench"></i> Settings</DropdownItem>
@@ -83,8 +148,25 @@ class DefaultHeader extends Component {
         </Nav>
         <AppAsideToggler className="d-md-down-none" />
         {/*<AppAsideToggler className="d-lg-none" mobile />*/}
+        
+        <Snackbar style={{marginBottom:'50px'}}
+          open={this.state.openSnackBar} autoHideDuration={1500} onClose={this.handleClose.bind(this)} 
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+            <Alert variant="filled"  onClose={this.handleClose.bind(this)}  severity="info" >
+                You have {pendingApproval} Pending Approval.
+            </Alert>
+      </Snackbar>
+      <Snackbar
+          open={this.state.openSnackBar} autoHideDuration={1500} onClose={this.handleClose.bind(this)} 
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+            <Alert variant="filled"  onClose={this.handleClose.bind(this)}  severity="info" >
+                You have {task} Pending Task.
+            </Alert>
+      </Snackbar>
+      
       </React.Fragment>
     );
+    
   }
 }
 
@@ -92,20 +174,4 @@ DefaultHeader.propTypes = propTypes;
 DefaultHeader.defaultProps = defaultProps;
 
 
-const mapStateToProps = state => {
-  return {
-    badge:state.badge,
-    user: state.user,
-   
-  };
-};
-
-const mapDispachToProps = dispatch => {
-  return {
-    fetchBadge: () => dispatch({ type: "FETCH_BADGE"}),
-    fetchUser: () => dispatch({ type: "FETCH_USER"}),
-     
-  };
-};
-
-export default connect(mapStateToProps,mapDispachToProps)(DefaultHeader);
+export default DefaultHeader;

@@ -2,11 +2,13 @@ import React, { Component, useState, useEffect } from 'react';
 import { Badge, Button, Card, CardBody, CardFooter, CardHeader, Col, Form, FormGroup, Label, Row, Input } from 'reactstrap';
 import '../css/style.css';
 import $ from 'jquery';
+import axios from 'axios';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardTimePicker, KeyboardDatePicker } from '@material-ui/pickers';
 import { connect } from "react-redux";
 import { makeStyles, useTheme, FormHelperText, Select, MenuItem, Chip,FormControl, InputLabel } from '@material-ui/core';
 import { DropzoneArea } from 'material-ui-dropzone';
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -61,55 +63,134 @@ const FormLocation = (props) => {
   const [actionSaveBtn, setActionSaveBtn] = useState(false);
   const [LocIDFlag, setLocIDFlag] = useState(true);
   const [dataLocID, setdataLocID] = useState({});
+  const [dcSiteList, setDCSiteList] = React.useState([]);
   const [dcSite, setDCSite] = React.useState([]);
+  const [locType, setLocType] = React.useState([]);
   const [selectedCommDate, setSelectedCommDate] = useState(null)
   const [selectedDecommDate, setSelectedDecommDate] = useState(null)
   const [imagePriviewFloor, setImagePreviewFloor] = useState(null);
   const [imagePriviewRack, setImagePreviewRack] = useState(null);
+  const [FileNameFloor, setFileNameFloor] = useState(null);
+  const [FileNameRack, setFileNameRack] = useState(null);
+  const [FileSizeFloor, setFileSizeFloor] = useState(null);
+  const [FileSizeRack, setFileSizeRack] = useState(null);
   const classes = useStyles();
   const theme = useTheme();
  
   useEffect(() => {
-
-      console.log('FormLocation', props);
+    var siteExist = Object.values(props.site).filter((site)=> site.SITE_VERIFIED_TAG === 'Y')
+    //console.log('siteExist',siteExist);
+      setDCSiteList([siteExist]);
+    console.log('FormLocation', props);
 
       if (actionForm == 'CREATE') {
           setActionSaveBtn(true);
           setImagePreviewFloor(props.imgPreviewFloor);
           setImagePreviewRack(props.imgPreviewRack);
+          setFileNameFloor(props.FileNameFloor); 
+          setFileNameRack(props.FileNameRack); 
+          setFileSizeFloor(props.FileSizeFloor); 
+          setFileSizeRack(props.FileSizeRack); 
       }
       if (actionForm == 'EDIT') {
           setActionCreateBtn(true);
           setLocIDFlag(false);
-          if(imagePriviewFloor === null || imagePriviewRack === null){
-            fetch('/claritybqm/reportFetch/?scriptName=DC_LOCATION&locn_id=' + props.locId)
-              .then(response => response.json())
-              .then((location) => 
-              {  
-                  console.log('loc',location);
-                  setdataLocID(location[0]);    
-                  setDCSite([location[0].SITE_NAME]);
-                  setImagePreviewFloor(location[0].FLOOR_PLAN);
-                  setImagePreviewRack(location[0].RACK_UTILIZATION);     
-                  setSelectedCommDate(location[0].LOCN_COMM_DT);
-                  setSelectedDecommDate(location[0].LOCN_DECOMM_DT);       
-                  //document.getElementById("LOCN_FLOOR_PLAN").value = "";
-                  //document.getElementById("LOCN_RACK_UTILIZATION").value = "";
-              }
-              );
-            }
-              if(props.changeFlag === true){
-                setdataLocID(props.data.values)
-              }
+          setdataLocID(props.location);    
+          setDCSite(props.dcSite);
+          setImagePreviewFloor(props.imgPreviewFloor);
+          setImagePreviewRack(props.imgPreviewRack);     
+          setSelectedCommDate(props.selectedCommDate);
+          setSelectedDecommDate(props.selectedDecommDate);       
+          setFileNameFloor(props.FileNameFloor); 
+          setFileNameRack(props.FileNameRack); 
+          setFileSizeFloor(props.FileSizeFloor); 
+          setFileSizeRack(props.FileSizeRack); 
+        
+          if(props.changeFlag === true){
+            setdataLocID(props.data.values)
           }
+          }
+          var siteExist = Object.values(props.site).filter((site)=> site.SITE_VERIFIED_TAG === 'Y')
+          setDCSiteList(siteExist);
+          //console.log('siteExist',siteExist);
+          
 
   }, [props]);
+
+  useEffect(()=>{
+
+    props.fetchSite();
+    var siteExist = Object.values(props.site).filter((site)=> site.SITE_VERIFIED_TAG === 'Y')
+    //console.log('siteExist',siteExist);
+      setDCSiteList(siteExist);
+
+      axios.get('/claritybqm/reportFetch/?scriptName=DC_LOV&type=LOCATION_DC_TYPE')
+      .then((res) => {
+        //console.log('LOCATION_DC_TYPE : ', res.data);   
+        setLocType(res.data)
+        
+        })
+          .catch((err) => {
+          console.log('error lov loc type : ', err);
+          });
+ 
+
+  },[]);
 
   const handleBackBtn =() =>{
       window.history.back();
   }
 
-  
+const imageFloorPreview = ()=>{
+
+  var fileSize = (FileSizeFloor/ 1024).toFixed(2) + " KB";
+
+  return(<div style={{justifyContent: 'right'}}>
+    <Row>
+    <Col>
+    <img src={imagePriviewFloor} alt='Rack Util' style={{width: 'auto', height: '150px'}} />
+    <Button type="button" color="danger" className="btn btn-pill" onClick={()=>handleDeleteImg('floor')}>
+    <span><i className="fa fa-trash" ></i></span>
+    </Button>
+    </Col>
+    </Row>
+    <Col style={{marginBottom: '0px'}}>
+    <Row>
+      File Name: {FileNameFloor}
+    </Row>
+     <Row>
+      File Size: {fileSize}
+    </Row>         
+    </Col>
+    </div> )
+
+}
+
+const imageRackPreview = ()=>{
+
+  var fileSize = (FileSizeRack/ 1024).toFixed(2) + " KB";
+
+  return(<div style={{justifyContent: 'right'}}>
+    <Row>
+    <Col>
+    <img src={imagePriviewRack} alt='Rack Util' style={{width: 'auto', height: '150px'}} />
+    <Button type="button" color="danger" className="btn btn-pill" onClick={()=>handleDeleteImg('rack')}>
+    <span><i className="fa fa-trash" ></i></span>
+    </Button>
+    </Col>
+    </Row>
+    <Col style={{marginBottom: '0px'}}>
+    <Row>
+      File Name: {FileNameRack}
+    </Row>
+     <Row>
+      File Size: {fileSize}
+    </Row>         
+    </Col>
+    </div> )
+
+}
+
 const handleDeleteImg = (e) =>{
  //var input = document.getElementById('LOCN_FLOOR_PLAN').value;
   //console.log('LOCN_FLOOR_PLAN',e);
@@ -170,9 +251,9 @@ return(
                           </div>
                         )}
                       >
-                        <MenuItem value=''/>
+                        <MenuItem  key="null" value=''/>
                         {
-                          Object.values(props.site).map((site)=>( //console.log('site',site)
+                          dcSiteList.map((site)=>( //console.log('site',site)
                               <MenuItem key={site.SITE_ID} value={site.SITE_NAME} classes={{ selected: classes.selected }} style={getStyles(site.SITE_NAME, dcSite, theme)}>
                                 {site.SITE_NAME}
                             </MenuItem>
@@ -181,9 +262,9 @@ return(
                       </Select>
                       {props.hasError1 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
                     </FormControl>
-                    <FormGroup className={classes.formControl}  error={props.hasError2}>
+                    <FormGroup error={props.hasError2}>
                     <Label>Served DC Location</Label>
-                    <Input id='LOCN_NAME' name='LOCN_NAME' value={dataLocID.LOCN_NAME} onChange={props.onChange} style={{ backgroundColor : backgcolor}} />
+                    <Input type="text" id='LOCN_NAME' name='LOCN_NAME' value={dataLocID.LOCN_NAME} onChange={props.onChange} style={{ backgroundColor : backgcolor}} />
                         {props.hasError2 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
                     </FormGroup>
                     <FormGroup  hidden={LocIDFlag}>
@@ -192,44 +273,48 @@ return(
                     </FormGroup>
                     <FormGroup>
                     <Label>DC Location Type :</Label>
-                    <Input type="select"  id="LOCN_TYPE" name="LOCN_TYPE" value={dataLocID.LOCN_TYPE} style={{ backgroundColor : backgcolor}} >
-                        <option value="">Please select</option>
-                        <option value="Premium">Premium</option>
-                        <option value="Option2">Option #2</option>
-                        <option value="Option3">Option #3</option>
+                    <Input type="select"  id="LOCN_TYPE" name="LOCN_TYPE" value={dataLocID.LOCN_TYPE} onChange={props.onChange} style={{ backgroundColor : backgcolor}} >
+                        <option id="null" value="">Please select</option>
+                        {
+                          Object.values(locType).map((type)=>{
+                            return(<>
+                              <option id={type.LOV_VALUE} value={type.LOV_VALUE}>{type.LOV_VALUE}</option>
+                            </>)
+                          })
+                        }
                       </Input>
                     </FormGroup>
                 </Col>
                 <Col xs="4">
                     <Label>Space Capacity (sqft) :</Label>
-                    <Input type="text" id="LOCN_SPACE_CAPACITY" value={dataLocID.LOCN_SPACE_CAPACITY} name="LOCN_SPACE_CAPACITY" onChange={props.onChange} style={{ backgroundColor : backgcolor}} />
+                    <Input type="number" id="LOCN_SPACE_CAPACITY" value={dataLocID.LOCN_SPACE_CAPACITY} name="LOCN_SPACE_CAPACITY" onChange={props.onChange} style={{ backgroundColor : backgcolor}} />
                     <Label>Floor Plan :</Label>
                     <Card body style={{borderColor: 'blue'}}>
-                    { imagePriviewFloor ? <div><img src={imagePriviewFloor} alt='' style={{width: 'auto', height: '150px'}} /><Button type="button" color="danger" className="btn btn-pill" onClick={()=>handleDeleteImg('floor')}><span><i className="fa fa-trash" ></i></span></Button></div> : "" }
+                    { imagePriviewFloor ? imageFloorPreview() : <h6>No image found</h6> }
                     <Button color="primary" onClick={handleClickFloorImg}>
                         Upload a file
                     </Button>
-                    <Input type="file" id="LOCN_FLOOR_PLAN" name="LOCN_FLOOR_PLAN" style={{ backgroundColor : backgcolor, display: 'none'}} onChange={props.onChange} />
+                    <Input type="file" accept="image/*" id="LOCN_FLOOR_PLAN" name="LOCN_FLOOR_PLAN" style={{ backgroundColor : backgcolor, display: 'none'}} onChange={props.onChange} />
                     </Card>
                     <Label>Rack Utilization :</Label>
                     <Card body style={{borderColor: 'blue'}}>
+                    { imagePriviewRack ? imageRackPreview() : <h6>No image found</h6> }
                     <Button color="primary" onClick={handleClickRackImg}>
                         Upload a file
                     </Button>
-                    { imagePriviewRack ? <div><img src={imagePriviewRack} alt='Rack Util' style={{width: 'auto', height: '150px'}} /><Button type="button" color="danger" className="btn btn-pill" onClick={()=>handleDeleteImg('rack')}><span><i className="fa fa-trash" ></i></span></Button></div> : "" }
-                    <Input type="file" id="LOCN_RACK_UTILIZATION" name="LOCN_RACK_UTILIZATION" onChange={props.onChange} style={{ backgroundColor : backgcolor, display: 'none'}} />   
+                    <Input type="file" accept="image/*"  id="LOCN_RACK_UTILIZATION" name="LOCN_RACK_UTILIZATION" onChange={props.onChange} style={{ backgroundColor : backgcolor, display: 'none'}} />   
                     </Card>
                 </Col>
                 <Col xs="4">
+                <Label>Commission Date :</Label>
                 <FormGroup>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <KeyboardDatePicker
                     id="LOCN_COMM_DT" 
                     name="LOCN_COMM_DT"
-                    margin="normal"
                     //id="date-picker-dialog"
                     //filterDate={date => date.getDay() !== 6 && date.getDay() !== 0}
-                    label="Commission Date"
+                    //label="Commission Date"
                     format="dd/MM/yyyy"
                     margin="normal"
                     value={selectedCommDate}
@@ -240,14 +325,15 @@ return(
                     />
                 </MuiPickersUtilsProvider>
                 </FormGroup>
-                <FormGroup>
+                <Label>Decommission Date :</Label>
+                <FormGroup  hidden={props.flagDecommDate}>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <KeyboardDatePicker
                     id="LOCN_DECOMM_DT" 
                     name="LOCN_DECOMM_DT"
                     margin="normal"
                     //id="date-picker-dialog"
-                    label="Decommission Date"
+                    //label="Decommission Date"
                     format="dd/MM/yyyy"
                     margin="normal"
                     placeholder="dd/mm/yyyy"
@@ -260,7 +346,7 @@ return(
                 </MuiPickersUtilsProvider>
                 </FormGroup>
                     <Label>Status :</Label>
-                    <Input type="select" name="LOCN_STATUS" id="LOCN_STATUS" value={dataLocID.LOCN_STATUS}  style={{ backgroundColor : backgcolor}} >
+                    <Input type="select" name="LOCN_STATUS" id="LOCN_STATUS" value={dataLocID.LOCN_STATUS}  onChange={props.onChange}   style={{ backgroundColor : backgcolor}} >
                         <option value="">Please select</option>
                         <option value="Active">Active</option>
                         <option value="Not Active">Not Active</option>
@@ -275,14 +361,18 @@ return(
                  <div className="form-button">
                             <Row style={{ marginBottom: '20px' }}>
                                 <Col>
-                                    <Button color="info" onClick={handleBackBtn}>
-                                        <i className="fa fa-history"></i>&nbsp; Back</Button>&nbsp;&nbsp;&nbsp;
-                                        <Button color="primary" type="submit" hidden={actionCreateBtn}>
-                                        <i className="fa fa-plus"></i>&nbsp; Create </Button>&nbsp;
-                                        <Button color="primary" type="submit" hidden={actionSaveBtn}>
-                                         <i className="fa fa-save"></i>&nbsp; Save </Button>&nbsp;
-                                        <Button color="success" type="submit" >
-                                         <i className="fa fa-send"></i>&nbsp; Submit </Button>
+                                <Button color="info" onClick={handleBackBtn}>
+                                      <i className="fa fa-history"></i>&nbsp; Back
+                                  </Button>&nbsp;&nbsp;&nbsp;
+                                  <Button color="success" type="submit" hidden={actionCreateBtn}>
+                                      <i className="fa fa-send"></i>&nbsp; Submit
+                                  </Button>&nbsp;
+                                  <Button color="success" type="submit" hidden={actionSaveBtn}>
+                                      <i className="fa fa-save"></i>&nbsp; Save
+                                  </Button>&nbsp;
+                                  <Button color="warning" type='reset' hidden={props.btnReset}>
+                                      <i className="fa fa-refresh"></i>&nbsp; Reset
+                                  </Button>
                                 </Col>
                             </Row>
                         </div>

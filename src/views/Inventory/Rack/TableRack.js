@@ -7,7 +7,7 @@ import Swal from 'sweetalert2';
 import axios from 'axios';
 
 export default function TableRack(props) {
-  console.log('table',props);
+  //console.log('table',props);
 
   //to handle delete row function
   const handleDelete = (row) => {

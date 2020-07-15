@@ -1,605 +1,409 @@
 import React, { Component } from 'react';
-import { Badge, Button, Card, CardBody, CardHeader, Col, UncontrolledCollapse, ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText, Row, TabContent, TabPane } from 'reactstrap';
-import FontAwesome from '../Icons/FontAwesome/FontAwesome';
-import { AppAsideToggler, AppNavbarBrand, AppSidebarToggler } from '@coreui/react';
+import { Badge, Card, CardBody, CardHeader, Col, ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText, Row, TabContent, TabPane
+,Pagination, PaginationItem, PaginationLink, Table, Button,CardTitle, CardText, Input} from 'reactstrap';
+import { connect } from "react-redux";
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import {TextField,Avatar} from '@material-ui/core';
+import auth from '../../../src/auth';
 
-class Approval extends Component {
-    constructor(props) {
-        super(props);
+class myTask extends Component {
 
-        this.toggle = this.toggle.bind(this);
-        this.state = {
-            activeTab: 1
-        };
-    }
+  constructor(props) {
+    super(props);
 
-    toggle(tab) {
-        if (this.state.activeTab !== tab) {
+    this.toggle = this.toggle.bind(this);
+    this.state = {
+      activeTab: 0,
+      pendingApprove: [],
+      dataAll: [],
+      dataToday: [],
+      data7days:[],
+      data2weeks:[],
+      valueOPt: "All",
+      inputValue: "",
+      colorSite: "",
+    };
+  }
+
+  componentDidMount(){
+    this.props.fetchBadge();
+    this.props.fetchUser();
+    this.getInboxList();
+  }
+
+  getInboxList(){
+
+    var username = auth.authenticated.username.toUpperCase();
+    fetch(`claritybqm/reportFetch/?scriptName=DC_PENDING_APPROVAL&userid=${username}`)
+    .then(response => response.json())
+    .then((pending) => {
+        //var approver = Object.values(user.user).filter(u => u.USER_APPROVE === 'Y');
+        console.log('pending',pending); 
+        this.setState({
+          pendingApprove: pending[0].PENDINGAPPROVAL,
+          dataAll: pending,
+        })
+
+        pending.map((d)=>{
+          if(d.AGING === 0){
             this.setState({
-                activeTab: tab
-            });
-        }
+              dataToday: d,
+              colorSite: 'green',
+            })
+          }
+          if(d.AGING >= 1 && d.AGING <= 7){
+            this.setState({
+              data7days: d,
+              colorSite: 'yellow',
+            })
+          }
+          if(d.AGING > 7){
+           // console.log('2week',d);
+            
+            this.setState({
+              data2weeks: d,
+              colorSite: 'red',
+            })
+          }
+        })
+
+    })
+
+  }
+
+
+  handleChange(e){
+   // console.log('onchange',e.target.value);
+    this.setState({
+      valueOPt: e.target.value
+    })
+    
+  }
+
+  toggle(tab) {
+    if (this.state.activeTab !== tab) {
+      this.setState({
+        activeTab: tab
+      });
     }
-    render() {
-        return (
-            <div className="animated fadeIn">
+  }
+
+  render() {
+    const task = this.state.pendingApprove
+    const valueOPt = this.state.valueOPt
+    const dataAll = this.state.dataAll
+    const dataToday = this.state.dataToday   
+    const data7days = this.state.data7days
+    const data2weeks = this.state.data2weeks    
+    //console.log('data2weeks',data2weeks);
+    
+    return (
+      <div className="animated fadeIn">
+        <Row>
+          <Col>
+            <Card>
+              <CardHeader>
+                <i className="fa fa-align-justify"></i><strong>Pending Approval</strong>
+                {/* <div className="card-header-actions">
+                  <p><b><em>Pending:</em></b><Badge color="warning">{task}</Badge></p>
+                </div> */}
+              </CardHeader>
+              <CardBody>
                 <Row>
-                    <Col xs='4'>
-                        <Card>
-                            <CardHeader id="toggler">
-                                <Row>
-                                    <Col xs='8'>
-                                        DC Site Commisioning
-                </Col>
-                                    <Col xs='2'>
-                                        <Badge color="warning" className="float-right" pill>4</Badge>
-                                    </Col>
-                                    <Col xs='2'>
-                                        <i className="icon-list"></i>
-                                    </Col>
-                                </Row>
-                            </CardHeader>
-                            <UncontrolledCollapse toggler="#toggler">
-                                <Card color="success" outline>
-                                    <div>
-                                        <CardBody>
-                                            <ListGroup className="list-group-accent" tag={'div'}>
-                                                <ListGroupItem action /*tag="a" href="#"*/ className="list-group-item-accent-warning list-group-item-divider">
-                                                    <div className="float-right">
-                                                        <Badge color="danger" className="pull-right" pill> Urgent</Badge>
-                                                    </div>
-                                                    <div> Site Name: CBJ 8</div>
-                                                    <div style={{ marginLeft: '150px' }}>
-                                                        <Col>
-                                                            <Button block color="success" className="btn-pill" size="sm" style={{ width: "80px" }}> Approve</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="info" className="btn-pill" size="sm" style={{ width: "80px" }}> View</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="danger" className="btn-pill" size="sm" style={{ width: "80px" }}> Decline</Button>
-                                                        </Col>
-                                                    </div>
-                                                </ListGroupItem>
-                                                <ListGroupItem action /*tag="a" href="#"*/ className="list-group-item-accent-warning list-group-item-divider">
-                                                    <div className="float-right">
-                                                        <Badge color="danger" className="pull-right" pill> Urgent</Badge>
-                                                    </div>
-                                                    <div> Site Name: BRF</div>
-                                                    <div style={{ marginLeft: '150px' }}>
-                                                        <Col>
-                                                            <Button block color="success" className="btn-pill" size="sm" style={{ width: "80px" }}> Approve</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="info" className="btn-pill" size="sm" style={{ width: "80px" }}> View</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="danger" className="btn-pill" size="sm" style={{ width: "80px" }}> Decline</Button>
-                                                        </Col>
-                                                    </div>
-                                                </ListGroupItem>
-                                                <ListGroupItem action /*tag="a" href="#"*/ className="list-group-item-accent-warning list-group-item-divider">
-                                                    <div className="float-right">
-                                                        <Badge color="danger" className="pull-right" pill> Urgent</Badge>
-                                                    </div>
-                                                    <div> Site Name: CBJ 6</div>
-                                                    <div style={{ marginLeft: '150px' }}>
-                                                        <Col>
-                                                            <Button block color="success" className="btn-pill" size="sm" style={{ width: "80px" }}> Approve</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="info" className="btn-pill" size="sm" style={{ width: "80px" }}> View</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="danger" className="btn-pill" size="sm" style={{ width: "80px" }}> Decline</Button>
-                                                        </Col>
-                                                    </div>
-                                                </ListGroupItem>
-                                                <ListGroupItem action /*tag="a" href="#"*/ className="list-group-item-accent-warning list-group-item-divider">
-                                                    <div className="float-right">
-                                                        <Badge color="danger" className="pull-right" pill> Urgent</Badge>
-                                                    </div>
-                                                    <div> Site Name: CBJ 1</div>
-                                                    <div style={{ marginLeft: '150px' }}>
-                                                        <Col>
-                                                            <Button block color="success" className="btn-pill" size="sm" style={{ width: "80px" }}> Approve</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="info" className="btn-pill" size="sm" style={{ width: "80px" }}> View</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="danger" className="btn-pill" size="sm" style={{ width: "80px" }}> Decline</Button>
-                                                        </Col>
-                                                    </div>
-                                                </ListGroupItem>
-                                            </ListGroup>
-                                        </CardBody>
-                                    </div>
-                                </Card>
-                            </UncontrolledCollapse>
-                        </Card>
-                    </Col>
-                    <Col xs='4'>
-                        <Card>
-                            <CardHeader id="toggler2">
-                                <Row>
-                                    <Col xs='8'>
-                                        DC Location Commisioning
+                  <Col xs="3">
+                    <ListGroup id="list-tab" role="tablist">
+                     <ListGroupItem onClick={() => this.toggle(0)} action active={this.state.activeTab === 0} >Pending <i className="float-right fa fa-bell-o"><Badge color="danger">{task}</Badge></i></ListGroupItem>
+                      <ListGroupItem onClick={() => this.toggle(1)} action active={this.state.activeTab === 1} >Approved</ListGroupItem>
+                      <ListGroupItem onClick={() => this.toggle(2)} action active={this.state.activeTab === 2} >All Workgroup</ListGroupItem>
+                    </ListGroup>
+                  </Col>
+                  <Col xs="6">
+                    <TabContent activeTab={this.state.activeTab}>
+                      <TabPane tabId={0} >
+                      <Row>
+                        <Col>
+                          <Input
+                              id="listOption"
+                              type="select"
+                              onChange={this.handleChange.bind(this)}
+                              value={valueOPt}
+                          >
+                            <option value="All">All</option>
+                            <option value="Today">Today</option>
+                            <option value="7days">Last 7 days</option>
+                            <option value="2weeks">Last 2 weeks</option>
+                          </Input>
                         </Col>
-                                    <Col xs='2'>
-                                        <Badge color="warning" className="float-right" pill>4</Badge>
-                                    </Col>
-                                    <Col xs='2'>
-                                        <i className="icon-list"></i>
-                                    </Col>
-                                </Row>
-                            </CardHeader>
-                            <UncontrolledCollapse toggler="#toggler2">
-                                <Card color="success" outline>
-                                    <div>
-                                        <CardBody>
-                                            <ListGroup className="list-group-accent" tag={'div'}>
-                                                <ListGroupItem action /*tag="a" href="#"*/ className="list-group-item-accent-warning list-group-item-divider">
-                                                    <div className="float-right">
-                                                        <Badge color="danger" className="pull-right" pill> Urgent</Badge>
-                                                    </div>
-                                                    <div> Site Name: CBJ 8</div>
-                                                    <div style={{ marginLeft: '150px' }}>
-                                                        <Col col="2" className="mb-3 mb-xl-0 text-center">
-                                                            <Button block color="success" className="btn-pill" size="sm" style={{ width: "80px" }} style={{ width: "80px" }}> Approve</Button>
-                                                        </Col>
-                                                        <Col col="2" className="mb-3 mb-xl-0 text-center">
-                                                            <Button block color="info" className="btn-pill" size="sm" style={{ width: "80px" }}> View</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="danger" className="btn-pill" size="sm" style={{ width: "80px" }}> Decline</Button>
-                                                        </Col>
-                                                    </div>
-                                                </ListGroupItem>
-                                                <ListGroupItem action /*tag="a" href="#"*/ className="list-group-item-accent-warning list-group-item-divider">
-                                                    <div className="float-right">
-                                                        <Badge color="danger" className="pull-right" pill> Urgent</Badge>
-                                                    </div>
-                                                    <div> Site Name: BRF</div>
-                                                    <div style={{ marginLeft: '150px' }}>
-                                                        <Col>
-                                                            <Button block color="success" className="btn-pill" size="sm" style={{ width: "80px" }}> Approve</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="info" className="btn-pill" size="sm" style={{ width: "80px" }}> View</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="danger" className="btn-pill" size="sm" style={{ width: "80px" }}> Decline</Button>
-                                                        </Col>
-                                                    </div>
-                                                </ListGroupItem>
-                                                <ListGroupItem action /*tag="a" href="#"*/ className="list-group-item-accent-warning list-group-item-divider">
-                                                    <div className="float-right">
-                                                        <Badge color="danger" className="pull-right" pill> Urgent</Badge>
-                                                    </div>
-                                                    <div> Site Name: CBJ 6</div>
-                                                    <div style={{ marginLeft: '150px' }}>
-                                                        <Col>
-                                                            <Button block color="success" className="btn-pill" size="sm" style={{ width: "80px" }}> Approve</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="info" className="btn-pill" size="sm" style={{ width: "80px" }}> View</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="danger" className="btn-pill" size="sm" style={{ width: "80px" }}> Decline</Button>
-                                                        </Col>
-                                                    </div>
-                                                </ListGroupItem>
-                                                <ListGroupItem action /*tag="a" href="#"*/ className="list-group-item-accent-warning list-group-item-divider">
-                                                    <div className="float-right">
-                                                        <Badge color="danger" className="pull-right" pill> Urgent</Badge>
-                                                    </div>
-                                                    <div> Site Name: CBJ 1</div>
-                                                    <div style={{ marginLeft: '150px' }}>
-                                                        <Col>
-                                                            <Button block color="success" className="btn-pill" size="sm" style={{ width: "80px" }}> Approve</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="info" className="btn-pill" size="sm" style={{ width: "80px" }}> View</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="danger" className="btn-pill" size="sm" style={{ width: "80px" }}> Decline</Button>
-                                                        </Col>
-                                                    </div>
-                                                </ListGroupItem>
-                                            </ListGroup>
-                                        </CardBody>
-                                    </div>
-                                </Card>
-                            </UncontrolledCollapse>
-                        </Card>
-                    </Col>
-                    <Col xs='4'>
-                        <Card>
-                            <CardHeader id="toggler3">
-                                <Row>
-                                    <Col xs='8'>
-                                        DC Rack Commisioning
+                        <Col xs='4'>
+                          <Input id="site" placeholder="Search Site"/>
                         </Col>
-                                    <Col xs='2'>
-                                        <Badge color="warning" className="float-right" pill>4</Badge>
-                                    </Col>
-                                    <Col xs='2'>
-                                        <i className="icon-list"></i>
-                                    </Col>
-                                </Row>
-                            </CardHeader>
-                            <UncontrolledCollapse toggler="#toggler3">
-                                <Card color="success" outline>
-                                    <div>
-                                        <CardBody>
-                                            <ListGroup className="list-group-accent" tag={'div'}>
-                                                <ListGroupItem action /*tag="a" href="#"*/ className="list-group-item-accent-warning list-group-item-divider">
-                                                    <div className="float-right">
-                                                        <Badge color="danger" className="pull-right" pill> Urgent</Badge>
-                                                    </div>
-                                                    <div> Site Name: CBJ 8</div>
-                                                    <div style={{ marginLeft: '150px' }}>
-                                                        <Col col="2" className="mb-3 mb-xl-0 text-center">
-                                                            <Button block color="success" className="btn-pill" size="sm" style={{ width: "80px" }} style={{ width: "80px" }}> Approve</Button>
-                                                        </Col>
-                                                        <Col col="2" className="mb-3 mb-xl-0 text-center">
-                                                            <Button block color="info" className="btn-pill" size="sm" style={{ width: "80px" }}> View</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="danger" className="btn-pill" size="sm" style={{ width: "80px" }}> Decline</Button>
-                                                        </Col>
-                                                    </div>
-                                                </ListGroupItem>
-                                                <ListGroupItem action /*tag="a" href="#"*/ className="list-group-item-accent-warning list-group-item-divider">
-                                                    <div className="float-right">
-                                                        <Badge color="danger" className="pull-right" pill> Urgent</Badge>
-                                                    </div>
-                                                    <div> Site Name: BRF</div>
-                                                    <div style={{ marginLeft: '150px' }}>
-                                                        <Col>
-                                                            <Button block color="success" className="btn-pill" size="sm" style={{ width: "80px" }}> Approve</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="info" className="btn-pill" size="sm" style={{ width: "80px" }}> View</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="danger" className="btn-pill" size="sm" style={{ width: "80px" }}> Decline</Button>
-                                                        </Col>
-                                                    </div>
-                                                </ListGroupItem>
-                                                <ListGroupItem action /*tag="a" href="#"*/ className="list-group-item-accent-warning list-group-item-divider">
-                                                    <div className="float-right">
-                                                        <Badge color="danger" className="pull-right" pill> Urgent</Badge>
-                                                    </div>
-                                                    <div> Site Name: CBJ 6</div>
-                                                    <div style={{ marginLeft: '150px' }}>
-                                                        <Col>
-                                                            <Button block color="success" className="btn-pill" size="sm" style={{ width: "80px" }}> Approve</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="info" className="btn-pill" size="sm" style={{ width: "80px" }}> View</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="danger" className="btn-pill" size="sm" style={{ width: "80px" }}> Decline</Button>
-                                                        </Col>
-                                                    </div>
-                                                </ListGroupItem>
-                                                <ListGroupItem action /*tag="a" href="#"*/ className="list-group-item-accent-warning list-group-item-divider">
-                                                    <div className="float-right">
-                                                        <Badge color="danger" className="pull-right" pill> Urgent</Badge>
-                                                    </div>
-                                                    <div> Site Name: CBJ 1</div>
-                                                    <div style={{ marginLeft: '150px' }}>
-                                                        <Col>
-                                                            <Button block color="success" className="btn-pill" size="sm" style={{ width: "80px" }}> Approve</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="info" className="btn-pill" size="sm" style={{ width: "80px" }}> View</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="danger" className="btn-pill" size="sm" style={{ width: "80px" }}> Decline</Button>
-                                                        </Col>
-                                                    </div>
-                                                </ListGroupItem>
-                                            </ListGroup>
-                                        </CardBody>
+                        </Row>
+                            {
+                            valueOPt==="All" ?
+                             Object.values(dataAll).map((t)=> {
+                                return(<div className="callout callout-info shadow-md m-4">
+                                  <Card body>
+                                   <Avatar style={{backgroundColor: this.state.colorSite, width: '80px', height: '80px'}}><strong className="h5">{t.TYPE_NAME===null ? "" : t.TYPE_NAME}</strong></Avatar>
+                                  <div className="chart-wrapper">
+                                    <Row>
+                                      Verified by:
+                                    </Row>
+                                    <Row>
+                                      {t.USER_NAME}
+                                    </Row>
+                                    <Row>
+                                      {t.AGING}{' '}<small> days ago</small>
+                                    </Row>
+                                    <Row>
+                                      <Button className="btn btn-pill" type='button' style={{cursor: 'pointer'}} color="success" size="sm" tag='a' 
+                                      href={"#/EditSite/" + t.FOREIGN_ID} >
+                                        View Details
+                                      </Button>
+                                      </Row>
                                     </div>
-                                </Card>
-                            </UncontrolledCollapse>
-                        </Card>
-                    </Col>
+                                    </Card>
+                                  </div>)
+                              })
+                              :
+                              valueOPt==='Today' ?
+                              Object.values(dataToday).map((t)=> {
+                                return(<div className="callout callout-info shadow-md m-4">
+                                  <Card body>
+                                   <Avatar style={{backgroundColor: this.state.colorSite, width: '80px', height: '80px'}}><strong className="h5">{t.TYPE_NAME===null ? "" : t.TYPE_NAME}</strong></Avatar>
+                                  <div className="chart-wrapper">
+                                    <Row>
+                                      Verified by:
+                                    </Row>
+                                    <Row>
+                                      {t.USER_NAME}
+                                    </Row>
+                                    <Row>
+                                      <Button className="btn btn-pill" type='button' style={{cursor: 'pointer'}} color="success" size="sm" tag='a' 
+                                      href={"#/EditSite/" + t.FOREIGN_ID} >
+                                        View Details
+                                      </Button>
+                                      </Row>
+                                    </div>
+                                    </Card>
+                                  </div>)
+                              })
+                              :
+                              valueOPt==='7days' ?
+                              Object.values(data7days).map((t)=> {
+                                return(<div className="callout callout-info shadow-md m-4">
+                                  <Card body>
+                                   <Avatar style={{backgroundColor: this.state.colorSite, width: '80px', height: '80px'}}><strong className="h5">{t.TYPE_NAME===null ? "" : t.TYPE_NAME}</strong></Avatar>
+                                  <div className="chart-wrapper">
+                                    <Row>
+                                      Verified by:
+                                    </Row>
+                                    <Row>
+                                      {t.USER_NAME}
+                                    </Row>
+                                    <Row>
+                                      {t.AGING}{' '}<small> days ago</small>
+                                    </Row>
+                                    <Row>
+                                      <Button className="btn btn-pill" type='button' style={{cursor: 'pointer'}} color="success" size="sm" tag='a' 
+                                      href={"#/EditSite/" + t.FOREIGN_ID} >
+                                        View Details
+                                      </Button>
+                                      </Row>
+                                    </div>
+                                    </Card>
+                                  </div>)
+                              })
+                              :
+                              valueOPt==='2weeks' ?
+                              Object.values(data2weeks).map((t)=> {
+                                //console.log('data2weeks',t);
+                                
+                                return(<div className="callout callout-info shadow-md m-4">
+                                  <Card body>
+                                   <Avatar style={{backgroundColor: this.state.colorSite, width: '80px', height: '80px'}}><strong className="h5">{t.TYPE_NAME === null || t.TYPE_NAME === "" ? "" : t.TYPE_NAME}</strong></Avatar>
+                                  <div className="chart-wrapper">
+                                    <Row>
+                                      Verified by:
+                                    </Row>
+                                    <Row>
+                                      {t.USER_NAME}
+                                    </Row>
+                                    <Row>
+                                      {t.AGING}{' '}<small> days ago</small>
+                                    </Row>
+                                    <Row>
+                                      <Button className="btn btn-pill" type='button' style={{cursor: 'pointer'}} color="success" size="sm" tag='a' 
+                                      href={"#/EditSite/" + t.FOREIGN_ID} >
+                                        View Details
+                                      </Button>
+                                      </Row>
+                                    </div>
+                                    </Card>
+                                  </div>)
+                              })
+                              :
+                              ""
+                            }
+                        
+                      </TabPane>
+                      <TabPane tabId={1}>
+                        <Table hover bordered striped responsive size="sm">
+                            <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Date registered</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>Vishnu Serghei</td>
+                                <td>2012/01/01</td>
+                                <td>Member</td>
+                                <td>
+                                <Badge color="success">Active</Badge>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Zbyněk Phoibos</td>
+                                <td>2012/02/01</td>
+                                <td>Staff</td>
+                                <td>
+                                <Badge color="danger">Banned</Badge>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Einar Randall</td>
+                                <td>2012/02/01</td>
+                                <td>Admin</td>
+                                <td>
+                                <Badge color="secondary">Inactive</Badge>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Félix Troels</td>
+                                <td>2012/03/01</td>
+                                <td>Member</td>
+                                <td>
+                                <Badge color="warning">Pending</Badge>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Aulus Agmundr</td>
+                                <td>2012/01/21</td>
+                                <td>Staff</td>
+                                <td>
+                                <Badge color="success">Active</Badge>
+                                </td>
+                            </tr>
+                            </tbody>
+                            </Table>
+                            <nav>
+                            <Pagination>
+                                <PaginationItem><PaginationLink previous tag="button">Prev</PaginationLink></PaginationItem>
+                                <PaginationItem active>
+                                <PaginationLink tag="button">1</PaginationLink>
+                                </PaginationItem>
+                                <PaginationItem><PaginationLink tag="button">2</PaginationLink></PaginationItem>
+                                <PaginationItem><PaginationLink tag="button">3</PaginationLink></PaginationItem>
+                                <PaginationItem><PaginationLink tag="button">4</PaginationLink></PaginationItem>
+                                <PaginationItem><PaginationLink next tag="button">Next</PaginationLink></PaginationItem>
+                            </Pagination>
+                            </nav>
+                      </TabPane>
+                      <TabPane tabId={2}>
+                        <Table hover bordered striped responsive size="sm">
+                            <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Date registered</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>Vishnu Serghei</td>
+                                <td>2012/01/01</td>
+                                <td>Member</td>
+                                <td>
+                                <Badge color="success">Active</Badge>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Zbyněk Phoibos</td>
+                                <td>2012/02/01</td>
+                                <td>Staff</td>
+                                <td>
+                                <Badge color="danger">Banned</Badge>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Einar Randall</td>
+                                <td>2012/02/01</td>
+                                <td>Admin</td>
+                                <td>
+                                <Badge color="secondary">Inactive</Badge>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Félix Troels</td>
+                                <td>2012/03/01</td>
+                                <td>Member</td>
+                                <td>
+                                <Badge color="warning">Pending</Badge>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Aulus Agmundr</td>
+                                <td>2012/01/21</td>
+                                <td>Staff</td>
+                                <td>
+                                <Badge color="success">Active</Badge>
+                                </td>
+                            </tr>
+                            </tbody>
+                            </Table>
+                            <nav>
+                            <Pagination>
+                                <PaginationItem><PaginationLink previous tag="button">Prev</PaginationLink></PaginationItem>
+                                <PaginationItem active>
+                                <PaginationLink tag="button">1</PaginationLink>
+                                </PaginationItem>
+                                <PaginationItem><PaginationLink tag="button">2</PaginationLink></PaginationItem>
+                                <PaginationItem><PaginationLink tag="button">3</PaginationLink></PaginationItem>
+                                <PaginationItem><PaginationLink tag="button">4</PaginationLink></PaginationItem>
+                                <PaginationItem><PaginationLink next tag="button">Next</PaginationLink></PaginationItem>
+                            </Pagination>
+                            </nav>
+                      </TabPane>
+                   </TabContent>
+                  </Col>
                 </Row>
-                <Row>
-                    <Col xs='4'>
-                        <Card>
-                            <CardHeader id="toggler4">
-                                <Row>
-                                    <Col xs='8'>
-                                        UPS Commisioning
-                </Col>
-                                    <Col xs='2'>
-                                        <Badge color="warning" className="float-right" pill>4</Badge>
-                                    </Col>
-                                    <Col xs='2'>
-                                        <i className="icon-list"></i>
-                                    </Col>
-                                </Row>
-                            </CardHeader>
-                            <UncontrolledCollapse toggler="#toggler4">
-                                <Card color="success" outline>
-                                    <div>
-                                        <CardBody>
-                                            <ListGroup className="list-group-accent" tag={'div'}>
-                                                <ListGroupItem action /*tag="a" href="#"*/ className="list-group-item-accent-warning list-group-item-divider">
-                                                    <div className="float-right">
-                                                        <Badge color="danger" className="pull-right" pill> Urgent</Badge>
-                                                    </div>
-                                                    <div> Site Name: CBJ 8</div>
-                                                    <div style={{ marginLeft: '150px' }}>
-                                                        <Col>
-                                                            <Button block color="success" className="btn-pill" size="sm" style={{ width: "80px" }}> Approve</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="info" className="btn-pill" size="sm" style={{ width: "80px" }}> View</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="danger" className="btn-pill" size="sm" style={{ width: "80px" }}> Decline</Button>
-                                                        </Col>
-                                                    </div>
-                                                </ListGroupItem>
-                                                <ListGroupItem action /*tag="a" href="#"*/ className="list-group-item-accent-warning list-group-item-divider">
-                                                    <div className="float-right">
-                                                        <Badge color="danger" className="pull-right" pill> Urgent</Badge>
-                                                    </div>
-                                                    <div> Site Name: BRF</div>
-                                                    <div style={{ marginLeft: '150px' }}>
-                                                        <Col>
-                                                            <Button block color="success" className="btn-pill" size="sm" style={{ width: "80px" }}> Approve</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="info" className="btn-pill" size="sm" style={{ width: "80px" }}> View</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="danger" className="btn-pill" size="sm" style={{ width: "80px" }}> Decline</Button>
-                                                        </Col>
-                                                    </div>
-                                                </ListGroupItem>
-                                                <ListGroupItem action /*tag="a" href="#"*/ className="list-group-item-accent-warning list-group-item-divider">
-                                                    <div className="float-right">
-                                                        <Badge color="danger" className="pull-right" pill> Urgent</Badge>
-                                                    </div>
-                                                    <div> Site Name: CBJ 6</div>
-                                                    <div style={{ marginLeft: '150px' }}>
-                                                        <Col>
-                                                            <Button block color="success" className="btn-pill" size="sm" style={{ width: "80px" }}> Approve</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="info" className="btn-pill" size="sm" style={{ width: "80px" }}> View</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="danger" className="btn-pill" size="sm" style={{ width: "80px" }}> Decline</Button>
-                                                        </Col>
-                                                    </div>
-                                                </ListGroupItem>
-                                                <ListGroupItem action /*tag="a" href="#"*/ className="list-group-item-accent-warning list-group-item-divider">
-                                                    <div className="float-right">
-                                                        <Badge color="danger" className="pull-right" pill> Urgent</Badge>
-                                                    </div>
-                                                    <div> Site Name: CBJ 1</div>
-                                                    <div style={{ marginLeft: '150px' }}>
-                                                        <Col>
-                                                            <Button block color="success" className="btn-pill" size="sm" style={{ width: "80px" }}> Approve</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="info" className="btn-pill" size="sm" style={{ width: "80px" }}> View</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="danger" className="btn-pill" size="sm" style={{ width: "80px" }}> Decline</Button>
-                                                        </Col>
-                                                    </div>
-                                                </ListGroupItem>
-                                            </ListGroup>
-                                        </CardBody>
-                                    </div>
-                                </Card>
-                            </UncontrolledCollapse>
-                        </Card>
-                    </Col>
-                    <Col xs='4'>
-                        <Card>
-                            <CardHeader id="toggler5">
-                                <Row>
-                                    <Col xs='8'>
-                                        PDU Commisioning
-                        </Col>
-                                    <Col xs='2'>
-                                        <Badge color="warning" className="float-right" pill>4</Badge>
-                                    </Col>
-                                    <Col xs='2'>
-                                        <i className="icon-list"></i>
-                                    </Col>
-                                </Row>
-                            </CardHeader>
-                            <UncontrolledCollapse toggler="#toggler5">
-                                <Card color="success" outline>
-                                    <div>
-                                        <CardBody>
-                                            <ListGroup className="list-group-accent" tag={'div'}>
-                                                <ListGroupItem action /*tag="a" href="#"*/ className="list-group-item-accent-warning list-group-item-divider">
-                                                    <div className="float-right">
-                                                        <Badge color="danger" className="pull-right" pill> Urgent</Badge>
-                                                    </div>
-                                                    <div> Site Name: CBJ 8</div>
-                                                    <div style={{ marginLeft: '150px' }}>
-                                                        <Col col="2" className="mb-3 mb-xl-0 text-center">
-                                                            <Button block color="success" className="btn-pill" size="sm" style={{ width: "80px" }} style={{ width: "80px" }}> Approve</Button>
-                                                        </Col>
-                                                        <Col col="2" className="mb-3 mb-xl-0 text-center">
-                                                            <Button block color="info" className="btn-pill" size="sm"  tag="a" href="#/pdu" style={{ width: "80px" }}> View</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="danger" className="btn-pill" size="sm" style={{ width: "80px" }}> Decline</Button>
-                                                        </Col>
-                                                    </div>
-                                                </ListGroupItem>
-                                                <ListGroupItem action /*tag="a" href="#"*/ className="list-group-item-accent-warning list-group-item-divider">
-                                                    <div className="float-right">
-                                                        <Badge color="danger" className="pull-right" pill> Urgent</Badge>
-                                                    </div>
-                                                    <div> Site Name: BRF</div>
-                                                    <div style={{ marginLeft: '150px' }}>
-                                                        <Col>
-                                                            <Button block color="success" className="btn-pill" size="sm" style={{ width: "80px" }}> Approve</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="info" className="btn-pill" size="sm" style={{ width: "80px" }}> View</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="danger" className="btn-pill" size="sm" style={{ width: "80px" }}> Decline</Button>
-                                                        </Col>
-                                                    </div>
-                                                </ListGroupItem>
-                                                <ListGroupItem action /*tag="a" href="#"*/ className="list-group-item-accent-warning list-group-item-divider">
-                                                    <div className="float-right">
-                                                        <Badge color="danger" className="pull-right" pill> Urgent</Badge>
-                                                    </div>
-                                                    <div> Site Name: CBJ 6</div>
-                                                    <div style={{ marginLeft: '150px' }}>
-                                                        <Col>
-                                                            <Button block color="success" className="btn-pill" size="sm" style={{ width: "80px" }}> Approve</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="info" className="btn-pill" size="sm" style={{ width: "80px" }}> View</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="danger" className="btn-pill" size="sm" style={{ width: "80px" }}> Decline</Button>
-                                                        </Col>
-                                                    </div>
-                                                </ListGroupItem>
-                                                <ListGroupItem action /*tag="a" href="#"*/ className="list-group-item-accent-warning list-group-item-divider">
-                                                    <div className="float-right">
-                                                        <Badge color="danger" className="pull-right" pill> Urgent</Badge>
-                                                    </div>
-                                                    <div> Site Name: CBJ 1</div>
-                                                    <div style={{ marginLeft: '150px' }}>
-                                                        <Col>
-                                                            <Button block color="success" className="btn-pill" size="sm" style={{ width: "80px" }}> Approve</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="info" className="btn-pill" size="sm" style={{ width: "80px" }}> View</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="danger" className="btn-pill" size="sm" style={{ width: "80px" }}> Decline</Button>
-                                                        </Col>
-                                                    </div>
-                                                </ListGroupItem>
-                                            </ListGroup>
-                                        </CardBody>
-                                    </div>
-                                </Card>
-                            </UncontrolledCollapse>
-                        </Card>
-                    </Col>
-                    <Col xs='4'>
-                        <Card>
-                            <CardHeader id="toggler6">
-                                <Row>
-                                    <Col xs='8'>
-                                        DC Rack Commisioning
-                        </Col>
-                                    <Col xs='2'>
-                                        <Badge color="warning" className="float-right" pill>4</Badge>
-                                    </Col>
-                                    <Col xs='2'>
-                                        <i className="icon-list"></i>
-                                    </Col>
-                                </Row>
-                            </CardHeader>
-                            <UncontrolledCollapse toggler="#toggler6">
-                                <Card color="success" outline>
-                                    <div>
-                                        <CardBody>
-                                            <ListGroup className="list-group-accent" tag={'div'}>
-                                                <ListGroupItem action /*tag="a" href="#"*/ className="list-group-item-accent-warning list-group-item-divider">
-                                                    <div className="float-right">
-                                                        <Badge color="danger" className="pull-right" pill> Urgent</Badge>
-                                                    </div>
-                                                    <div> Site Name: CBJ 8</div>
-                                                    <div style={{ marginLeft: '150px' }}>
-                                                        <Col col="2" className="mb-3 mb-xl-0 text-center">
-                                                            <Button block color="success" className="btn-pill" size="sm" style={{ width: "80px" }} style={{ width: "80px" }}> Approve</Button>
-                                                        </Col>
-                                                        <Col col="2" className="mb-3 mb-xl-0 text-center">
-                                                            <Button block color="info" className="btn-pill" size="sm" style={{ width: "80px" }}> View</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="danger" className="btn-pill" size="sm" style={{ width: "80px" }}> Decline</Button>
-                                                        </Col>
-                                                    </div>
-                                                </ListGroupItem>
-                                                <ListGroupItem action /*tag="a" href="#"*/ className="list-group-item-accent-warning list-group-item-divider">
-                                                    <div className="float-right">
-                                                        <Badge color="danger" className="pull-right" pill> Urgent</Badge>
-                                                    </div>
-                                                    <div> Site Name: BRF</div>
-                                                    <div style={{ marginLeft: '150px' }}>
-                                                        <Col>
-                                                            <Button block color="success" className="btn-pill" size="sm" style={{ width: "80px" }}> Approve</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="info" className="btn-pill" size="sm" style={{ width: "80px" }}> View</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="danger" className="btn-pill" size="sm" style={{ width: "80px" }}> Decline</Button>
-                                                        </Col>
-                                                    </div>
-                                                </ListGroupItem>
-                                                <ListGroupItem action /*tag="a" href="#"*/ className="list-group-item-accent-warning list-group-item-divider">
-                                                    <div className="float-right">
-                                                        <Badge color="danger" className="pull-right" pill> Urgent</Badge>
-                                                    </div>
-                                                    <div> Site Name: CBJ 6</div>
-                                                    <div style={{ marginLeft: '150px' }}>
-                                                        <Col>
-                                                            <Button block color="success" className="btn-pill" size="sm" style={{ width: "80px" }}> Approve</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="info" className="btn-pill" size="sm" style={{ width: "80px" }}> View</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="danger" className="btn-pill" size="sm" style={{ width: "80px" }}> Decline</Button>
-                                                        </Col>
-                                                    </div>
-                                                </ListGroupItem>
-                                                <ListGroupItem action /*tag="a" href="#"*/ className="list-group-item-accent-warning list-group-item-divider">
-                                                    <div className="float-right">
-                                                        <Badge color="danger" className="pull-right" pill> Urgent</Badge>
-                                                    </div>
-                                                    <div> Site Name: CBJ 1</div>
-                                                    <div style={{ marginLeft: '150px' }}>
-                                                        <Col>
-                                                            <Button block color="success" className="btn-pill" size="sm" style={{ width: "80px" }}> Approve</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="info" className="btn-pill" size="sm" style={{ width: "80px" }}> View</Button>
-                                                        </Col>
-                                                        <Col>
-                                                            <Button block color="danger" className="btn-pill" size="sm" style={{ width: "80px" }}> Decline</Button>
-                                                        </Col>
-                                                    </div>
-                                                </ListGroupItem>
-                                            </ListGroup>
-                                        </CardBody>
-                                    </div>
-                                </Card>
-                            </UncontrolledCollapse>
-                        </Card>
-                    </Col>
-                </Row>
-            </div>
-        );
-    }
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+      </div>
+    );
+  }
 }
 
-export default Approval;
+const mapStateToProps = state => {
+    return {
+      badge:state.badge,
+      user: state.user,
+     
+    };
+  };
+  
+  const mapDispachToProps = dispatch => {
+    return {
+      fetchBadge: () => dispatch({ type: "FETCH_BADGE"}),
+      fetchUser: () => dispatch({ type: "FETCH_USER"}),
+       
+    };
+  };
+  
+  export default connect(mapStateToProps,mapDispachToProps)(myTask);

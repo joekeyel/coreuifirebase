@@ -273,10 +273,10 @@ return(
                             <Label>Description</Label>
                             <Input type="textarea" id="PDU_DESC" name="PDU_DESC" value={PDUdata.PDU_DESC} rows="6" onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
                             <Label>Maintenance Update</Label>
-                            <Input type="textarea" id="UPS_MAINTENANCE_UPD" name="UPS_MAINTENANCE_UPD"  rows="6" onChange={props.onChange}  style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
+                            <Input disabled={props.MaintenanceFlag} type="textarea" id="UPS_MAINTENANCE_UPD" name="UPS_MAINTENANCE_UPD"  rows="6" onChange={props.onChange}  style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
                         </Col>
                         <Col xs='5'>
-                        <Card>
+                        <Card hidden={props.MaintenanceFlag}>
                             <CardHeader>Maintenance Update History:</CardHeader>
                                 <CardBody>
                                      <TableMaintenance data=''/>

@@ -10,13 +10,9 @@ import Swal from 'sweetalert2';
 const CreateForm = (props) => {
 
     const [formValues, setformValues]= useState({});
-    const [optionSite, setOptionSite]= useState({});
-    const [optionLocation, setoptionLocation ] = useState({});
     const [openSnackBar, setOpenSnackBar] = useState(false);
     const [formIsValid, setformIsValid] = useState('');
     const [flagSubmit, setflagSubmit] = useState(true);
-    const [borderColor, setBorderColor] = useState("");
-    const [siteErrorMsg, setSiteErrorMsg] = useState("");
     const [fileFloorPlan, setfileFloorPlan] = useState(null)
     const [fileRackUtil, setfileRackUtil] = useState(null)
     const [blobFloorPlan, setblobFloorPlan] = useState(null)
@@ -25,6 +21,9 @@ const CreateForm = (props) => {
     const [FsizeRackUtil, setFsizeRackUtil] = useState(null)
     const [FnameFloorPlan, setFnameFloorPlan] = useState(null)
     const [FnameRackUtil, setFnameRackUtil] = useState(null)
+    const [hasError1, setHasError1] = useState(false);
+    const [hasError2, setHasError2] = useState(false);
+   
 
       //to handle form submit validation
       const onSubmit = (e)=> 
@@ -35,11 +34,11 @@ const CreateForm = (props) => {
   
           var values = {};
           $inputs.each(function () {
-              if ($(this).is(':radio') == true || $(this).is(':checkbox') == true){
-                values[this.name] = $('input[name=' + $(this).attr('name') + ']:checked').val() == undefined ? "" : $('input[name=' + $(this).attr('name') + ']:checked').val();
+              if ($(this).is(':radio') === true || $(this).is(':checkbox') === true){
+                values[this.name] = $('input[name=' + $(this).attr('name') + ']:checked').val() === undefined ? "" : $('input[name=' + $(this).attr('name') + ']:checked').val();
                     } 
                     else {
-                values[this.name] = $(this).val() == undefined ? "" : $(this).val();
+                values[this.name] = $(this).val() === undefined ? "" : $(this).val();
               }
                values['LOCN_FLOORPLAN_BLOB'] = blobFloorPlan;
                values['LOCN_FLOORPLAN_FILENAME'] = FnameFloorPlan;
@@ -51,9 +50,27 @@ const CreateForm = (props) => {
                values['LOCN_CREATED_BY'] = 'DCOADMIN';
            });
 
-           console.log('values',values);// save form value to state
+          // console.log('values',values);// save form value to state
           
+                if(values.SITE_NAME ){
+                  setHasError1(false);
+                }
+                if(values.LOCN_NAME){
+                  setHasError2(false);
+                }
+              
 
+
+              /** validate value is null */
+              if(!values.SITE_NAME ){
+                setHasError1(true);
+              }
+              if(!values.LOCN_NAME){
+                setHasError2(true);
+              }
+            
+            
+          if(values.SITE_NAME && values.LOCN_NAME){
            Swal.fire({
             text: 'Are you sure to Create this DC Location ' + values.LOCN_NAME + '?',
             }).then((result) => {
@@ -62,7 +79,7 @@ const CreateForm = (props) => {
                     axios.post('/claritybqm/reportFetchJ/?scriptName=DC_LOCATION_CREATE', values
                     ).then((res) => {
                       //console.log('success to create : ', res.data);   
-                        if(res.data == "success"){
+                        if(res.data === "success"){
                             setOpenSnackBar(true);
                         }
             
@@ -75,6 +92,7 @@ const CreateForm = (props) => {
 
             })
        
+          }
      }  
 
     
@@ -85,11 +103,11 @@ const CreateForm = (props) => {
          var values = {};
          
          $inputs.each(function () {
-             if ($(this).is(':radio') == true || $(this).is(':checkbox') == true){
-               values[this.name] = $('input[name=' + $(this).attr('name') + ']:checked').val() == undefined ? "" : $('input[name=' + $(this).attr('name') + ']:checked').val();
+             if ($(this).is(':radio') === true || $(this).is(':checkbox') === true){
+               values[this.name] = $('input[name=' + $(this).attr('name') + ']:checked').val() === undefined ? "" : $('input[name=' + $(this).attr('name') + ']:checked').val();
                    } 
                    else {
-               values[this.name] = $(this).val() == undefined ? "" : $(this).val();
+               values[this.name] = $(this).val() === undefined ? "" : $(this).val();
              }
              values['LOCN_FLOORPLAN_BLOB'] = blobFloorPlan;
              values['LOCN_FLOORPLAN_FILENAME'] = FnameFloorPlan;
@@ -106,12 +124,28 @@ const CreateForm = (props) => {
          //console.log('valuesChanges',values);
          //console.log('files',e.target.name);
 
-         if(e.target.name == 'LOCN_FLOOR_PLAN'){
+         if(e.target.name === 'LOCN_FLOOR_PLAN'){
            //console.log('files',e.target.files);
            var files = e.target.files
-           setfileFloorPlan(URL.createObjectURL(files[0]));
-           setFnameFloorPlan(files[0].name);
-           setFsizeFloorPlan(files[0].size);
+           var fileSize = files[0].size
+      
+          if(fileSize >= 1048576){
+        
+              Swal.fire({
+                width: '30%',
+                icon: 'error',
+                title: 'Oops Image size too large!',
+                text: 'Please make sure your image size not more than 10MB.',
+                fontsize: '10px'
+                //footer: '<a href>Why do I have this issue?</a>'
+              })     
+  
+          }
+          else if(fileSize  >= 1024){
+            setfileFloorPlan(URL.createObjectURL(files[0]));
+            setFnameFloorPlan(files[0].name);
+            setFsizeFloorPlan(fileSize);
+          }
 
            var reader = new FileReader();
            reader.readAsDataURL(files[0]);
@@ -122,18 +156,34 @@ const CreateForm = (props) => {
            }
          }
 
-         if(e.target.name == 'LOCN_RACK_UTILIZATION'){
+         if(e.target.name === 'LOCN_RACK_UTILIZATION'){
           //console.log('files',e.target.files);
           var files = e.target.files
-          setfileRackUtil(URL.createObjectURL(files[0]));
-          setFnameRackUtil(files[0].name);
-          setFsizeRackUtil(files[0].size);
+          var fileSize = files[0].size
 
+          if(fileSize >= 1048576){
+        
+              Swal.fire({
+                width: '30%',
+                icon: 'error',
+                title: 'Oops Image size too large!',
+                text: 'Please make sure your image size not more than 10MB.',
+                fontsize: '10px'
+                //footer: '<a href>Why do I have this issue?</a>'
+              })     
+  
+          }
+          else if(fileSize  >= 1024){
+            setfileRackUtil(URL.createObjectURL(files[0]));
+            setFnameRackUtil(files[0].name);
+            setFsizeRackUtil(fileSize);
+          }
+              
           var reader = new FileReader();
           reader.readAsDataURL(files[0]);
           reader.onload = (e) =>{
               var fileRack = e.target.result//{file: e.target.result}
-              //console.log('onload',fileData);
+              //console.log('onload',fileRack);
               setblobRackUtil(fileRack);
           }
         }
@@ -164,6 +214,13 @@ const CreateForm = (props) => {
                flagSubmit={flagSubmit}
                imgPreviewFloor={fileFloorPlan}
                imgPreviewRack={fileRackUtil}
+               flagDecommDate={true}
+               FileNameFloor={FnameFloorPlan}
+               FileNameRack={FnameRackUtil}
+               FileSizeFloor={FsizeFloorPlan}
+               FileSizeRack={FsizeRackUtil}
+               hasError1={hasError1}
+               hasError2={hasError2}
             />
             <Snackbar
                   open={openSnackBar} autoHideDuration={1500} onClose={handleClose} 

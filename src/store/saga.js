@@ -11,7 +11,19 @@ function* fetchUpAsync() {
        .then(myJson => myJson)
    );
    yield put({ type: "FETCH_DATA_USER", value: json });
-  // console.log(json,username)
+  //console.log('user',json)
+ }
+
+ function* fetchPendingApproval() {
+  var username =  auth.authenticated.username.toUpperCase();
+   //console.log("getData");
+   const json = yield call(() =>
+     fetch("/claritybqm/reportFetch/?scriptName=DC_PENDING_APPROVAL&userid=" + username)
+       .then(response => response.json())
+       .then(myJson => myJson)
+   );
+   yield put({ type: "FETCH_DATA_PENDINGAPPROVAL", value: json });
+  console.log('pendingApp',json)
  }
 
 //  function* fetchBadge() {
@@ -114,20 +126,20 @@ function* fetchCRAC() {
   //console.log('pdu',json)
 }
 
-function* fetchDashboard() {
-  //console.log("port");
-    const json = yield call(() =>
-    fetch("/claritybqm/reportFetch/?scriptName=DC_DASHBOARD_INFO")
-      .then(response => response.json())
-      .then(data => data )
-  );
-  yield put({ type: "FETCH_DATA_DASHBOARD", value: json });
-  console.log('fetchDashboard',json)
-}
+// function* fetchDashboard() {
+//   //console.log("port");
+//     const json = yield call(() =>
+//     fetch("/claritybqm/reportFetch/?scriptName=DC_DASHBOARD_INFO")
+//       .then(response => response.json())
+//       .then(data => data )
+//   );
+//   yield put({ type: "FETCH_DATA_DASHBOARD", value: json });
+//   console.log('fetchDashboard',json)
+// }
 
 export function* watchFetchData() {
   yield takeEvery("FETCH_USER", fetchUpAsync);
- // yield takeEvery("FETCH_BADGE", fetchBadge);
+  yield takeEvery("FETCH_PENDINGAPPROVAL", fetchPendingApproval);
   yield takeEvery("FETCH_RACK", fetchRack);
   yield takeEvery("FETCH_DCSITE", fetchSite);
   yield takeEvery("FETCH_DCLOCATION", fetchLocation);
@@ -136,5 +148,5 @@ export function* watchFetchData() {
   yield takeEvery("FETCH_UPS", fetchUPS);
   yield takeEvery("FETCH_PDU", fetchPDU);
   yield takeEvery("FETCH_CRAC", fetchCRAC);
-  yield takeEvery("FETCH_DASHBOARD", fetchDashboard);
+ // yield takeEvery("FETCH_DASHBOARD", fetchDashboard);
 }

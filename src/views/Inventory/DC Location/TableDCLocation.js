@@ -70,10 +70,10 @@ export default function TableDCLocation(props) {
         title: 'DC Type',
         field: 'LOCN_TYPE',
       },
-      {
-        title: 'State',
-        field: 'LOCN_STATE',
-      },
+      // {
+      //   title: 'State',
+      //   field: 'LOCN_STATE',
+      // },
       {
         title: 'Status',
         field: 'LOCN_STATUS',
@@ -81,11 +81,11 @@ export default function TableDCLocation(props) {
 
       {
         title: 'Commission Date',
-        field: 'LOCN_CREATED_DT',
+        field: 'LOCN_COMM_DT_V',
       },
       {
         title: 'Decommission Date',
-        field: 'LOCN_UPDATED_DT',
+        field: 'LOCN_DECOMM_DT_V',
       },
     ],
   });

@@ -3,6 +3,7 @@ import { Badge, Button, Card, CardBody, CardFooter, CardHeader, Col, Form, FormG
 import '../css/style.css';
 import $, { data } from 'jquery';
 import auth from '../../../auth';
+import { connect } from "react-redux";
 
 const FormRack = (props) => {
 
@@ -11,20 +12,25 @@ const FormRack = (props) => {
     const [actionCreateBtn, setactionCreateBtn] = useState(false);
     const [actionSaveBtn, setactionSaveBtn] = useState(false);
     const [RackIdFlag, setRackIdFlag] = useState(true);
-    const [optionSite, setOptionSite] = useState({});
+    const [optionSite, setOptionSite] = useState([]);
     const [optionLocation, setoptionLocation] = useState({});
     const [borderColor, setBorderColor] = useState("");
     const [siteErrorMsg, setSiteErrorMsg]= useState("");
     const [locErrorMsg, setLocErrorMsg]= useState("");
     const [RackNoErrorMsg, setRackNoErrorMsg] = useState("");
     const [dataRack, setdataRack] = useState({});
-   
+    const [cableID, setCablelID] = useState([{}]);
   
     useEffect(() => {
         console.log('propsForm', props);
+
+        var siteExist = Object.values(props.site).filter((site)=> site.SITE_VERIFIED_TAG === 'Y')
+        //console.log('siteExist',siteExist);
+        setOptionSite(siteExist)
+
+
         if (actionForm == 'CREATE') {
             setactionSaveBtn(true);
-            setOptionSite(props.optionSite)
             setoptionLocation(props.optionLocation)
         }
         if (actionForm == 'EDIT') {
@@ -50,6 +56,15 @@ const FormRack = (props) => {
             
 
     }, [props]);
+
+    useEffect(()=>{
+
+        props.fetchSite();
+        var siteExist = Object.values(props.site).filter((site)=> site.SITE_VERIFIED_TAG === 'Y')
+        //console.log('siteExist',siteExist);
+        setOptionSite(siteExist)
+
+    },[]);
 
     const handleBackBtn =() =>{
         window.history.back();
@@ -125,7 +140,16 @@ const FormRack = (props) => {
     return formIsValid;
 }
 
+const addCableID = () =>{
+    setCablelID([{cableID: [...cableID, '']}])
+}
 
+const handleCableChange = (e,index) =>{
+    cableID[index] = e.target.value;
+    setCablelID([{cableID: cableID}]);
+    console.log('cableID',cableID);
+    
+}
     return (<div className="animated fadeIn">
       <Row>
 <Col xs='12'>
@@ -138,10 +162,10 @@ const FormRack = (props) => {
                         <FormGroup>
                             <Label >DC Site</Label>
                             <Input type="select" name="SITE_NAME" id="SITE_NAME" onChange={props.onChange} style={{ backgroundColor : backgcolor, border: borderColor}} >
-                            {/* <option value="">Please select</option> */}
+                            <option value="">Please select</option>
                             {/*loop Dc site*/}
-                            {    optionSite.site ? 
-                                    optionSite.site.map(function(lov,index) {
+                            {    optionSite ? 
+                                    optionSite.map(function(lov,index) {
                                     return <option key={index} value={lov.SITE_NAME}>{lov.SITE_NAME}</option>
                                     })
                                     :
@@ -150,7 +174,6 @@ const FormRack = (props) => {
                                     // })
                                     <option key='id' value={dataRack.SITE_NAME}>{dataRack.SITE_NAME}</option>
                                    
-   
                             }  
                             </Input>
                             <span style={{color: "red"}}>{siteErrorMsg}</span>  
@@ -214,7 +237,6 @@ const FormRack = (props) => {
                                     <option value="5.0">5.0</option>
                                     <option value="7.0">7.0</option>
                                     <option value="10.0">10.0</option>
-                                    <option value="">NULL</option>
                                 </Input>
                                 <Label>Breaker Type</Label>
                                 <Input type="select" name="RACK_BREAKER_TYPE" id="RACK_BREAKER_TYPE" value={dataRack.RACK_BREAKER_TYPE} onChange={props.onChange} style={{ backgroundColor: backgcolor }}>
@@ -228,7 +250,25 @@ const FormRack = (props) => {
                                     <option value="">Null</option>
                                 </Input>
                                 <Label>Cable ID</Label>
-                                <Input type="text" id="RACK_CABLE_ID" name="RACK_CABLE_ID" value={dataRack.RACK_CABLE_ID} onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
+                                <FormGroup>
+                                {
+                                    cableID.map((cable,index)=>{
+                                        return(<div key={index} >
+                                            <Input 
+                                            type="text" 
+                                            id="RACK_CABLE_ID" 
+                                            name="RACK_CABLE_ID" 
+                                            value={cable} 
+                                            onChange={(e)=> handleCableChange(e,index)} 
+                                            style={{ backgroundColor: backgcolor}}  
+                                            className="input-icons"/>
+                                            <Button color='default' ><i className="fa fa-close"/></Button>
+                                        </div>)
+                                    })
+                                }
+                                <hr/>
+                                <Button color="primary" onClick={()=> addCableID()}>Add Cable ID</Button>
+                                </FormGroup>
                             </Col>
                             <Col xs='3'>
                                 <Label>PDU A</Label>
@@ -268,20 +308,20 @@ const FormRack = (props) => {
                 </Card>
             </CardBody>
             <div className="form-button">
-                <Row style={{ marginBottom: '20px' }}>
+                 <Row style={{ marginBottom: '20px' }}>
                     <Col>
-                        <Button color="info" onClick={handleBackBtn}>
+                    <Button color="info" onClick={handleBackBtn}>
                             <i className="fa fa-history"></i>&nbsp; Back
-             </Button>&nbsp;&nbsp;&nbsp;
-                        <Button color="primary" type="submit" hidden={actionCreateBtn} onClick={() => { InputValidation()}}>
-                            <i className="fa fa-plus"></i>&nbsp; Create
-             </Button>&nbsp;
-             <Button color="primary" type="submit" hidden={actionSaveBtn} onClick={() => { InputValidation()}}>
-                            <i className="fa fa-save"></i>&nbsp; Save
-             </Button>&nbsp;
-             <Button color="success" type="submit" >
+                        </Button>&nbsp;&nbsp;&nbsp;
+                        <Button color="success" type="submit" hidden={actionCreateBtn}>
                             <i className="fa fa-send"></i>&nbsp; Submit
-             </Button>
+                        </Button>&nbsp;
+                        <Button color="success" type="submit" hidden={actionSaveBtn}>
+                            <i className="fa fa-save"></i>&nbsp; Save
+                        </Button>&nbsp;
+                        <Button color="warning" type='reset' hidden={props.btnReset}>
+                            <i className="fa fa-refresh"></i>&nbsp; Reset
+                        </Button>
                     </Col>
                 </Row>
             </div>
@@ -293,4 +333,19 @@ const FormRack = (props) => {
     );
 
 }
-export default FormRack;
+
+
+const mapStateToProps = state => {
+    return {
+      site: state.site
+    };
+  };
+  
+  const mapDispachToProps = dispatch => {
+    return {
+  
+        fetchSite: () => dispatch({ type: "FETCH_DCSITE"}),
+    
+    };
+  };
+export default connect(mapStateToProps,mapDispachToProps)(FormRack);

@@ -236,7 +236,7 @@ return(
                            <Label>Description</Label>
                             <Input type="textarea" id="UPS_DESC" name="UPS_DESC" rows="6" value={UPSdata.UPS_DESC} onChange={props.onChange}  style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
                             <Label>Maintenance Update</Label>
-                            <Input type="textarea" id="UPS_MAINTENANCE_UPD" name="UPS_MAINTENANCE_UPD" value={UPSdata.UPS_MAINTENANCE_UPD} rows="6" onChange={props.onChange}  style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
+                            <Input disabled={props.MaintenanceFlag} type="textarea" id="UPS_MAINTENANCE_UPD" name="UPS_MAINTENANCE_UPD" value={UPSdata.UPS_MAINTENANCE_UPD} rows="6" onChange={props.onChange}  style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
                         </Col>
                         <Col xs='6'>
                         <FormGroup error={props.hasError4}>
@@ -283,7 +283,7 @@ return(
                                 />
                             </MuiPickersUtilsProvider>
                             </FormGroup>
-                          <Card>
+                          <Card hidden={props.MaintenanceFlag}>
                             <CardHeader>Maintenance Update History:</CardHeader>
                                 <CardBody>
                                      <TableMaintenance data=''/>

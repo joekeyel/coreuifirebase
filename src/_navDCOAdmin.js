@@ -1,21 +1,14 @@
 export default {
     items: [
-      // {
-      //   name: 'Dashboard',
-      //   url: '/dashboard',
-      //   icon: 'icon-speedometer',
-      //   // badge: {
-      //   //   variant: 'info',
-      //   //   text: 'NEW',
-      //   // },
-      //   children: [
-      //     {
-      //       name: 'Summary',
-      //       url: '/summarySpace',
-      //       icon: 'icon-chart',
-      //     },
-      //   ],
-      // },
+      {
+        name: 'Dashboard',
+        url: '/dashboard',
+        icon: 'icon-speedometer',
+        // badge: {
+        //   variant: 'info',
+        //   text: 'NEW',
+        // },
+      },
       {
         name: 'Dashboard',
         url: '/summary',
@@ -66,11 +59,11 @@ export default {
             url: '/ListCRAC',
             icon: 'icon-layers',
           },
-      // {
-      //   name: 'Resource Checking',
-      //   url: '/resourceChecking',
-      //   icon: 'icon-puzzle',
-      // },
+      {
+        name: 'Resource Checking',
+        url: '/resourceChecking',
+        icon: 'icon-puzzle',
+      },
     //   {
     //     title: true,
     //     name: 'Theme',

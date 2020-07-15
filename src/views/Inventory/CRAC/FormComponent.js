@@ -242,9 +242,9 @@ return(
                         <Col xs='6'>
                           <FormGroup>
                             <Label>Maintenance Update</Label>
-                            <Input type="textarea" id="CRAC_MAINTENANCE_UPD" name="CRAC_MAINTENANCE_UPD"  rows="6" onChange={props.onChange}  style={{ backgroundColor : backgcolor}} />
+                            <Input disabled={props.MaintenanceFlag} type="textarea" id="CRAC_MAINTENANCE_UPD" name="CRAC_MAINTENANCE_UPD"  rows="6" onChange={props.onChange}  style={{ backgroundColor : backgcolor}} />
                           </FormGroup>
-                        <Card>
+                        <Card hidden={props.MaintenanceFlag}>
                             <CardHeader>Maintenance Update History:</CardHeader>
                                 <CardBody>
                                      <TableMaintenance data=''/>

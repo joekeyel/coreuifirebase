@@ -166,7 +166,7 @@ class ResourceCheck extends Component {
                             <CardHeader>
                                 Rack
                                 <div className="card-header-actions">
-                                  <Badge pill color={color} className="float-right">Rack Utilization: {this.state.rack_util}</Badge>
+                                  <h4><Badge pill color={color} className="float-right">Rack Utilization: {this.state.rack_util}</Badge></h4>
                                 </div>
                             </CardHeader>
                             <CardBody>
@@ -177,6 +177,7 @@ class ResourceCheck extends Component {
                                             {
                                                 return(<div>
                                                     <CardBody>
+                                                        <h5>
                                                         <Row>
                                                             <Label>Rack Utilized : <Badge pill color="warning" >  {d.RACK_UTILIZED}</Badge></Label>
                                                         </Row>
@@ -186,6 +187,7 @@ class ResourceCheck extends Component {
                                                         <Row>
                                                             <Label>Total Rack Capacity : <Badge pill color="primary" > {d.RACK_CAPACITY}</Badge></Label>
                                                         </Row>
+                                                        </h5>
                                                     </CardBody>
                                                     </div>)
                                             })
@@ -200,7 +202,7 @@ class ResourceCheck extends Component {
                             <CardHeader color={colorSpace} >
                                 Space
                                 <div className="card-header-actions">
-                                  <Badge pill color={colorSpace} className="float-right">Space Utilization: {this.state.space_util}</Badge>
+                                  <h4><Badge pill color={colorSpace} className="float-right">Space Utilization: {this.state.space_util}</Badge></h4>
                                 </div>
                             </CardHeader>
                             <Card body  color={colorSpace} style={{marginBottom: '0px'}}>
@@ -211,6 +213,7 @@ class ResourceCheck extends Component {
                                             {
                                                 return(<div>
                                                     <CardBody>
+                                                        <h5>
                                                         <Row>
                                                             <Label>Space Utilized : <Badge pill color="warning" >  {d.SPACE_UTILIZED} sqft</Badge></Label>
                                                         </Row>
@@ -220,6 +223,7 @@ class ResourceCheck extends Component {
                                                         <Row>
                                                              <Label>Total Space Capacity : <Badge pill color="primary" >  {d.SPACE_CAPACITY} sqft</Badge></Label>
                                                         </Row>
+                                                        </h5>
                                                     </CardBody>
                                                     </div>)
                                             })
@@ -234,7 +238,7 @@ class ResourceCheck extends Component {
                             <CardHeader>
                                 Power
                                 <div className="card-header-actions">
-                                  <Badge pill color={color} className="float-right">Power Utilization: {this.state.power_util}</Badge>
+                                  <h4><Badge pill color={color} className="float-right">Power Utilization: {this.state.power_util}</Badge></h4>
                                 </div>
                             </CardHeader>
                             <CardBody>
@@ -245,6 +249,7 @@ class ResourceCheck extends Component {
                                             {
                                                 return(<div>
                                                     <CardBody>
+                                                        <h5>
                                                         <Row>
                                                             <Label>Power Utilized : <Badge pill color="warning" >  {d.POWER_UTILIZED} KW</Badge></Label>
                                                         </Row>
@@ -254,6 +259,7 @@ class ResourceCheck extends Component {
                                                         <Row>
                                                              <Label>Total Power Capacity : <Badge pill color="primary" >  {d.POWER_CAPACITY} KW</Badge></Label>
                                                         </Row>
+                                                        </h5>
                                                     </CardBody>
                                                     </div>)
                                             })
@@ -270,7 +276,7 @@ class ResourceCheck extends Component {
                             <CardHeader>
                                 Network Port
                                 <div className="card-header-actions">
-                                  <Badge pill color={color} className="float-right">Network Port Utilization: {this.state.total_util}</Badge>
+                                <h4><Badge pill color={color} className="float-right">Network Port Utilization: {this.state.total_util}</Badge></h4>
                                 </div>
                             </CardHeader>
                             <CardBody>
@@ -281,6 +287,7 @@ class ResourceCheck extends Component {
                                             {
                                                 return(<div>
                                                     <CardBody>
+                                                        <h5>
                                                         <Row>
                                                             <Label>Network Port Utilized : <Badge pill color="warning" >  {d.RACK_UTILIZED}</Badge></Label>
                                                        </Row>
@@ -290,6 +297,7 @@ class ResourceCheck extends Component {
                                                         <Row>
                                                             <Label>Total Network Port Capacity : <Badge pill color="primary" >  {d.TOTAL_RACK}</Badge></Label>
                                                         </Row>
+                                                        </h5>
                                                     </CardBody>
                                                     </div>)
                                             })
@@ -304,7 +312,7 @@ class ResourceCheck extends Component {
                             <CardHeader>
                                 Bandwidth
                                 <div className="card-header-actions">
-                                  <Badge pill color={color} className="float-right">Bandwidth Utilization: {this.state.bandwidth_util}</Badge>
+                                  <h4><Badge pill color={color} className="float-right">Bandwidth Utilization: {this.state.bandwidth_util}</Badge></h4>
                                 </div>
                             </CardHeader>
                             <CardBody>
@@ -315,6 +323,7 @@ class ResourceCheck extends Component {
                                             {
                                                 return(<div>
                                                      <CardBody>
+                                                      <h5>
                                                         <Row>
                                                             <Label>Bandwidth Utilized : <Badge pill color="warning" >  {d.BANDWIDTH_UTILIZED} MB</Badge></Label>
                                                         </Row>
@@ -324,6 +333,7 @@ class ResourceCheck extends Component {
                                                         <Row>
                                                             <Label>Total Bandwidth Capacity : <Badge pill color="primary" >  {d.BANDWIDTH_CAPACITY} MB</Badge></Label>
                                                           </Row>
+                                                          </h5>
                                                         </CardBody>
                                                    </div>)
                                             })
@@ -340,7 +350,7 @@ class ResourceCheck extends Component {
                     </Alert>
                     <hr/>
                         <Row>
-                            <Col xs='3' style={{marginLeft: '900px'}}>
+                            <Col xs='3'>
                                 <Button block color="info" className="btn-pill" href="#/resourceDetails"> Resource Details</Button>
                             </Col>
                         </Row>

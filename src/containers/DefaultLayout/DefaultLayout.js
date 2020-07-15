@@ -19,6 +19,10 @@ import {
 import navigation from '../../_nav';
 import navigationkl from '../../_navkl';
 import navigationAdmin from '../../_navDCOAdmin';
+import navigationInventory from '../../navInventory';
+import navigationResourceCheck from '../../navResourceCheck';
+import navigationDashboard from '../../navDashboard';
+
 // routes config
 import routes from '../../routes';
 //import routeskl from '../../routesKL';
@@ -38,14 +42,14 @@ class DefaultLayout extends Component {
     super(props);
 
     this.state = {
-      usergroup: auth.isAuthenticated().username
+      usergroup: auth.isAuthenticated().username,
+      menuSelected: auth.isAuthenticated().menuSelected,
     }
 
   }
 
   componentDidMount(){
    // console.log('layout', auth.isAuthenticated());
-    
   }
 
   loading = () => <div className="animated fadeIn pt-1 text-center">Loading...</div>
@@ -55,8 +59,9 @@ class DefaultLayout extends Component {
     this.props.history.push('/login')
   }
 
-
   render() {
+    console.log('state',auth.isAuthenticated());
+    
     return (
       <div className="app">
         <AppHeader fixed>
@@ -70,9 +75,13 @@ class DefaultLayout extends Component {
             <AppSidebarForm />
             <Suspense>
             <AppSidebarNav navConfig={
-
-              this.state.usergroup == "kl" ? navigation : navigationAdmin
-
+              this.state.menuSelected === "inventory" ? navigationInventory
+              :
+              this.state.menuSelected === "resource check" ? navigationResourceCheck
+              :
+              this.state.menuSelected === "dashboard" ? navigationDashboard
+              :
+              navigationAdmin
               } 
               {...this.props} 
               router={router}
@@ -98,8 +107,15 @@ class DefaultLayout extends Component {
                         )} />
                     ) : (null);
                   })}
-                  {auth.isAuthenticated().status? <Redirect from="/" to="/main-menu" />: <Redirect from="/" to="/login" />}
-                 
+                  {
+                  auth.isAuthenticated().status && this.state.menuSelected === 'inventory' ? <Redirect from="/" to="/ListDCSite" />
+                  :
+                  auth.isAuthenticated().status && this.state.menuSelected === 'resource check' ? <Redirect from="/" to="/resourceChecking" />
+                  :
+                  auth.isAuthenticated().status && this.state.menuSelected === 'dashboard' ? <Redirect from="/" to="/summary" />
+                  :
+                  auth.isAuthenticated().status && this.state.menuSelected === "" ? <Redirect from="/" to="/main-menu" />
+                  : <Redirect from="/" to="/login" />}
                 </Switch>
               </Suspense>
             </Container>

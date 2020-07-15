@@ -13,7 +13,7 @@ const initialState = {
     pdu:{},
     crac:{},
     dashboard:{},
-
+    pendingApproval:[],
 };
 
 
@@ -85,6 +85,12 @@ const reducer = (state=initialState, action) => {
             break;
 
             case 'FETCH_DATA_DASHBOARD': 
+
+            newState.dashboard = action.value;
+            
+            break;
+
+            case 'FETCH_DATA_PENDINGAPPROVAL': 
 
             newState.dashboard = action.value;
             
