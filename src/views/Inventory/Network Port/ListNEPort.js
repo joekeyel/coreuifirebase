@@ -49,7 +49,7 @@ return(
                       <Button color="primary" href="#/CreateNEPort"><i className="fa fa-plus-square"></i>&nbsp; Add New Network Port</Button>
                         </CardHeader>
                         <CardBody>
-                              <TableNTWPort id="tablePort" data={data}/>
+                              <TableNTWPort id="tablePort" data={data} props={()=> this.props.fetchPort()}/>
                           </CardBody>
                       </Card>
                 </CardBody>

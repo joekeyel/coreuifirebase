@@ -42,7 +42,7 @@ class DefaultLayout extends Component {
     super(props);
 
     this.state = {
-      usergroup: auth.isAuthenticated().username,
+     // usergroup: localStorage.getItem('username').toUpperCase(),
       menuSelected: auth.isAuthenticated().menuSelected,
     }
 

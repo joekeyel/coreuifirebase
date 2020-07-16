@@ -24,7 +24,10 @@ import {
   Label,
   Row,Progress
 } from 'reactstrap';
-import TableRack from './RackTable';
+import TableRack from '../Inventory/Rack/TableRack';
+import TableSpace from '../Inventory/Rack/TableRack';
+import TableNetwork from '../Inventory/Network Port/TableNTWPort';
+import { connect } from "react-redux";
 
 class ResourceDetails extends Component {
     constructor(props) {
@@ -41,38 +44,68 @@ class ResourceDetails extends Component {
     
       componentDidMount(){
       
-        this.fetchDCSiteList();
+        this.props.fetchRack();
+        this.props.fetchPort();
     
       }
     
-      fetchDCSiteList(){
-        fetch('/claritybqm/reportFetch/?scriptName=DC_SITE')
-        .then(response => response.json())
-        .then(json => //console.log(json)
-        this.setState({data : json})
-        );
-      }
+     
     render(){
-        const data = this.state.data
+        const rack = this.state.rack
+        const port = this.state.port
     return(
         <div className="animated fadeIn" >
             <Row>
-            <Col xs="12">
                 <Card>
                     <CardHeader>
                         <strong>Rack Details</strong>
                         {/* <small> Form</small> */}
                     </CardHeader>
                     <CardBody>
-                        <TableRack data={data} />
+                        <TableRack data={rack} />
                     </CardBody>
                 </Card>
-            </Col>
+            </Row>
+            <Row>
+                <Card>
+                    <CardHeader>
+                        <strong>Space Details</strong>
+                        {/* <small> Form</small> */}
+                    </CardHeader>
+                    <CardBody>
+                        <TableSpace data={rack} />
+                    </CardBody>
+                </Card>
+            </Row>
+            <Row>
+                <Card>
+                    <CardHeader>
+                        <strong>Network Details</strong>
+                        {/* <small> Form</small> */}
+                    </CardHeader>
+                    <CardBody>
+                        <TableNetwork data={port} />
+                    </CardBody>
+                </Card>
             </Row>
             </div>
         );
     }
     }
     
-
-export default ResourceDetails;
+    const mapStateToProps = state => {
+        return {
+          rack: state.rack,
+          port:  state.port
+        };
+      };
+      
+      const mapDispachToProps = dispatch => {
+        return {
+      
+          fetchRack: () => dispatch({ type: "FETCH_RACK"}),
+          fetchPort: () => dispatch({ type: "FETCH_PORT"}),
+        
+        };
+      };
+export default connect(mapStateToProps,mapDispachToProps)(ResourceDetails);

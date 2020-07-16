@@ -80,11 +80,11 @@ export default function TableDCLocation(props) {
       },
       {
         title: 'Commision Date',
-        field: 'NTW_COMM_DT',
+        field: 'NTW_COMM_DT_V',
       },
       {
         title: 'Decommision Date',
-        field: 'NTW_DECOMM_DT',
+        field: 'NTW_DECOMM_DT_V',
       },
     ],
   });

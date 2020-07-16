@@ -51,6 +51,8 @@ class ResourceCheck extends Component {
       alertFlag: true,
       dcLocation: {},
       selectedLocation: {},
+      imageFloorPlan: {},
+      imageRackUtil: {},
     };
   }
 
@@ -76,8 +78,10 @@ class ResourceCheck extends Component {
             //console.log('site',JSON.stringify(site))
             
             var LocFilter = loc.filter(loc => loc.SITE_NAME == siteSelected);
-            this.setState({ dcLocation : LocFilter})          
-           
+            this.setState({ dcLocation : LocFilter})  
+
+            //console.log('site',LocFilter)
+
         }
         );
 
@@ -85,9 +89,28 @@ class ResourceCheck extends Component {
 
   }
   handleChangeLocation(e){
+      //console.log('handleChangeLocation',e.target.value);
+    var location = this.state.dcLocation
+    var LocFilter = Object.values(location).filter(loc => loc.LOCN_NAME == e.target.value);
+    //console.log('LocFilterssd',LocFilter);
+
     this.setState({
         selectedLocation: e.target.value
     })
+
+    
+    fetch('/claritybqm/reportFetch/?scriptName=DC_LOCATION&locn_id=' + LocFilter[0].LOCN_ID)
+    .then(response => response.json())
+    .then((location) => 
+    {  
+        //console.log('loc',location);
+      
+        this.setState({
+            imageFloorPlan: location.FLOOR_PLAN,
+            imageRackUtil: location.RACK_UTILIZATION,
+        })
+    }
+    );
   }
 
   LOVsite(){
@@ -101,8 +124,7 @@ class ResourceCheck extends Component {
        
     }
     );
-
-   
+       
   }
   resourceSummary(e){
     
@@ -361,11 +383,20 @@ class ResourceCheck extends Component {
                             <Row>
                                 <Col>
                                  <h6>Floor Plan:</h6>
-                                    <img id="imgView" src={'../../assets/img/avatars/floorPlan.png'} style={{width: '100%', height: '350px'}}/>
-                                </Col>
+                                    { this.state.imageFloorPlan ?
+                                    <img id="imgView" src={this.state.imageFloorPlan} style={{width: '100%', height: '350px'}}/>
+                                    :
+                                    <h6>No Image Found</h6>
+                                    }
+                                    </Col>
                                 <Col>
                                  <h6>Rack Utilization:</h6>
-                                    <img id="imgView2" src={'../../assets/img/avatars/rackUtil.png'} style={{width: '100%', height: '350px'}}/>
+                                 {
+                                     this.state.imageRackUtil ?
+                                     <img id="imgView2" src={this.state.imageRackUtil} style={{width: '100%', height: '350px'}}/>
+                                     :
+                                     <h6>No Image Found</h6>
+                                }  
                                 </Col>
                             </Row>
                         </div>

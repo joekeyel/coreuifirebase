@@ -57,8 +57,15 @@ class Login extends Component {
 
   render() {
    // console.log('auth',auth.isAuthenticated());
-    
     return (
+    <div style={{ display: 'flex',
+            flexDirection: 'column',
+            minHeight: '100vh',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            background: 'url(../assets/img/bgdcp.png)',
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: 'cover' }}>
       <div className="app flex-row align-items-center">
         <Container>
           <Row className="justify-content-center">
@@ -120,6 +127,7 @@ class Login extends Component {
             </Col>
           </Row>
         </Container>
+      </div>
       </div>
     );
   }

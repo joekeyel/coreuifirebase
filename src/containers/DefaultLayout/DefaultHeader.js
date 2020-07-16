@@ -9,6 +9,8 @@ import logo from '../../assets/img/brand/telekom.png'
 import sygnet from '../../assets/img/brand/sygnet.svg'
 import auth from '../../../src/auth';
 import Avatar from 'react-avatar';
+import { connect } from "react-redux";
+
 
 const propTypes = {
   children: PropTypes.node,
@@ -29,9 +31,16 @@ class DefaultHeader extends Component {
   }
   componentDidMount() {
   
-    var username = auth.authenticated.username.toUpperCase();
+    this.props.fetchUpAsync();
+    this.props.fetchPendingApproval();
+   
+    var username = localStorage.getItem('username').toUpperCase();
+    var password = localStorage.getItem('password');
+    //console.log('login',username1,password);
 
-    fetch(`claritybqm/reportFetch/?scriptName=DC_INBOX_LIST&userid=${username}`)
+   // var username = auth.authenticated.username.toUpperCase();
+
+    fetch('/claritybqm/reportFetch/?scriptName=DC_INBOX_LIST&userid='+ username)
     .then(response => response.json())
     .then((inbox) => {
         //var approver = Object.values(user.user).filter(u => u.USER_APPROVE === 'Y');
@@ -57,7 +66,7 @@ class DefaultHeader extends Component {
        
     })
 
-    fetch(`/claritybqm/reportFetch/?scriptName=DC_USER&userid=${username}`)
+    fetch('/claritybqm/reportFetch/?scriptName=DC_USER&userid='+ username)
     .then(response => response.json())
     .then((user) => {
         //console.log('user',user);
@@ -87,7 +96,7 @@ class DefaultHeader extends Component {
   };
   render() {
     //console.log('render',this.state);
-    
+    //console.log('props',this.props);
     // eslint-disable-next-line
     const { children, ...attributes } = this.props;
     const task = this.state.PendingTask ? this.state.PendingTask.length : 0;
@@ -127,7 +136,7 @@ class DefaultHeader extends Component {
             <DropdownToggle nav>
               <span id={auth.authenticated.username.toUpperCase()} >{this.state.userFullName}</span>
               {/* <img src={'../../assets/img/avatars/telekom.png'} className="img-avatar" /> */}
-              <Avatar name={this.state.userFullName} value={this.state.userFullName ? this.state.userFullName : 'TM'} color={Avatar.getRandomColor('sitebase', ['red', 'green', 'blue'])} size="50" round={true} />
+              <Avatar name={this.state.userFullName} value={this.state.userFullName ? this.state.userFullName : 'TM'} color={Avatar.getRandomColor('sitebase', ['red', 'green', 'blue'])} size="40" round={true} />
             </DropdownToggle>
             <DropdownMenu right>
               <DropdownItem header tag="div" className="text-center"><strong>Account</strong></DropdownItem>
@@ -174,4 +183,20 @@ DefaultHeader.propTypes = propTypes;
 DefaultHeader.defaultProps = defaultProps;
 
 
-export default DefaultHeader;
+
+const mapStateToProps = state => {
+  return {
+    user: state.user,
+    pendingApproval: state.pendingApproval
+  };
+};
+
+const mapDispachToProps = dispatch => {
+  return {
+
+    fetchUpAsync: () => dispatch({ type: "FETCH_USER"}),
+    fetchPendingApproval: () => dispatch({ type: "FETCH_PENDINGAPPROVAL"}),
+  
+  };
+};
+export default connect(mapStateToProps,mapDispachToProps)(DefaultHeader);

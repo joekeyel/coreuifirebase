@@ -41,10 +41,12 @@ const useStyles = makeStyles({
   const [disabledDashboard, setDisabledDashboard] = useState(true);
 
   useEffect(()=>{
-    var user = auth.authenticated.username.toUpperCase();
+    var user = localStorage.getItem('username').toUpperCase();
+    var password = localStorage.getItem('password');
+    
     setUserID(user)
     //console.log('user',user);
-    fetch(`/claritybqm/reportFetch/?scriptName=DC_USER&userid=${user}`)
+    fetch('https://10.54.5.141:3443/claritybqm/reportFetch/?scriptName=DC_USER&userid='+ user)
     .then(resp => resp.json())
     .then((user)=>{
         //console.log('user',user.rights);

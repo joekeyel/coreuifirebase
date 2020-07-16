@@ -1,9 +1,12 @@
 import React, { Component, useState, useEffect } from 'react';
 import { Badge, Button, Card, CardBody, CardFooter, CardHeader, Col, Form, FormGroup, Label, Row, Input } from 'reactstrap';
 import '../css/style.css';
-import $, { data } from 'jquery';
-import auth from '../../../auth';
 import { connect } from "react-redux";
+import 'date-fns';
+import CableRack from './addCableid';
+import DateFnsUtils from '@date-io/date-fns';
+import { MuiPickersUtilsProvider, KeyboardTimePicker, KeyboardDatePicker } from '@material-ui/pickers';
+import { makeStyles, useTheme, FormHelperText, Select, MenuItem, Chip,FormControl, InputLabel } from '@material-ui/core';
 
 const FormRack = (props) => {
 
@@ -19,7 +22,9 @@ const FormRack = (props) => {
     const [locErrorMsg, setLocErrorMsg]= useState("");
     const [RackNoErrorMsg, setRackNoErrorMsg] = useState("");
     const [dataRack, setdataRack] = useState({});
-    const [cableID, setCablelID] = useState([{}]);
+    const [selectedCommDate, setSelectedCommDate] = useState(null)
+    const [selectedDecommDate, setSelectedDecommDate] = useState(null)
+
   
     useEffect(() => {
         console.log('propsForm', props);
@@ -37,22 +42,17 @@ const FormRack = (props) => {
 
             setactionCreateBtn(true);
             setRackIdFlag(false);
+            setdataRack(props.dataRack);
+            if(props.dataRack){
+                setSelectedCommDate(props.dataRack.RACK_COMM_DT);
+            }
+            if(props.dataRack){
+                setSelectedDecommDate(props.dataRack.RACK_DECOMM_DT);
+            }
+           
             //getRackDetail();
         }
 
-        fetch('/claritybqm/reportFetch/?scriptName=DC_RACK')
-            .then(response => response.json())
-            .then((rack) => 
-            {  
-                
-                if(props.rackid){
-                    var filter = Object.values(rack).filter(rack => rack.RACK_ID == props.rackid);
-                    setdataRack(filter[0]);
-            
-                    console.log('filter',filter);     
-                }
-            }
-            );
             
 
     }, [props]);
@@ -70,86 +70,8 @@ const FormRack = (props) => {
         window.history.back();
     }
 
-    const InputValidation = (e) => {
- 
-        let formIsValid = true;
-       
-        var $inputs = $('#formRack :input');//get form values
-  
-        var values = {};
-        $inputs.each(function () {
-            if ($(this).is(':radio') == true || $(this).is(':checkbox') == true){
-              values[this.name] = $('input[name=' + $(this).attr('name') + ']:checked').val() == undefined ? "" : $('input[name=' + $(this).attr('name') + ']:checked').val();
-                  } 
-                  else {
-              values[this.name] = $(this).val() == undefined ? "" : $(this).val();
-            }
-            values['RACK_ID'] = '';
-            values['RACK_CONTRACTUAL_POWER'] = '';
-            values['RACK_INSERT_BY'] = auth.authenticated.username ? auth.authenticated.username.toUpperCase() : "TMIMS_FORM";
-  
-         });
-  
-         console.log('handleValidation', values );
-  
-        //SITE_NAME
-        if(values.SITE_NAME == ""){
-          formIsValid = false;
-          setSiteErrorMsg("Please select DC Site");
-          setBorderColor("solid red");
-       }if(values.SITE_NAME){
-           formIsValid = true;
-           setSiteErrorMsg("");
-           setBorderColor("");
-       }
-  
-       //LOCN_NAME
-       if(values.LOCN_NAME == ""){
-           formIsValid = false;
-           setLocErrorMsg("Please select DC Location");
-           setBorderColor("solid red");
-        }if(values.LOCN_NAME){
-            formIsValid = true;
-            setLocErrorMsg("");
-            setBorderColor("");
-        }
-  
-          //RACK_ROOM
-       if(values.RACK_ROOM == ""){
-        formIsValid = false;
-        setRackNoErrorMsg("Cannot be empty");
-        setBorderColor("solid red");
-       }if(values.RACK_ROOM){
-         formIsValid = true;
-         setRackNoErrorMsg("");
-         setBorderColor("");
-      }
-  
-  
-        //RACK_NO
-        if(values.RACK_NO == ""){
-           formIsValid = false;
-           setRackNoErrorMsg("Cannot be empty");
-           setBorderColor("solid red");
-        }if(values.RACK_NO){
-            formIsValid = true;
-            setRackNoErrorMsg("");
-            setBorderColor("");
-        }
+   
 
-    return formIsValid;
-}
-
-const addCableID = () =>{
-    setCablelID([{cableID: [...cableID, '']}])
-}
-
-const handleCableChange = (e,index) =>{
-    cableID[index] = e.target.value;
-    setCablelID([{cableID: cableID}]);
-    console.log('cableID',cableID);
-    
-}
     return (<div className="animated fadeIn">
       <Row>
 <Col xs='12'>
@@ -159,10 +81,10 @@ const handleCableChange = (e,index) =>{
             <CardBody>
                 <Row style={{ marginLeft: '250px' }}>
                     <Col xs='4'>
-                        <FormGroup>
+                        <FormGroup  error={props.hasError1}>
                             <Label >DC Site</Label>
                             <Input type="select" name="SITE_NAME" id="SITE_NAME" onChange={props.onChange} style={{ backgroundColor : backgcolor, border: borderColor}} >
-                            <option value="">Please select</option>
+                            {/* <option value="">Please select</option> */}
                             {/*loop Dc site*/}
                             {    optionSite ? 
                                     optionSite.map(function(lov,index) {
@@ -176,9 +98,9 @@ const handleCableChange = (e,index) =>{
                                    
                             }  
                             </Input>
-                            <span style={{color: "red"}}>{siteErrorMsg}</span>  
+                            {props.hasError1 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
                             </FormGroup>
-                            <FormGroup>
+                            <FormGroup  error={props.hasError2}>
                             <Label >DC Location</Label>
                             <Input type="select" name="LOCN_NAME" id="LOCN_NAME" onChange={props.onChange} style={{ backgroundColor:  backgcolor, border: borderColor}}>
                             {/* <option value="">Please select</option> */}
@@ -195,14 +117,14 @@ const handleCableChange = (e,index) =>{
                                     
                             }  
                             </Input>
-                            <span style={{color: "red"}}>{locErrorMsg}</span>  
+                            {props.hasError2 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
                         </FormGroup>
                     </Col>
                     <Col xs='4'>
-                        <FormGroup>
+                        <FormGroup  error={props.hasError3}>
                         <Label>Room</Label>
                         <Input type="text" id="RACK_ROOM" name="RACK_ROOM" value={dataRack.RACK_ROOM} onChange={props.onChange} style={{ backgroundColor: backgcolor, border: borderColor  }} />
-                        <span style={{color: "red"}}>{RackNoErrorMsg}</span>
+                        {props.hasError3 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
                       </FormGroup>
                     </Col>
                 </Row>
@@ -210,14 +132,13 @@ const handleCableChange = (e,index) =>{
                     <CardBody>
                         <Row>
                             <Col xs='3'>
-                                <FormGroup hidden={RackIdFlag}>
+                                <FormGroup hidden={props.hideRackID}>
                                 <Label>Rack ID</Label>
-                                <Input type="text" value={dataRack.RACK_ID} readOnly/>
+                                <Input type="text" value={dataRack.RACK_ID} style={{ backgroundColor: backgcolor}}/>
                                 </FormGroup>
                                 <FormGroup>
                                 <Label>Rack No</Label>
                                 <Input type="text" id="RACK_NO" name="RACK_NO" value={dataRack.RACK_NO} onChange={props.onChange} style={{ backgroundColor: backgcolor, border: borderColor }} />
-                                <span style={{color: "red"}}>{RackNoErrorMsg}</span>
                                 </FormGroup>
                                 <FormGroup>
                                 <Label>Rack Type</Label>
@@ -247,28 +168,8 @@ const handleCableChange = (e,index) =>{
                                 <Input type="select" name="RACK_POWER_PHASE" id="RACK_POWER_PHASE" value={dataRack.RACK_POWER_PHASE} onChange={props.onChange} style={{ backgroundColor: backgcolor }}>
                                     <option value="">Please select</option>
                                     <option value="Single">Single</option>
-                                    <option value="">Null</option>
                                 </Input>
-                                <Label>Cable ID</Label>
-                                <FormGroup>
-                                {
-                                    cableID.map((cable,index)=>{
-                                        return(<div key={index} >
-                                            <Input 
-                                            type="text" 
-                                            id="RACK_CABLE_ID" 
-                                            name="RACK_CABLE_ID" 
-                                            value={cable} 
-                                            onChange={(e)=> handleCableChange(e,index)} 
-                                            style={{ backgroundColor: backgcolor}}  
-                                            className="input-icons"/>
-                                            <Button color='default' ><i className="fa fa-close"/></Button>
-                                        </div>)
-                                    })
-                                }
-                                <hr/>
-                                <Button color="primary" onClick={()=> addCableID()}>Add Cable ID</Button>
-                                </FormGroup>
+                                <CableRack value={dataRack.RACK_CABLE_ID} actionType={actionForm}/>
                             </Col>
                             <Col xs='3'>
                                 <Label>PDU A</Label>
@@ -295,13 +196,55 @@ const handleCableChange = (e,index) =>{
                             <Col xs='3'>
                                 <Label>Status</Label>
                                 <Input type="select" name="RACK_STATUS" id="RACK_STATUS" value={dataRack.RACK_STATUS} onChange={props.onChange} style={{ backgroundColor: backgcolor }}>
-                                    <option value="0">Please select</option>
-                                    <option value="">Null</option>
+                                    <option value="">Please select</option>
                                     <option value="Registered">Registered</option>
                                     <option value="Unoccupied">Unoccupied</option>
                                 </Input>
                                 <Label>Description</Label>
                                 <Input type="textarea" size="6" id="RACK_DESC" name="RACK_DESC" value={dataRack.RACK_DESC} onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
+                                <Label>Commission Date :</Label>
+                                <FormGroup  error={props.hasError4}>
+                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <KeyboardDatePicker
+                                    helperText={''} 
+                                    id="RACK_COMM_DT" 
+                                    name="RACK_COMM_DT"
+                                    //id="date-picker-dialog"
+                                    //filterDate={date => date.getDay() !== 6 && date.getDay() !== 0}
+                                    //label="Commission Date"
+                                    placeholder="dd/mm/yyyy"
+                                    format="dd/MM/yyyy"
+                                    margin="normal"
+                                    value={selectedCommDate}
+                                    onChange={date => setSelectedCommDate(date)}
+                                    KeyboardButtonProps={{
+                                        'aria-label': 'change date',
+                                    }}
+                                    />
+                                </MuiPickersUtilsProvider>
+                                {props.hasError4 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
+                                </FormGroup>
+                                <FormGroup  hidden={props.flagDecommDate}>
+                                <Label>Decommission Date :</Label>
+                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <KeyboardDatePicker
+                                    helperText={''} 
+                                    id="RACK_DECOMM_DT" 
+                                    name="RACK_DECOMM_DT"
+                                    margin="normal"
+                                    //id="date-picker-dialog"
+                                    //label="Decommission Date"
+                                    margin="normal"
+                                    placeholder="dd/mm/yyyy"
+                                    format="dd/MM/yyyy"
+                                    value={selectedDecommDate}
+                                    onChange={date => setSelectedDecommDate(date)}
+                                    KeyboardButtonProps={{
+                                        'aria-label': 'change date',
+                                    }}
+                                    />
+                                </MuiPickersUtilsProvider>
+                                </FormGroup>
                             </Col>
                         </Row>
                     </CardBody>

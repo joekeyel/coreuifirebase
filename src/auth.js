@@ -46,7 +46,9 @@ class Auth {
         this.authenticated.menuSelected = "";
         this.authenticated.username = username;
         this.authenticated.password = password;
-
+        localStorage.setItem('username', username);
+        localStorage.setItem('password', password);
+       
         if(username){
 
           axios.get('/claritybqm/reportFetch/?scriptName=DC_USER&userid='+username.toUpperCase(), 
@@ -74,10 +76,11 @@ class Auth {
     }
 
     MenuSelected(menu,username,cb) {
-      console.log('selecteMenu',menu);
+      //console.log('selecteMenu',menu);
       this.authenticated.menuSelected = menu;
       this.authenticated.status = true;
       this.authenticated.username = username;
+      //localStorage.setItem('menuSelected', menu);
       cb(username,cb)
     }
 

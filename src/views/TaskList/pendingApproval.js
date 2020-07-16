@@ -33,16 +33,21 @@ class myTask extends Component {
 
   getInboxList(){
 
-    var username = auth.authenticated.username.toUpperCase();
-    fetch(`claritybqm/reportFetch/?scriptName=DC_PENDING_APPROVAL&userid=${username}`)
+    var username = localStorage.getItem('username').toUpperCase();
+    var password = localStorage.getItem('password');
+
+    fetch('/claritybqm/reportFetch/?scriptName=DC_PENDING_APPROVAL&userid=' + username)
     .then(response => response.json())
     .then((pending) => {
         //var approver = Object.values(user.user).filter(u => u.USER_APPROVE === 'Y');
         console.log('pending',pending); 
-        this.setState({
-          pendingApprove: pending[0].PENDINGAPPROVAL,
-          dataAll: pending,
-        })
+        if(pending){
+          this.setState({
+            pendingApprove: pending.length,
+            dataAll: pending,
+          })
+        }
+     
 
         pending.map((d)=>{
           if(d.AGING === 0){

@@ -13,6 +13,10 @@ const CreateForm = (props) => {
     const [optionSite, setOptionSite]= useState({});
     const [optionLocation, setoptionLocation ] = useState({});
     const [openSnackBar, setopenSnackBar] = useState(false);
+    const [hasError1, setHasError1] = useState(false);
+    const [hasError2, setHasError2] = useState(false);
+    const [hasError3, setHasError3] = useState(false);
+    const [hasError4, setHasError4] = useState(false);
 
     useEffect(() => {
 
@@ -47,8 +51,37 @@ const CreateForm = (props) => {
               values['RACK_INSERT_BY'] = auth.authenticated.username ? auth.authenticated.username.toUpperCase() : "TMIMS_FORM";
 
            });
+             
+              if(values.SITE_NAME ){
+                setHasError1(false);
+                }
+                if(values.LOCN_NAME){
+                  setHasError2(false);
+                }
+                if(values.RACK_ROOM ){
+                  setHasError3(false);
+                  }
+                if(values.RACK_COMM_DT){
+                  setHasError4(false);
+                }
+              
+
+
+              /** validate value is null */
+              if(!values.SITE_NAME ){
+                setHasError1(true);
+              }
+              if(!values.LOCN_NAME){
+                setHasError2(true);
+              }
+              if(!values.RACK_ROOM ){
+                setHasError3(true);
+              }
+              if(!values.RACK_COMM_DT){
+                setHasError4(true);
+              }
   
-          if ( values.SITE_NAME && values.LOCN_NAME && values.RACK_NO  && values.RACK_ROOM ){
+          if ( values.SITE_NAME && values.LOCN_NAME && values.RACK_ROOM && values.RACK_COMM_DT){
 
             axios.post('/claritybqm/reportFetchJ/?scriptName=DC_RACK_CREATE', values).then((res) => {
              //console.log('success to save : ', res.data);   
@@ -117,6 +150,12 @@ const CreateForm = (props) => {
               values={formValues} 
               onSubmit={onSubmit} 
               onChange={handleChange}
+              flagDecommDate={true}
+              hideRackID={true}
+              hasError1={hasError1}
+              hasError2={hasError2}
+              hasError3={hasError3}
+              hasError4={hasError4}
             />
             <Snackbar
                   open={openSnackBar} autoHideDuration={1500} onClose={handleClose} 

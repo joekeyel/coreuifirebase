@@ -48,7 +48,7 @@ return(
                       <Button color="primary" href="#/CreateRack"><i className="fa fa-plus-square"></i>&nbsp; Add New Rack</Button>
                         </CardHeader>
                         <CardBody>
-                              <TableRack id="tableRack" data={data}/>
+                              <TableRack id="tableRack" data={data} props={()=> this.props.fetchRack()}/>
                           </CardBody>
                       </Card>
                 </CardBody>

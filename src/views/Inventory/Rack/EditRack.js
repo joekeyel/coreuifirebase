@@ -12,7 +12,25 @@ const EditForm = (props) => {
 
     const [formValues, setformValues]= useState({});
     const [openSnackBar, setopenSnackBar] = useState(false);
- 
+    const [dataRack, setdataRack] = useState({});
+    const [hasError1, setHasError1] = useState(false);
+    const [hasError2, setHasError2] = useState(false);
+    const [hasError3, setHasError3] = useState(false);
+    const [hasError4, setHasError4] = useState(false);
+
+  useEffect(()=>{
+    fetch('/claritybqm/reportFetch/?scriptName=DC_RACK')
+    .then(response => response.json())
+    .then((rack) => 
+    {  
+        
+            var filter = Object.values(rack).filter(rack => rack.RACK_ID == props.match.params.id);
+            setdataRack(filter[0]);
+            console.log('filter',filter[0]);     
+            //console.log('SelectedCommDate',filter[0].RACK_COMM_DT,filter[0].RACK_DECOMM_DT);    
+    }
+    );
+  },[])
 
   //to handle form submit validation
   const onSubmit = (e)=> 
@@ -31,11 +49,38 @@ const EditForm = (props) => {
           }
           values['RACK_ID'] =  props.match.params.id;
           values['RACK_CONTRACTUAL_POWER'] = '';
-          values['RACK_INSERT_BY'] = auth.authenticated.username ? auth.authenticated.username.toUpperCase() : "TMIMS_FORM";
+          values['RACK_UPDATE_BY'] = auth.authenticated.username ? auth.authenticated.username.toUpperCase() : "TMIMS_FORM";
 
        });
 
-       
+       if(values.SITE_NAME ){
+        setHasError1(false);
+        }
+        if(values.LOCN_NAME){
+          setHasError2(false);
+        }
+        if(values.RACK_ROOM ){
+          setHasError3(false);
+          }
+        if(values.RACK_COMM_DT){
+          setHasError4(false);
+        }
+  
+
+      /** validate value is null */
+      if(!values.SITE_NAME ){
+        setHasError1(true);
+      }
+      if(!values.LOCN_NAME){
+        setHasError2(true);
+      }
+      if(!values.RACK_ROOM ){
+        setHasError3(true);
+      }
+      if(!values.RACK_COMM_DT){
+        setHasError4(true);
+      }
+
       if ( values.SITE_NAME && values.LOCN_NAME && values.RACK_NO && values.RACK_ROOM ){
 
         axios.post('/claritybqm/reportFetchJ/?scriptName=DC_RACK_UPDATE', values).then((res) => {
@@ -89,6 +134,12 @@ const handleChange = (e) => {
     props={props.rack}
     onSubmit={onSubmit} 
     onChange={handleChange}
+    hasError1={hasError1}
+    hasError2={hasError2}
+    hasError3={hasError3}
+    hasError4={hasError4}
+    dataRack={dataRack}
+    flagDecommDate={false}
   />
   <Snackbar
         open={openSnackBar} autoHideDuration={1500} onClose={handleClose} 

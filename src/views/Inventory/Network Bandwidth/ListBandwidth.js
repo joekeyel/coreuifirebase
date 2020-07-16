@@ -22,7 +22,7 @@ class Bandwidth extends Component {
   }
 
   componentWillReceiveProps(props){
-    props.fetchBandwidth();
+    //props.fetchBandwidth();
     //console.log('componentWillReceiveProps',props);
     this.setState({
       data: props.bandwidth,
@@ -49,7 +49,7 @@ return(
                       <Button color="primary" href="#/CreateBandwidth"><i className="fa fa-plus-square"></i>&nbsp; Add New Network Bandwidth</Button>
                         </CardHeader>
                         <CardBody>
-                              <TableBandwidth id="tableBandwidth" data={data}/>
+                              <TableBandwidth id="tableBandwidth" data={data} props={()=> this.props.fetchBandwidth()}/>
                           </CardBody>
                       </Card>
                 </CardBody>

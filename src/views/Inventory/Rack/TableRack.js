@@ -85,11 +85,11 @@ export default function TableRack(props) {
       },
       {
         title: 'Commision Date',
-        field: 'RACK_COMM_DT',
+        field: 'RACK_COMM_DT_V',
       },
       {
         title: 'Decommision Date',
-        field: 'RACK_DECOMM_DT',
+        field: 'RACK_DECOMM_DT_V',
       },
       {
         title: 'Customer Name',
@@ -132,7 +132,7 @@ export default function TableRack(props) {
             
             //display button based on action edit/delete
             if( props.action.icon == 'edit'){                               
-                return(<Link to={"/EditRack/" + props.data.LOCN_ID} >
+                return(<Link to={"/EditRack/" + props.data.RACK_ID} >
                 <Tooltip title="Edit" >
                 <Icon
                   //onClick={ }

@@ -6,7 +6,7 @@ import auth from '../../../auth';
 import Swal from 'sweetalert2';
 import { connect } from "react-redux";
 import axios from 'axios';
-import { makeStyles, useTheme, TextField, Select, MenuItem, Chip ,Grid,FormHelperText} from '@material-ui/core';
+import { makeStyles, useTheme, TextField, Select, MenuItem, Chip ,Grid,FormHelperText,Switch,FormControlLabel } from '@material-ui/core';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardTimePicker, KeyboardDatePicker } from '@material-ui/pickers';
 
@@ -71,6 +71,10 @@ const FormDCSite = (props) => {
     const [approverList, setapproverList] = useState([]);
     const classes = useStyles();
     const theme = useTheme();
+    const [state, setState] = useState({
+        approve: false,
+      });
+    
 
     
   useEffect(() => {
@@ -100,8 +104,7 @@ const FormDCSite = (props) => {
 
     useEffect(() => {
         console.log('propsFormComponent', props);
-        //console.log('propsFormComponenStatet', PostcodeErrorMsg);
-
+       
         if (actionForm == 'CREATE') {
             setActionSaveBtn(true);
             
@@ -124,6 +127,11 @@ const FormDCSite = (props) => {
         
     }
 
+    const handleChangeApprove = (event) => {
+        console.log('state',  event.target.checked);
+
+        setState({ ...state, [event.target.name]: event.target.checked });
+    };
 
     const handleBackBtn = () => {
         window.history.back();
@@ -357,6 +365,17 @@ const FormDCSite = (props) => {
                                                     </Select>
                                                     {props.hasError5 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
                                                 </FormGroup>
+                                                <FormControlLabel
+                                                    control={
+                                                    <Switch
+                                                        checked={state.approve}
+                                                        onChange={handleChangeApprove}
+                                                        name="SITE_VERIFIED_TAG"
+                                                        color="primary"
+                                                    />
+                                                    }
+                                                    label="Approve"
+                                                />
                                             </Col>
                                         </Row>
                                     </CardBody>
