@@ -54,7 +54,7 @@ class Auth {
           axios.get('/claritybqm/reportFetch/?scriptName=DC_USER&userid='+username.toUpperCase(), 
           ).then(resp => {
            
-                //console.log('d',resp.data.user.length)               
+               // console.log('d',resp.data)               
                 if(!resp.data.user.length){
                   Swal.fire({
                     width: '30%',

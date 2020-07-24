@@ -98,11 +98,11 @@ const TableCRAC = (props) => {
       },
       {
         title: 'Commision Date',
-        field: 'CRAC_COMM_DT',
+        field: 'CRAC_COMM_DT_V',
       },
       {
         title: 'Decommision Date',
-        field: 'CRAC_DECOMM_DT',
+        field: 'CRAC_DECOMM_DT_V',
       },
     ],
   });

@@ -42,9 +42,9 @@ const EditForm = (props) => {
     if(props.match.params.approved){
       setapproveFlag(true);
       setApprovedSite('Y');
+      //setverifiedID();
     }
-    
-    
+
   },[props])
 
    //to handle form submit validation
@@ -64,26 +64,13 @@ const EditForm = (props) => {
              values[this.name] = $(this).val() == undefined ? "" : $(this).val();
            }
             //values['RACK_ID'] = '';
-            values['SITE_VERIFIED_TAG'] = approvedSite;
-            //values['SITE_VERIFIED_BY'] = verifiedID;
-            values['SITE_WORKGROUP'] = "DCO1";
+            //values['SITE_VERIFIED_TAG'] = approvedSite;
+            //values['SITE_VERIFIED_BY'] = ;
+            //values['SITE_WORKGROUP'] = "DCO1";
             values['SITE_UPDATE_BY'] = username ? username : "TMIMS";
         });
 
-        if(values.SITE_VERIFIED_BY){
-          fetch('/claritybqm/reportFetch/?scriptName=DC_USER')
-          .then(response => response.json())
-          .then((user) => {
-            
-              //console.log('verified',verified[0].ID); 
-              // if(user.user.length){
-              //   var verified = Object.values(user.user).filter(u => u.NAME === values.SITE_VERIFIED_BY);
-              //   setverifiedID(verified[0].ID);
-              // }
-              
-          })
-        
-       }
+       
         //console.log('values',values);
         setformValues(values); // save form value to state
         /** validate value is not null */
@@ -99,9 +86,7 @@ const EditForm = (props) => {
          if(values.SITE_COMM_DT){
            setHasError4(false);
          }
-         if(values.SITE_VERIFIED_BY){
-           setHasError5(false);
-         }
+      
 
 
          /** validate value is null */
@@ -117,11 +102,9 @@ const EditForm = (props) => {
          if(!values.SITE_COMM_DT){
            setHasError4(true);
          }
-         if(!values.SITE_VERIFIED_BY){
-           setHasError5(true);
-         }
+        
 
-       if(values.SITE_NAME && values.ADDE_POSTCODE && values.ADDE_STATE && values.SITE_COMM_DT && values.SITE_VERIFIED_BY){
+       if(values.SITE_NAME && values.ADDE_POSTCODE && values.ADDE_STATE && values.SITE_COMM_DT ){
        // console.log('approveFlag ', approveFlag);   
                 if(type === 'delete'){
                   //console.log('delete');
@@ -227,7 +210,6 @@ const EditForm = (props) => {
     hasError2={hasError2}
     hasError3={hasError3}
     hasError4={hasError4}
-    hasError5={hasError5}
     approvedSite={approvedSite}
     approveFlag={approveFlag}
     btnReset={true}

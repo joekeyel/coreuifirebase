@@ -35,10 +35,11 @@ const ViewForm = (props) => {
             <FormComponent 
               actionForm={'VIEW'} 
               btnReset={false}
-              MaintenanceFlag={true}
+              //MaintenanceFlag={true}
               CRACid={props.match.params.id}
               CRACdata={CRACdata}
               CRACJurnal={CRACJurnal}
+              btnReset={true}
             />
           
         </div >);

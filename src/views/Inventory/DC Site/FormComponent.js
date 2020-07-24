@@ -108,15 +108,13 @@ const FormDCSite = (props) => {
   },[]);
 
     useEffect(() => {
-        //console.log('propsFormLocationComponent', props);
+        //console.log('formDCSITE', props);
         if (actionForm === 'VIEW') {
             setActionSaveBtn(true);
             setActionCreateBtn(true);
+            setActionApproveBtn(true);
             setActionDeleteBtn(true);
             setDataSite(props.data);
-            if(props.approveFlag === false){
-                setActionApproveBtn(true);
-            }
             if(props.data){
                 setSelectedCommDate(props.data.SITE_COMM_DT);
                 setSelectedDecommDate(props.data.SITE_DECOMM_DT);   
@@ -174,7 +172,7 @@ const FormDCSite = (props) => {
 
     const getWorkgroup = (user) => {
         
-      console.log('dataUSer',user.workgroups);
+     // console.log('dataUSer',user.workgroups);
       setUserWorkgroup(user.workgroups)
         
     }
@@ -409,7 +407,11 @@ const FormDCSite = (props) => {
                                             </Col>
                                             <Col xs='3'>
                                             <Label>Status</Label>
-                                                <Input bsSize="sm"  type="select" name="SITE_STATUS" id="SITE_STATUS" value={dataSite.SITE_STATUS } onChange={props.onChange} style={{ backgroundColor: backgcolor }} >
+                                                <Input bsSize="sm"  type="select" name="SITE_STATUS" 
+                                                id="SITE_STATUS" 
+                                                value={dataSite.SITE_STATUS } 
+                                                onChange={props.onChange} 
+                                                style={{ backgroundColor: backgcolor }} >
                                                    {
                                                        actionForm === 'CREATE' ?
                                                        <option value="Pending Approval">Pending Approval</option>
@@ -426,14 +428,14 @@ const FormDCSite = (props) => {
                                                         actionForm === 'EDIT' && dataSite.SITE_VERIFIED_TAG === 'Y' &&  dataSite.SITE_DECOMM_DT ?
                                                         <option value="Inactive">Inactive</option>
                                                         :
-                                                        <option value="null">null</option>
+                                                       <option value={dataSite.SITE_STATUS}>{dataSite.SITE_STATUS}</option>
                                                     }
 
                                                 </Input>
                                                 <Label>Description</Label>
                                                 <Input bsSize="sm"  type="textarea" rows="4" id="SITE_DESC" name="SITE_DESC" value={dataSite.SITE_DESC} onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
-                                                <FormGroup className={classes.formControl} error={props.hasError5}>                                         
-                                                <Label>Workgroup :</Label> <font color="red">*</font><br/>
+                                                <FormGroup>                                         
+                                                <Label>Workgroup :</Label>
                                                     <Input bsSize="sm"  
                                                      id="SITE_WORKGROUP"
                                                      name="SITE_WORKGROUP"
@@ -448,18 +450,16 @@ const FormDCSite = (props) => {
                                                      <option key="DCO3" value="DCO3">DCO3</option>
                                                      <option key="DCO4" value="DCO4">DCO41</option> */}
                                                      {
-                                                         actionForm === 'CREATE' || dataSite.SITE_VERIFIED_TAG === 'N' ? 
-                                                         userWorkgroup.map((wrg) => (
+                                                        props.actionForm === 'VIEW' ||  props.actionForm === 'EDIT' ?
+                                                        <option key={dataSite.SITE_WORKGROUP} value={dataSite.SITE_WORKGROUP}>{dataSite.SITE_WORKGROUP}</option>
+                                                        :
+                                                        Object.values(userWorkgroup).map((wrg) => (
                                                             <option key={wrg} value={wrg}>
                                                             {wrg}
                                                             </option>
                                                         ))
-                                                        :
-                                                        <option key={dataSite.SITE_WORKGROUP} value={dataSite.SITE_WORKGROUP}>{dataSite.SITE_WORKGROUP}</option>
-                                                        
                                                      }
                                                      </Input>
-                                                     {props.hasError5 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
                                                 </FormGroup>    
                                                <FormGroup hidden={props.flagVerified}>                                            
                                                 <Label>Verified by:</Label>
@@ -470,19 +470,7 @@ const FormDCSite = (props) => {
                                                      style={{ backgroundColor: backgcolor }} 
                                                      onChange={props.onChange}
                                                      value={dataSite.SITE_VERIFIED_BY}
-                                                     > 
-                                                     {/* {
-                                                        actionForm === 'CREATE' ?
-                                                            approverList.map((user) => (
-                                                            <option key={user.ID} value={user.NAME}>
-                                                            {user.NAME}
-                                                            </option>
-                                                        ))
-                                                        :
-                                                        <option key={dataSite.SITE_VERIFIED_BY} value={dataSite.SITE_VERIFIED_BY}>{dataSite.SITE_VERIFIED_BY}</option>
-                                                        
-                                                    } */}
-                                                     </Input>
+                                                     /> 
                                                 </FormGroup>
                                                 {/* <FormControlLabel
                                                     hidden={props.flagApprover}

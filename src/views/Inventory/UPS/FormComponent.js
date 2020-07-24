@@ -231,7 +231,7 @@ return(
                         </Col>
                     </Row>
                     <Row  style={{marginLeft: "50px", marginTop: "10px"}}>
-                        <Col xs='2'>
+                        <Col xs='3'>
                          <FormGroup hidden={flagUPSid}>
                             <Label>UPS Ref ID</Label>
                             <Input bsSize="sm"  type="text" id="UPS_ID" name="UPS_ID" value={props.upsID} onChange={props.onChange}  style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} readOnly/>
@@ -255,15 +255,13 @@ return(
                                     <option value="KIV">KIV</option>              
                             </Input>
                           </Col>
-                        <Col xs='4'>
+                        <Col xs='5'>
                            <Label>Description</Label>
                             <Input bsSize="sm"  type="textarea" id="UPS_DESC" name="UPS_DESC" rows="6" value={UPSdata.UPS_DESC} onChange={props.onChange}  style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
-                           <FormControl hidden={props.MaintenanceFlag}>
+                           {/* <FormControl hidden={props.MaintenanceFlag}>
                             <Label>Maintenance Update</Label>
                             <Input bsSize="sm" type="textarea" id="UPS_MAINTENANCE_UPD" name="UPS_MAINTENANCE_UPD" value={UPSdata.UPS_MAINTENANCE_UPD} rows="6" onChange={props.onChange}  style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
-                            </FormControl>
-                        </Col>
-                        <Col xs='6'>
+                            </FormControl> */}
                         <Label>Commission Date</Label><font color="red">*</font>
                         <FormGroup error={props.hasError4}>
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -272,7 +270,7 @@ return(
                                 name="UPS_COMM_DT"
                                 margin="normal"
                                 //id="date-picker-dialog"
-                                disablePast={true}
+                                //disablePast={true}
                                 //shouldDisableDate={date => date.getDay() === 0 && date.getDay() === 6
                                 //date => console.log('date',date.getDay()) 
                                 //date.getDay() !== 6 && date.getDay() !== 0
@@ -290,8 +288,8 @@ return(
                             </MuiPickersUtilsProvider>
                             {props.hasError4 && <FormHelperText style={{color: 'red'}}> This is required!</FormHelperText>}
                             </FormGroup>
-                            <FormGroup hidden={flagDecommDate}>
                             <Label>Decommission Date</Label>
+                            <FormGroup hidden={flagDecommDate}>
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                             <KeyboardDatePicker
                                 id="UPS_DECOMM_DT" 
@@ -303,7 +301,7 @@ return(
                                 margin="normal"
                                 placeholder="dd/mm/yyyy"
                                 value={selectedDecommDate}
-                                disablePast={true}
+                                //disablePast={true}
                                 onChange={date => setSelectedDecommDate(date)}
                                 KeyboardButtonProps={{
                                     'aria-label': 'change date',
@@ -311,13 +309,23 @@ return(
                                 />
                             </MuiPickersUtilsProvider>
                             </FormGroup>
-                          <Card hidden={props.MaintenanceFlag}>
+                        </Col>
+                    </Row>
+                    <Row style={{marginLeft: "50px"}}>
+                      <Col xs='4'>
+                        <FormGroup hidden={props.MaintenanceFlag}>
+                        <Label>Maintenance Update</Label>
+                        <Input type="textarea" id="UPS_MAINTENANCE_UPD" name="UPS_MAINTENANCE_UPD" value={UPSdata.UPS_MAINTENANCE_UPD} rows="6" onChange={props.onChange}  style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
+                        </FormGroup>
+                    </Col>
+                    <Col xs='8'>
+                    <Card hidden={props.MaintenanceFlag}>
                             <CardHeader>Maintenance Update History:</CardHeader>
                                 <CardBody>
                                      <TableMaintenance data={props.UPSJournal ? props.UPSJournal : ''}/>
                                 </CardBody>
-                          </Card>
-                        </Col>
+                     </Card>
+                     </Col>
                     </Row>
                     <div className="form-button" style={{ marginTop: '20px' }}>
                             <Row >

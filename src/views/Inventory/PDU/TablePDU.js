@@ -84,11 +84,11 @@ export default function TablePDU(props){
       },
       {
         title: 'Commision Date',
-        field: 'PDU_COMM_DT',
+        field: 'PDU_COMM_DT_V',
       },
       {
         title: 'Decommision Date',
-        field: 'PDU_DECOMM_DT',
+        field: 'PDU_DECOMM_DT_V',
       },
     ],
   });

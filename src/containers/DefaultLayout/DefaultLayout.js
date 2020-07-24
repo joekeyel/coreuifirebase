@@ -22,7 +22,7 @@ import navigationAdmin from '../../_navDCOAdmin';
 import navigationInventory from '../../navInventory';
 import navigationResourceCheck from '../../navResourceCheck';
 import navigationDashboard from '../../navDashboard';
-
+import navigationInbox from '../../navInbox';
 // routes config
 import routes from '../../routes';
 //import routeskl from '../../routesKL';
@@ -81,7 +81,7 @@ class DefaultLayout extends Component {
               :
               this.state.menuSelected === "dashboard" ? navigationDashboard
               :
-              navigationAdmin
+              navigationInbox//navigationAdmin
               } 
               {...this.props} 
               router={router}
@@ -114,7 +114,7 @@ class DefaultLayout extends Component {
                   :
                   auth.isAuthenticated().status && this.state.menuSelected === 'dashboard' ? <Redirect from="/" to="/summary" />
                   :
-                  auth.isAuthenticated().status && this.state.menuSelected === "" ? <Redirect from="/" to="/main-menu" />
+                  auth.isAuthenticated().status && this.state.menuSelected === "" ? <Redirect from="/" to="/pendingApproval" />
                   : <Redirect from="/" to="/login" />}
                 </Switch>
               </Suspense>

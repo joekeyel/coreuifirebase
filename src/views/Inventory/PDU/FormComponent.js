@@ -72,6 +72,15 @@ const FormPDU =(props) =>{
     if(actionForm === 'VIEW'){
       setactionSaveBtn(true);
       setactionCreateBtn(true);
+      setPDUdata(props.PDUdata);
+      setFlagPDUid(false);
+      setDCSite([props.PDUdata.SITE_NAME]);
+      setSelectedCommDate(props.PDUdata.PDU_COMM_DT);
+      setSelectedDecommDate(props.PDUdata.PDU_DECOMM_DT);
+      if(props.PDUdata.LOCATION_NAME){
+        var splitLocn = props.PDUdata.LOCATION_NAME.split(',');
+        setoptionLocation(splitLocn);  
+      }
     }
     if(actionForm === 'CREATE'){
       setactionSaveBtn(true);
@@ -183,9 +192,7 @@ return(
                           {props.hasError1 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
                         </FormControl>
                         </Col>
-                    </Row>
-                    <Row  style={{marginLeft: "50px", marginTop: "10px"}}>
-                        <Col xs="4">
+                        <Col xs="6">
                         <FormGroup className={classes.formControl} error={props.hasError2}>
                             <InputLabel >Served DC Location<font color="red">*</font></InputLabel>
                             <Select
@@ -239,7 +246,7 @@ return(
                             <Label>User/Rack</Label>
                             <Input bsSize="sm"  type="text" id="PDU_USER_RACK" name="PDU_USER_RACK" value={PDUdata.PDU_USER_RACK} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
                             <FormGroup error={props.hasError4}>
-                            <font color="red">*</font>
+                            <Label>Commission Date</Label><font color="red">*</font>
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                             <KeyboardDatePicker
                                 helperText={''}
@@ -247,12 +254,12 @@ return(
                                 name="PDU_COMM_DT"
                                 margin="normal"
                                 //id="date-picker-dialog"
-                                disablePast={true}
+                                //disablePast={true}
                                 //shouldDisableDate={date => date.getDay() === 0 && date.getDay() === 6
                                 //date => console.log('date',date.getDay()) 
                                 //date.getDay() !== 6 && date.getDay() !== 0
                                 // }
-                                label="Commission Date"
+                                //label="Commission Date"
                                 format="dd/MM/yyyy"
                                 margin="normal"
                                 value={selectedCommDate}
@@ -265,6 +272,7 @@ return(
                             {props.hasError4 && <FormHelperText style={{color: 'red'}}> This is required!</FormHelperText>}
                             </FormGroup>
                             <FormGroup hidden={flagDecommDate}>
+                            <Label>Decommission Date</Label>
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                             <KeyboardDatePicker
                                 helperText={''}
@@ -272,12 +280,12 @@ return(
                                 name="PDU_DECOMM_DT"
                                 margin="normal"
                                 //id="date-picker-dialog"
-                                label="Decommission Date"
+                                //label="Decommission Date"
                                 format="dd/MM/yyyy"
                                 margin="normal"
                                 placeholder="dd/mm/yyyy"
                                 value={selectedDecommDate}
-                                disablePast={true}
+                                //disablePast={true}
                                 onChange={date => setSelectedDecommDate(date)}
                                 KeyboardButtonProps={{
                                     'aria-label': 'change date',

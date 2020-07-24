@@ -14,56 +14,44 @@ export default function TableDCSite(props) {
         render: (cell) => <p>{cell.tableData.id + 1}</p>
       },
       {
-        title: 'Rack ID',
-        field: 'RACK_ID',
+        title: 'Contractual Space Size (sqft)',
+        field: 'CAGE_CONTRACTUAL_SPACE_SIZE',
       },
       {
-        title: 'Rack No',
-        field: 'RACK_NO',
-      },
-      {
-        title: 'Rack Type',
-        field: 'RACK_TYPE',
-      },
-      {
-        title: 'Rack Size',
-        field: 'RACK_SIZE',
-      },
-      {
-        title: 'DC Site',
-        field: 'SITE_NAME',
-      },
-      {
-        title: 'DC Location',
-        field: 'LOCATION_NAME',
-      },
-
-      {
-        title: 'Power Density',
-        field: 'RACK_POWER_DENSITY',
-      },
-      {
-        title: 'Commision Date',
-        field: 'RACK_COMM_DT_V',
-      },
-      {
-        title: 'Decommision Date',
-        field: 'RACK_DECOMM_DT_V',
-      },
-      {
-        title: 'Customer Name',
-        field: 'RACK_CUSTOMER',
+        title: 'Status',
+        field: 'CAGE_STATUS',
       },
       {
         title: 'Service ID',
-        field: 'RACK_SERVICEID',
+        field: 'CAGE_SERVICEID',
       },
+      {
+        title: 'Customer',
+        field: 'CUSTOMER_NAME',
+      },
+      {
+        title: 'Cage No',
+        field: 'CAGE_NO',
+      },
+      {
+        title: 'Suite No',
+        field: 'CAGE_SUITE_NO',
+      },
+
+      {
+        title: 'Contractual Power',
+        field: 'CAGE_CONTRACTUAL_POWER',
+      },
+      {
+        title: 'No of Rack',
+        field: 'CAGE_NO_RACK',
+      }
     ],
   });
 
   return (
     <MaterialTable
-      title="Rack"
+      title="Space"
       //hover={true}
       options={{    
           //hover: true,

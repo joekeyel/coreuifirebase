@@ -20,7 +20,7 @@ function* fetchUpAsync() {
   var password = localStorage.getItem('password');
    //console.log("getData");
    const json = yield call(() =>
-     fetch("/claritybqm/reportFetch/?scriptName=DC_PENDING_APPROVAL&userid=" + username)
+     fetch("/claritybqm/reportFetch/?scriptName=DC_INBOX_LIST&userid=" + username)
        .then(response => response.json())
        .then(myJson => myJson)
    );

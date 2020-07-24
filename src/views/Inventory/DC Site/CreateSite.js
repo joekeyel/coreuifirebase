@@ -62,8 +62,8 @@ const CreateForm = (props) => {
                 values[this.name] = $(this).val() == undefined ? "" : $(this).val();
               }
                //values['RACK_ID'] = '';
-               values['SITE_WORKGROUP'] = "DCO1";
-               values['SITE_VERIFIED_BY'] = verifiedID;
+               //values['SITE_WORKGROUP'] = "DCO1";
+               //values['SITE_VERIFIED_BY'] = "";
                values['SITE_CREATED_BY'] = username ? username : "TMIMS";
            });
 
@@ -83,10 +83,7 @@ const CreateForm = (props) => {
             if(values.SITE_COMM_DT){
               setHasError4(false);
             }
-            if(values.SITE_VERIFIED_BY){
-              setHasError5(false);
-            }
-
+           
 
             /** validate value is null */
             if(!values.SITE_NAME ){
@@ -101,11 +98,9 @@ const CreateForm = (props) => {
             if(!values.SITE_COMM_DT){
               setHasError4(true);
             }
-            if(!values.SITE_VERIFIED_BY){
-              setHasError5(true);
-            }
+          
 
-          if(values.SITE_NAME && values.ADDE_POSTCODE && values.ADDE_STATE && values.SITE_COMM_DT && values.SITE_VERIFIED_BY){
+          if(values.SITE_NAME && values.ADDE_POSTCODE && values.ADDE_STATE && values.SITE_COMM_DT ){
             
             Swal.fire({
               text: "Are you sure to Create this DCSite " + values.SITE_NAME + '?',
@@ -151,7 +146,7 @@ const CreateForm = (props) => {
                   else {
               values[this.name] = $(this).val() == undefined ? "" : $(this).val();
             }
-            values['SITE_VERIFIED_BY'] = verifiedID;
+           // values['SITE_VERIFIED_BY'] = verifiedID;
          });
 
         setformValues(values); // save form value to state

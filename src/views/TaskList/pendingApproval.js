@@ -26,7 +26,7 @@ class myTask extends Component {
       colorSite7days: "",
       colorSite2week: "",
       approved: {},
-      approvedData:{},
+      approvedData: {},
     };
   }
 
@@ -36,14 +36,21 @@ class myTask extends Component {
     this.props.fetchSite();
     this.getInboxList();
     this.getApproved();
+    var username = localStorage.getItem('username').toUpperCase();
+    var filtersite = Object.values(this.props.site).filter((r)=> r.SITE_VERIFIED_BY === username)
+    var filtersite2 = Object.values(filtersite).filter((r)=> r.SITE_VERIFIED_TAG === 'Y')
+     //console.log('componentWillReceiveProps2',filtersite,filtersite2);
+    this.setState({
+      approvedData: filtersite2
+    })
   }
 
   componentWillReceiveProps(props){
-      //console.log('componentWillReceiveProps',props);
+      console.log('componentWillReceiveProps',props.site);
       var username = localStorage.getItem('username').toUpperCase();
       var filtersite = Object.values(props.site).filter((r)=> r.SITE_VERIFIED_BY === username)
       var filtersite2 = Object.values(filtersite).filter((r)=> r.SITE_VERIFIED_TAG === 'Y')
-      // console.log('componentWillReceiveProps2',filtersite,filtersite2);
+       console.log('componentWillReceiveProps2',filtersite,filtersite2);
       this.setState({
         approvedData: filtersite2
       })
@@ -54,11 +61,11 @@ class myTask extends Component {
     var username = localStorage.getItem('username').toUpperCase();
     var password = localStorage.getItem('password');
 
-    fetch('/claritybqm/reportFetch/?scriptName=DC_PENDING_APPROVAL&userid=' + username)
+    fetch('/claritybqm/reportFetch/?scriptName=DC_INBOX_LIST&userid=' + username)
     .then(response => response.json())
     .then((pending) => {
         //var approver = Object.values(user.user).filter(u => u.USER_APPROVE === 'Y');
-        //console.log('pending',pending); 
+        console.log('pending',pending); 
         if(pending){
           this.setState({
             pendingApprove: pending.length,
@@ -102,7 +109,7 @@ class myTask extends Component {
     var username = localStorage.getItem('username').toUpperCase();
     var filtersite = Object.values(this.props.site).filter((r)=> r.SITE_VERIFIED_BY === username)
     var filtersite2 = Object.values(filtersite).filter((r)=> r.SITE_VERIFIED_TAG === 'Y')
-    // console.log('componentWillReceiveProps2',filtersite,filtersite2);
+     //console.log('componentWillReceiveProps2',filtersite,filtersite2);
     this.setState({
       approvedData: filtersite2
     })

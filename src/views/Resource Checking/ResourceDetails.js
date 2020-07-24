@@ -24,9 +24,9 @@ import {
   Label,
   Row,Progress
 } from 'reactstrap';
-import TableRack from '../Inventory/Rack/TableRack';
-import TableSpace from '../Inventory/Rack/TableRack';
-import TableNetwork from '../Inventory/Network Port/TableNTWPort';
+import TableRack from './RackTable';
+import TableSpace from './SpaceTable';
+import TableNetwork from './NetworkTable';
 import { connect } from "react-redux";
 
 class ResourceDetails extends Component {
@@ -39,6 +39,7 @@ class ResourceDetails extends Component {
             message: '',
             dataRack: {},
             dataPort: {},
+            dataSpace: []
           }
         
       }
@@ -48,7 +49,7 @@ class ResourceDetails extends Component {
         this.props.fetchRack();
         this.props.fetchPort();
         var siteName = this.props.match.params.id
-        
+        this.getSpace()
         var filterRack = Object.values(this.props.rack).filter((r)=> r.SITE_NAME === siteName)
         var filterPort = Object.values(this.props.port).filter((r)=> r.SITE_NAME === siteName)
         //console.log('componentWillReceiveProps',filterRack,filterPort);
@@ -72,9 +73,28 @@ class ResourceDetails extends Component {
       handleBackBtn(){
         window.history.back();
       }
+
+      getSpace(){
+        var siteName = this.props.match.params.id
+        fetch('/claritybqm/reportFetch/?scriptName=DC_CAGE')
+        .then(response => response.json())
+        .then((space) => 
+        {  
+           // console.log('space',space);
+           var filterspace = Object.values(space).filter((r)=> r.SITE_NAME === siteName)
+            this.setState({
+                dataSpace: filterspace,
+            })            
+        }
+        );
+       
+      }
+
+
     render(){
         const rack = this.state.dataRack
         const port = this.state.dataPort
+        const space = this.state.dataSpace
     return(
         <div className="animated fadeIn" >
             <Row>
@@ -98,7 +118,7 @@ class ResourceDetails extends Component {
                         {/* <small> Form</small> */}
                     </CardHeader>
                     <CardBody>
-                        <TableSpace data={rack} />
+                        <TableSpace data={space} />
                     </CardBody>
                 </Card>
             </Row>
