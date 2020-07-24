@@ -14,6 +14,7 @@ const FormRack = (props) => {
     const [actionForm, setactionForm] = useState(props.actionForm);
     const [actionCreateBtn, setactionCreateBtn] = useState(false);
     const [actionSaveBtn, setactionSaveBtn] = useState(false);
+    const [actionDeleteBtn, setActionDeleteBtn] = useState(false);
     const [RackIdFlag, setRackIdFlag] = useState(true);
     const [optionSite, setOptionSite] = useState([]);
     const [optionLocation, setoptionLocation] = useState({});
@@ -32,11 +33,16 @@ const FormRack = (props) => {
         var siteExist = Object.values(props.site).filter((site)=> site.SITE_VERIFIED_TAG === 'Y')
         //console.log('siteExist',siteExist);
         setOptionSite(siteExist)
-
+        if(actionForm === 'VIEW'){
+            setactionSaveBtn(true);
+            setactionCreateBtn(true);
+            setActionDeleteBtn(true);
+          }
 
         if (actionForm == 'CREATE') {
             setactionSaveBtn(true);
-            setoptionLocation(props.optionLocation)
+            setoptionLocation(props.optionLocation);
+            setActionDeleteBtn(true);
         }
         if (actionForm == 'EDIT') {
 
@@ -70,20 +76,25 @@ const FormRack = (props) => {
         window.history.back();
     }
 
-   
+    const handleResetData = () => {
+        setSelectedCommDate(null);
+        setSelectedDecommDate(null);
+    }
 
     return (<div className="animated fadeIn">
       <Row>
 <Col xs='12'>
     <Card>
-        <CardHeader>Rack <strong>({actionForm})</strong></CardHeader>
+        <CardHeader>Rack <strong>({actionForm})</strong>
+        <small><font color="red"> ( * ) is mandatoy field</font></small>
+        </CardHeader>
         <Form name="formRack" id="formRack" onSubmit={props.onSubmit}>
             <CardBody>
                 <Row style={{ marginLeft: '250px' }}>
                     <Col xs='4'>
                         <FormGroup  error={props.hasError1}>
-                            <Label >DC Site</Label>
-                            <Input type="select" name="SITE_NAME" id="SITE_NAME" onChange={props.onChange} style={{ backgroundColor : backgcolor, border: borderColor}} >
+                            <Label>DC Site</Label><font color="red">*</font>
+                            <Input bsSize="sm"  type="select" name="SITE_NAME" id="SITE_NAME" onChange={props.onChange} style={{ backgroundColor : backgcolor, border: borderColor}} >
                             {/* <option value="">Please select</option> */}
                             {/*loop Dc site*/}
                             {    optionSite ? 
@@ -101,8 +112,8 @@ const FormRack = (props) => {
                             {props.hasError1 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
                             </FormGroup>
                             <FormGroup  error={props.hasError2}>
-                            <Label >DC Location</Label>
-                            <Input type="select" name="LOCN_NAME" id="LOCN_NAME" onChange={props.onChange} style={{ backgroundColor:  backgcolor, border: borderColor}}>
+                            <Label >DC Location</Label><font color="red">*</font>
+                            <Input bsSize="sm"  type="select" name="LOCN_NAME" id="LOCN_NAME" onChange={props.onChange} style={{ backgroundColor:  backgcolor, border: borderColor}}>
                             {/* <option value="">Please select</option> */}
                              {/*loop Dc Loction based on selected dc site*/}
                             {    optionLocation.loc ? 
@@ -122,8 +133,8 @@ const FormRack = (props) => {
                     </Col>
                     <Col xs='4'>
                         <FormGroup  error={props.hasError3}>
-                        <Label>Room</Label>
-                        <Input type="text" id="RACK_ROOM" name="RACK_ROOM" value={dataRack.RACK_ROOM} onChange={props.onChange} style={{ backgroundColor: backgcolor, border: borderColor  }} />
+                        <Label>Room</Label><font color="red">*</font>
+                        <Input bsSize="sm"  type="text" id="RACK_ROOM" name="RACK_ROOM" value={dataRack.RACK_ROOM} onChange={props.onChange} style={{ backgroundColor: backgcolor, border: borderColor  }} />
                         {props.hasError3 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
                       </FormGroup>
                     </Col>
@@ -134,24 +145,28 @@ const FormRack = (props) => {
                             <Col xs='3'>
                                 <FormGroup hidden={props.hideRackID}>
                                 <Label>Rack ID</Label>
-                                <Input type="text" value={dataRack.RACK_ID} style={{ backgroundColor: backgcolor}}/>
+                                <Input bsSize="sm"  type="text" value={dataRack.RACK_ID} style={{ backgroundColor: backgcolor}}/>
                                 </FormGroup>
                                 <FormGroup>
-                                <Label>Rack No</Label>
-                                <Input type="text" id="RACK_NO" name="RACK_NO" value={dataRack.RACK_NO} onChange={props.onChange} style={{ backgroundColor: backgcolor, border: borderColor }} />
+                                <Label>Rack No</Label><font color="red">*</font>
+                                <Input bsSize="sm"  type="text" id="RACK_NO" name="RACK_NO" value={dataRack.RACK_NO} onChange={props.onChange} style={{ backgroundColor: backgcolor, border: borderColor }} />
                                 </FormGroup>
                                 <FormGroup>
                                 <Label>Rack Type</Label>
-                                <Input type="text" id="RACK_TYPE" name="RACK_TYPE" value={dataRack.RACK_TYPE} onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
+                                <Input bsSize="sm"  type="select" id="RACK_TYPE" name="RACK_TYPE" value={dataRack.RACK_TYPE} onChange={props.onChange} style={{ backgroundColor: backgcolor }} >
+                                    <option value="">Please select</option>
+                                    <option value="Dedicated">Dedicated</option>
+                                    <option value="Shared">Shared</option>
+                                </Input>
                                 </FormGroup>
                                 <FormGroup>
                                 <Label>Rack Size</Label>
-                                <Input type="text" id="RACK_SIZE" name="RACK_SIZE" value={dataRack.RACK_SIZE} onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
+                                <Input bsSize="sm"  type="text" id="RACK_SIZE" name="RACK_SIZE" value={dataRack.RACK_SIZE} onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
                                 </FormGroup>
                             </Col>
                             <Col xs='3'>
                                 <Label>Power Density</Label>
-                                <Input type="select" name="RACK_POWER_DENSITY" id="RACK_POWER_DENSITY" value={dataRack.RACK_POWER_DENSITY} onChange={props.onChange} style={{ backgroundColor: backgcolor }}>
+                                <Input bsSize="sm"  type="select" name="RACK_POWER_DENSITY" id="RACK_POWER_DENSITY" value={dataRack.RACK_POWER_DENSITY} onChange={props.onChange} style={{ backgroundColor: backgcolor }}>
                                     <option value="">Please select</option>
                                     <option value="1.5">1.5</option>
                                     <option value="3.0">3.0</option>
@@ -160,12 +175,12 @@ const FormRack = (props) => {
                                     <option value="10.0">10.0</option>
                                 </Input>
                                 <Label>Breaker Type</Label>
-                                <Input type="select" name="RACK_BREAKER_TYPE" id="RACK_BREAKER_TYPE" value={dataRack.RACK_BREAKER_TYPE} onChange={props.onChange} style={{ backgroundColor: backgcolor }}>
+                                <Input bsSize="sm"  type="select" name="RACK_BREAKER_TYPE" id="RACK_BREAKER_TYPE" value={dataRack.RACK_BREAKER_TYPE} onChange={props.onChange} style={{ backgroundColor: backgcolor }}>
                                     <option value="">Please select</option>
                                     <option value="16">16</option>
                                 </Input>
                                 <Label>Power Phase</Label>
-                                <Input type="select" name="RACK_POWER_PHASE" id="RACK_POWER_PHASE" value={dataRack.RACK_POWER_PHASE} onChange={props.onChange} style={{ backgroundColor: backgcolor }}>
+                                <Input bsSize="sm"  type="select" name="RACK_POWER_PHASE" id="RACK_POWER_PHASE" value={dataRack.RACK_POWER_PHASE} onChange={props.onChange} style={{ backgroundColor: backgcolor }}>
                                     <option value="">Please select</option>
                                     <option value="Single">Single</option>
                                 </Input>
@@ -173,21 +188,21 @@ const FormRack = (props) => {
                             </Col>
                             <Col xs='3'>
                                 <Label>PDU A</Label>
-                                <Input type="text" id="RACK_PDU_A" name="RACK_PDU_A" value={dataRack.RACK_PDU_A} onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
+                                <Input bsSize="sm"  type="text" id="RACK_PDU_A" name="RACK_PDU_A" value={dataRack.RACK_PDU_A} onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
                                 <Label>PDU B</Label>
-                                <Input type="text" id="RACK_PDU_B" name="RACK_PDU_B" value={dataRack.RACK_PDU_B} onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
+                                <Input bsSize="sm"  type="text" id="RACK_PDU_B" name="RACK_PDU_B" value={dataRack.RACK_PDU_B} onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
                                 <Label>Source A</Label>
-                                <Input type="text" id="RACK_SOURCE_A" name="RACK_SOURCE_A" value={dataRack.RACK_SOURCE_A} onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
+                                <Input bsSize="sm"  type="text" id="RACK_SOURCE_A" name="RACK_SOURCE_A" value={dataRack.RACK_SOURCE_A} onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
                                 <Label>Source B</Label>
-                                <Input type="text" id="RACK_SOURCE_B" name="RACK_SOURCE_B" value={dataRack.RACK_SOURCE_B} onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
+                                <Input bsSize="sm"  type="text" id="RACK_SOURCE_B" name="RACK_SOURCE_B" value={dataRack.RACK_SOURCE_B} onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
                                 <Label>Power Pre-Laid</Label>
-                                <Input type="select" name="RACK_POWER_PRELAID" id="RACK_POWER_PRELAID" value={dataRack.RACK_POWER_PRELAID} onChange={props.onChange} style={{ backgroundColor: backgcolor }}>
+                                <Input bsSize="sm"  type="select" name="RACK_POWER_PRELAID" id="RACK_POWER_PRELAID" value={dataRack.RACK_POWER_PRELAID} onChange={props.onChange} style={{ backgroundColor: backgcolor }}>
                                     <option value="">Please select</option>
                                     <option value="Yes">Yes</option>
                                     <option value="No">No</option>
                                 </Input>
                                 <Label>Cabling Pre-Laid</Label>
-                                <Input type="select" name="RACK_CABLING_PRELAID" id="RACK_CABLING_PRELAID" value={dataRack.RACK_CABLING_PRELAID} onChange={props.onChange} style={{ backgroundColor: backgcolor }}>
+                                <Input bsSize="sm"  type="select" name="RACK_CABLING_PRELAID" id="RACK_CABLING_PRELAID" value={dataRack.RACK_CABLING_PRELAID} onChange={props.onChange} style={{ backgroundColor: backgcolor }}>
                                     <option value="">Please select</option>
                                     <option value="Yes">Yes</option>
                                     <option value="No">No</option>
@@ -195,14 +210,14 @@ const FormRack = (props) => {
                             </Col>
                             <Col xs='3'>
                                 <Label>Status</Label>
-                                <Input type="select" name="RACK_STATUS" id="RACK_STATUS" value={dataRack.RACK_STATUS} onChange={props.onChange} style={{ backgroundColor: backgcolor }}>
+                                <Input bsSize="sm"  type="select" name="RACK_STATUS" id="RACK_STATUS" value={dataRack.RACK_STATUS} onChange={props.onChange} style={{ backgroundColor: backgcolor }}>
                                     <option value="">Please select</option>
                                     <option value="Registered">Registered</option>
                                     <option value="Unoccupied">Unoccupied</option>
                                 </Input>
                                 <Label>Description</Label>
-                                <Input type="textarea" size="6" id="RACK_DESC" name="RACK_DESC" value={dataRack.RACK_DESC} onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
-                                <Label>Commission Date :</Label>
+                                <Input bsSize="sm"  type="textarea" size="6" id="RACK_DESC" name="RACK_DESC" value={dataRack.RACK_DESC} onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
+                                <Label>Commission Date :</Label><font color="red">*</font>
                                 <FormGroup  error={props.hasError4}>
                                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                 <KeyboardDatePicker
@@ -262,7 +277,13 @@ const FormRack = (props) => {
                         <Button color="success" type="submit" hidden={actionSaveBtn}>
                             <i className="fa fa-save"></i>&nbsp; Save
                         </Button>&nbsp;
-                        <Button color="warning" type='reset' hidden={props.btnReset}>
+                        <Button color="danger" type="submit" id="delete" 
+                        onClick={(e)=> props.onSubmit(e,'delete')}
+                        hidden={actionDeleteBtn}>
+                            <i className="fa fa-trash"></i>&nbsp; Delete
+                        </Button>&nbsp;
+                        <Button color="warning" type='reset' hidden={props.btnReset}
+                        onClick={handleResetData}>
                             <i className="fa fa-refresh"></i>&nbsp; Reset
                         </Button>
                     </Col>

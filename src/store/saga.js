@@ -3,7 +3,8 @@ import auth from '../../src/auth';
 
 
 function* fetchUpAsync() {
-  var username =  auth.authenticated.username.toUpperCase();
+  var username = localStorage.getItem('username').toUpperCase();
+  var password = localStorage.getItem('password');
    //console.log("getData");
    const json = yield call(() =>
      fetch("/claritybqm/reportFetch/?scriptName=DC_USER&userid=" + username)
@@ -15,7 +16,8 @@ function* fetchUpAsync() {
  }
 
  function* fetchPendingApproval() {
-  var username =  auth.authenticated.username.toUpperCase();
+  var username = localStorage.getItem('username').toUpperCase();
+  var password = localStorage.getItem('password');
    //console.log("getData");
    const json = yield call(() =>
      fetch("/claritybqm/reportFetch/?scriptName=DC_PENDING_APPROVAL&userid=" + username)

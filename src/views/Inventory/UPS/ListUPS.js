@@ -19,17 +19,17 @@ class ListUPS extends Component {
   componentDidMount(){
     //console.log('componentDidMount',this.props);
     this.props.fetchUPS();
+   
   }
 
   componentWillReceiveProps(props){
     //console.log('componentWillReceiveProps',props);
     this.setState({
-      data: props.ups,
+      data: props.ups.ups,
     })
 
   }
 
- 
 render(){
     //console.log('render', this.state);
     const data =  this.state.data
@@ -48,7 +48,7 @@ return(
                       <Button color="primary" href="#/CreateUPS"><i className="fa fa-plus-square"></i>&nbsp; Add New UPS</Button>
                         </CardHeader>
                         <CardBody>
-                              <TableUPS id="tableUPS" data={data} />
+                              <TableUPS id="tableUPS" data={data} props={()=> this.props.fetchUPS()}/>
                           </CardBody>
                       </Card>
                 </CardBody>

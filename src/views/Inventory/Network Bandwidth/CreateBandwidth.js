@@ -111,7 +111,7 @@ const CreateForm = (props) => {
                   open={openSnackBar} autoHideDuration={1500} onClose={handleClose} 
                   anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
                     <Alert variant="filled"  onClose={handleClose} severity="success" >
-                       Data has been Crerated.
+                       Data has been Created.
                     </Alert>
               </Snackbar>
         </div >);

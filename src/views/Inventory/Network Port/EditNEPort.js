@@ -10,7 +10,7 @@ import Alert from '@material-ui/lab/Alert';
 const EditForm = (props) => {
 
   const [formValues, setformValues]= useState({});
-  const [dataPort, setdataPort] = useState(false);
+  const [dataPort, setdataPort] = useState({});
   const [openSnackBar, setopenSnackBar] = useState(false);
   const [NtwIDFlag, setNtwIDFlag] = useState(false);
   const [onChangeFlag, setonChangeFlag] = useState(false);

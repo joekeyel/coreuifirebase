@@ -43,41 +43,49 @@ const DCSiteForm = React.lazy(() => import('./views/Inventory/DC Site/FormCompon
 const DCSiteList = React.lazy(() => import('./views/Inventory/DC Site/ListDCSite'));
 const DCSiteCreate = React.lazy(() => import('./views/Inventory/DC Site/CreateSite'));
 const DCSiteEdit = React.lazy(() => import('./views/Inventory/DC Site/EditSite'));
+const DCSiteView = React.lazy(() => import('./views/Inventory/DC Site/ViewSite'));
 //DC LOCATION
 const DCLocForm = React.lazy(() => import('./views/Inventory/DC Location/FormComponent'));
 const DCLocList = React.lazy(() => import('./views/Inventory/DC Location/ListDCLocation'));
 const DCLocCreate = React.lazy(() => import('./views/Inventory/DC Location/CreateDCLocation'));
 const DCLocEdit = React.lazy(() => import('./views/Inventory/DC Location/EditDCLocation'));
+const DCLocationView = React.lazy(() => import('./views/Inventory/DC Location/ViewLocation'));
 //DC Rack
 const RackForm = React.lazy(() => import('./views/Inventory/Rack/FormComponent'));
 const RackList = React.lazy(() => import('./views/Inventory/Rack/ListRack'));
 const RackCreate = React.lazy(() => import('./views/Inventory/Rack/CreateRack'));
 const RackEdit = React.lazy(() => import('./views/Inventory/Rack/EditRack'));
+const RackView = React.lazy(() => import('./views/Inventory/Rack/ViewRack'));
 //DC NETWORK BANDWIDTH
 const NEBandwidthForm = React.lazy(() => import('./views/Inventory/Network Bandwidth/FormComponent'));
 const NEBandwidthList = React.lazy(() => import('./views/Inventory/Network Bandwidth/ListBandwidth'));
 const NEBandwidthCreate = React.lazy(() => import('./views/Inventory/Network Bandwidth/CreateBandwidth'));
 const NEBandwidthEdit = React.lazy(() => import('./views/Inventory/Network Bandwidth/EditBandwidth'));
+const NEBandView = React.lazy(() => import('./views/Inventory/Network Bandwidth/ViewNetworkBand'));
 //DC NETWORK PORT
 const NEPortForm = React.lazy(() => import('./views/Inventory/Network Port/FormComponent'));
 const NEPortList = React.lazy(() => import('./views/Inventory/Network Port/ListNEPort'));
 const NEPortCreate = React.lazy(() => import('./views/Inventory/Network Port/CreateNEPort'));
 const NEPortEdit = React.lazy(() => import('./views/Inventory/Network Port/EditNEPort'));
+const NEPortView = React.lazy(() => import('./views/Inventory/Network Port/ViewNetworkPort'));
 //DC UPS
 const UPSForm = React.lazy(() => import('./views/Inventory/UPS/FormComponent'));
 const UPSList = React.lazy(() => import('./views/Inventory/UPS/ListUPS'));
 const UPSCreate = React.lazy(() => import('./views/Inventory/UPS/CreateUPS'));
 const UPSEdit = React.lazy(() => import('./views/Inventory/UPS/EditUPS'));
+const UPSView = React.lazy(() => import('./views/Inventory/UPS/ViewUPS'));
 //DC PDU
 const PDUForm = React.lazy(() => import('./views/Inventory/PDU/FormComponent'));
 const PDUList = React.lazy(() => import('./views/Inventory/PDU/ListPDU'));
 const PDUCreate = React.lazy(() => import('./views/Inventory/PDU/CreatePDU'));
 const PDUEdit = React.lazy(() => import('./views/Inventory/PDU/EditPDU'));
+const PDUView = React.lazy(() => import('./views/Inventory/PDU/ViewPDU'));
 //DC CRAC
 const CRACForm = React.lazy(() => import('./views/Inventory/CRAC/FormComponent'));
 const CRACList = React.lazy(() => import('./views/Inventory/CRAC/ListCRAC'));
 const CRACCreate = React.lazy(() => import('./views/Inventory/CRAC/CreateCRAC'));
 const CRACEdit = React.lazy(() => import('./views/Inventory/CRAC/EditCRAC'));
+const CRACView = React.lazy(() => import('./views/Inventory/CRAC/ViewCrac'));
 //resource checking
 const ResourceCheck = React.lazy(() => import('./views/Resource Checking/ResourceCheck'));
 const ResourceDetails = React.lazy(() => import('./views/Resource Checking/ResourceDetails'));
@@ -99,44 +107,53 @@ const routes = [
   { path: '/ListDCSite', name: 'DC Site List', component: DCSiteList },
   { path: '/CreateSite', name: 'DC Site', component: DCSiteCreate },
   { path: '/EditSite/:id', name: 'DC Site', component: DCSiteEdit },
+  { path: '/ApproveSite/:id/:approved', name: 'DC Site', component: DCSiteEdit },
+  { path: '/ViewSite/:id', name: 'DC Site', component: DCSiteView },
   //dc location
   { path: '/dcLocation', name: 'DC Location', component: DCLocForm },
   { path: '/ListDCLocation', name: 'DC Location List', component: DCLocList},
   { path: '/CreateDCLocation', name: 'DC Location', component: DCLocCreate },
   { path: '/EditDCLocation/:id', name: 'DC Location', component: DCLocEdit },
+  { path: '/ViewLocation/:id', name: 'DC Location', component: DCLocationView },
   //rack
   { path: '/rackForm', name: 'Rack Form', component: RackForm },
   { path: '/ListRack', name: 'Rack List', component: RackList },
   { path: '/CreateRack', name: 'Rack', component: RackCreate },
   { path: '/EditRack/:id', name: 'Rack', component: RackEdit },
+  { path: '/ViewRack/:id', name: 'Rack', component:  RackView},
   //NETWORK BANDWIDTH
   { path: '/BandwidthForm', name: 'Bandwidth Form', component: NEBandwidthForm },
   { path: '/ListBandwidth', name: 'Bandwidth List', component: NEBandwidthList },
   { path: '/CreateBandwidth', name: 'Bandwidth', component: NEBandwidthCreate },
   { path: '/EditBandwidth/:id', name: 'Bandwidth', component: NEBandwidthEdit },
+  { path: '/ViewNetworkBand/:id', name: 'Bandwidth', component:  NEBandView},
   //NETWORK PORT
   { path: '/NEPortForm', name: 'NEPort Form', component: NEPortForm },
   { path: '/ListNEPort', name: 'NEPort List', component: NEPortList },
   { path: '/CreateNEPort', name: 'NEPort', component: NEPortCreate },
   { path: '/EditNEPort/:id', name: 'NEPort', component: NEPortEdit },
+  { path: '/ViewNetworkPort/:id', name: 'NEPort', component:  NEPortView},
   //UPS
   { path: '/UPSForm', name: 'UPS Form', component: UPSForm },
   { path: '/ListUPS', name: 'UPS List', component: UPSList },
   { path: '/CreateUPS', name: 'UPS', component: UPSCreate },
   { path: '/EditUPS/:id', name: 'UPS', component: UPSEdit },
+  { path: '/ViewUPS/:id', name: 'UPS', component:  UPSView},
   //PDU
   { path: '/PDUForm', name: 'PDU Form', component: PDUForm },
   { path: '/ListPDU', name: 'PDU List', component: PDUList },
   { path: '/CreatePDU', name: 'PDU', component: PDUCreate },
   { path: '/EditPDU/:id', name: 'PDU', component: PDUEdit },
+  { path: '/ViewPDU/:id', name: 'PDU', component:  PDUView},
   //CRAC
   { path: '/CRACForm', name: 'CRAC Form', component: CRACForm },
   { path: '/ListCRAC', name: 'CRAC List', component: CRACList },
   { path: '/CreateCRAC', name: 'CRAC', component: CRACCreate },
   { path: '/EditCRAC/:id', name: 'CRAC', component: CRACEdit },
+  { path: '/ViewCRAC/:id', name: 'CRAC', component:  CRACView},
 //resource checking
   { path: '/resourceChecking', name: 'Resource Checking', component: ResourceCheck },
-  { path: '/resourceDetails', name: 'Resource Details', component: ResourceDetails },
+  { path: '/resourceDetails/:id', name: 'Resource Details', component: ResourceDetails },
   { path: '/taskList', name: 'Task List', component: TaskList },
   { path: '/pendingApproval', name: 'Waiting Approval', component: PendingApproval },
   { path: '/myTask', name: 'My Task', component: myTask },

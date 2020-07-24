@@ -53,6 +53,7 @@ const FormPDU =(props) =>{
   const [actionCreateBtn, setactionCreateBtn] = useState(false);
   const [actionSaveBtn, setactionSaveBtn] = useState(false);
   const [locationData, setlocationData] = useState([]);
+  const [dcSiteList, setDCSiteList] = React.useState([]);
   const [dcSite, setDCSite] = React.useState([]);
   const [optionLocation, setoptionLocation] = useState([]);
   const [selectedCommDate, setSelectedCommDate] = useState(null)
@@ -68,6 +69,10 @@ const FormPDU =(props) =>{
   useEffect(()=> {
     //console.log('props',props);
     
+    if(actionForm === 'VIEW'){
+      setactionSaveBtn(true);
+      setactionCreateBtn(true);
+    }
     if(actionForm === 'CREATE'){
       setactionSaveBtn(true);
     }
@@ -96,7 +101,19 @@ const FormPDU =(props) =>{
      
     }
   
+    var siteExist = Object.values(props.site).filter((site)=> site.SITE_VERIFIED_TAG === 'Y')
+    setDCSiteList(siteExist);
+
   },[props]);
+
+  useEffect(()=>{
+
+    props.fetchSite();
+    var siteExist = Object.values(props.site).filter((site)=> site.SITE_VERIFIED_TAG === 'Y')
+    //console.log('siteExist',siteExist);
+      setDCSiteList(siteExist);
+
+  },[]);
   
  const handleBackBtn =() =>{
     window.history.back();
@@ -128,49 +145,52 @@ return(
        <Row>
               <Col xs='12'>
               <Card>
-                  <CardHeader>PDU<strong>({actionForm})</strong></CardHeader>
+                  <CardHeader>PDU<strong>({actionForm})</strong>
+                  <small><font color="red"> ( * ) is mandatoy field</font></small>
+                  </CardHeader>
                   <CardBody>
                     <Form id="formPDU" onSubmit={props.onSubmit}>
                     <Row style={{marginLeft: "50px"}}>
                         <Col xs="4">
-                        <FormControl className={classes.formControl} error={props.hasError1} onClick={() => props.fetchSite()}>
-                            <InputLabel id="demo-controlled-open-select-label">DC Site</InputLabel>
-                            <Select
-                              labelId="demo-controlled-open-select-label"
-                              id="SITE_NAME"
-                              name="SITE_NAME"
-                              value={dcSite}
-                              onChange={handleChangeSite}
-                              fullWidth
-                              renderValue={(selected) => (
-                                <div>
-                                  {
-                                  selected.map((value) => (
-                                    <MenuItem key={value} value={value}>{value}</MenuItem>
-                                  ))}
-                                </div>
-                              )}
-                            >
-                              <MenuItem value=''/>
-                              {
-                                Object.values(props.site).map((site)=>( //console.log('site',site)
-                                   <MenuItem key={site.SITE_ID} value={site.SITE_NAME} classes={{ selected: classes.selected }} style={getStyles(site.SITE_NAME, dcSite, theme)}>
-                                     {site.SITE_NAME}
-                                  </MenuItem>
-                                ))
-                              }
-                            </Select>
-                            {props.hasError1 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
-                          </FormControl>
+                        <FormControl className={classes.formControl} error={props.hasError1}>
+                          <InputLabel>DC Site<font color="red">*</font></InputLabel>
+                          <Select
+                            //labelId="demo-controlled-open-select-label"
+                            id="SITE_NAME"
+                            name="SITE_NAME"
+                            onClick={() => props.fetchSite()}
+                            value={dcSite}
+                            onChange={handleChangeSite}
+                            fullWidth
+                            renderValue={(selected) => (
+                              <div>
+                                {
+                                selected.map((value) => (
+                                  <MenuItem key={value} value={value}>{value}</MenuItem>
+                                ))}
+                              </div>
+                            )}
+                          >
+                            <MenuItem  key="null" value=''/>
+                            {
+                              dcSiteList.map((site)=>( //console.log('site',site)
+                                  <MenuItem key={site.SITE_ID} value={site.SITE_NAME} classes={{ selected: classes.selected }} style={getStyles(site.SITE_NAME, dcSite, theme)}>
+                                    {site.SITE_NAME}
+                                </MenuItem>
+                              ))
+                            }
+                          </Select>
+                          {props.hasError1 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
+                        </FormControl>
                         </Col>
                     </Row>
                     <Row  style={{marginLeft: "50px", marginTop: "10px"}}>
                         <Col xs="4">
                         <FormGroup className={classes.formControl} error={props.hasError2}>
-                            <InputLabel id="demo-controlled-open-select-label">Served DC Location</InputLabel>
+                            <InputLabel >Served DC Location<font color="red">*</font></InputLabel>
                             <Select
                                     required
-                                    labelId="demo-controlled-open-select-label"
+                                    //labelId="demo-controlled-open-select-label"
                                     id="LOCN_NAME"
                                     name="LOCN_NAME"
                                     multiple
@@ -205,22 +225,24 @@ return(
                         <Col xs='3'>
                             <FormGroup hidden={flagPDUid}>
                             <Label>PDU Ref ID</Label>
-                            <Input type="text" id="PDU_ID" name="PDU_ID" value={props.PDUid} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} readOnly/>
+                            <Input bsSize="sm"  type="text" id="PDU_ID" name="PDU_ID" value={props.PDUid} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} readOnly/>
                             </FormGroup>
                             <FormGroup  error={props.hasError3}>
-                            <Label>PDU Name</Label>
-                            <Input type="text" id="PDU_NAME" name="PDU_NAME" value={PDUdata.PDU_NAME} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
+                            <Label>PDU Name</Label><font color="red">*</font>
+                            <Input bsSize="sm"  type="text" id="PDU_NAME" name="PDU_NAME" value={PDUdata.PDU_NAME} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
                             {props.hasError3 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
                             </FormGroup>
                             <Label>Code</Label>
-                            <Input type="text" id="PDU_CODE" name="PDU_CODE" value={PDUdata.PDU_CODE} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
+                            <Input bsSize="sm"  type="text" id="PDU_CODE" name="PDU_CODE" value={PDUdata.PDU_CODE} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
                             <Label>Fuse</Label>
-                            <Input type="text" id="PDU_FUSE" name="PDU_FUSE" value={PDUdata.PDU_FUSE} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
+                            <Input bsSize="sm"  type="text" id="PDU_FUSE" name="PDU_FUSE" value={PDUdata.PDU_FUSE} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
                             <Label>User/Rack</Label>
-                            <Input type="text" id="PDU_USER_RACK" name="PDU_USER_RACK" value={PDUdata.PDU_USER_RACK} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
+                            <Input bsSize="sm"  type="text" id="PDU_USER_RACK" name="PDU_USER_RACK" value={PDUdata.PDU_USER_RACK} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
                             <FormGroup error={props.hasError4}>
+                            <font color="red">*</font>
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                             <KeyboardDatePicker
+                                helperText={''}
                                 id="PDU_COMM_DT" 
                                 name="PDU_COMM_DT"
                                 margin="normal"
@@ -245,6 +267,7 @@ return(
                             <FormGroup hidden={flagDecommDate}>
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                             <KeyboardDatePicker
+                                helperText={''}
                                 id="PDU_DECOMM_DT" 
                                 name="PDU_DECOMM_DT"
                                 margin="normal"
@@ -265,21 +288,23 @@ return(
                         </Col>
                         <Col xs='4'>
                             <Label>Status</Label>
-                            <Input type="select" id="PDU_STATUS" name="PDU_STATUS" value={PDUdata.PDU_STATUS} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} >
+                            <Input bsSize="sm"  type="select" id="PDU_STATUS" name="PDU_STATUS" value={PDUdata.PDU_STATUS} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} >
                                 <option value=''>Please Select</option>
                                 <option value='ACTIVE'>ACTIVE</option>
                                 <option value='NOT ACTIVE'>NOT ACTIVE</option>
                             </Input>
                             <Label>Description</Label>
-                            <Input type="textarea" id="PDU_DESC" name="PDU_DESC" value={PDUdata.PDU_DESC} rows="6" onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
+                            <Input bsSize="sm"  type="textarea" id="PDU_DESC" name="PDU_DESC" value={PDUdata.PDU_DESC} rows="6" onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
+                            <FormGroup  hidden={props.MaintenanceFlag}>
                             <Label>Maintenance Update</Label>
-                            <Input disabled={props.MaintenanceFlag} type="textarea" id="UPS_MAINTENANCE_UPD" name="UPS_MAINTENANCE_UPD"  rows="6" onChange={props.onChange}  style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
+                            <Input bsSize="sm"  type="textarea" id="PDU_MAINTENANCE_UPD" name="PDU_MAINTENANCE_UPD"  rows="6" onChange={props.onChange}  style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
+                            </FormGroup>
                         </Col>
                         <Col xs='5'>
                         <Card hidden={props.MaintenanceFlag}>
                             <CardHeader>Maintenance Update History:</CardHeader>
                                 <CardBody>
-                                     <TableMaintenance data=''/>
+                                     <TableMaintenance data={props.PDUJournal ? props.PDUJournal : ""}/>
                                 </CardBody>
                           </Card>
                          </Col>
@@ -314,7 +339,8 @@ return(
 
 const mapStateToProps = state => {
   return {
-    site: state.site
+    site: state.site,
+    pdu: state.pdu
   };
 };
 
@@ -322,6 +348,7 @@ const mapDispachToProps = dispatch => {
   return {
 
     fetchSite: () => dispatch({ type: "FETCH_DCSITE"}),
+    fetchPDU: () => dispatch({ type: "FETCH_PDU"}),
   
   };
 };

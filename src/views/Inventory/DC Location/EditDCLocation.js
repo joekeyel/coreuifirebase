@@ -50,12 +50,13 @@ const EditForm = (props) => {
   },[])
 
   //to handle form submit validation
-  const onSubmit = (e)=> 
+  const onSubmit = (e,type)=> 
   {
       e.preventDefault();
      
       var $inputs = $('#formLocation :input');//get form values
-
+      var username = localStorage.getItem('username').toUpperCase();
+  
       var values = {};
       $inputs.each(function () {
           if ($(this).is(':radio') == true || $(this).is(':checkbox') == true){
@@ -71,22 +72,51 @@ const EditForm = (props) => {
           values['LOCN_RACK_UTIL_FILENAME'] = FnameRackUtil;
           values['LOCN_RACK_UTIL_FILESIZE'] = FsizeRackUtil;
           values['LOCN_STATE'] = '';
-          values['LOCN_UPDATED_BY'] = auth.authenticated.username ? auth.authenticated.username.toUpperCase() : "TMIMS";
+          values['LOCN_UPDATED_BY'] = username ? username : "TMIMS";
 
        });
 
 
       if ( values.LOCN_ID && values.LOCN_NAME){
+ 
+       if(type === 'delete'){
+        //console.log('delete');
+        if(values.LOCN_DECOMM_DT === "" || values.LOCN_DECOMM_DT === 'null' ){
+          
+         Swal.fire({
+          width: '30%',
+          icon: 'error',
+          fontsize: '8px',
+          text: 'Decommission Date cannot be null!',
+          //footer: '<a href>Why do I have this issue?</a>'
+        }) 
+        } else{
+          axios.post('/claritybqm/reportFetchJ/?scriptName=DC_LOCATION_UPDATE', values).then((res) => {
+            //console.log('success to update : ', res.data,values);   
+              if(res.data == "success"){
+                //setopenSnackBar(true);
+                props.history.push('/ListDCLocation');
+              }
+            })
+              .catch((err) => {
+              //console.log('failed to update : ', err);
+              });
+         }
 
+       }else{
         axios.post('/claritybqm/reportFetchJ/?scriptName=DC_LOCATION_UPDATE', values).then((res) => {
-          console.log('success to update : ', res.data,values);   
+         // console.log('success to update : ', res.data,values);   
             if(res.data == "success"){
               setopenSnackBar(true);
+              setTimeout(function(){ props.history.push('/ListDCLocation') }, 2000);
+              
             }
           })
             .catch((err) => {
             //console.log('failed to update : ', err);
             });
+       }
+       
       }     
  }
 

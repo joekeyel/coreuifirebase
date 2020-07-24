@@ -24,7 +24,7 @@ class CRACList extends Component {
   componentWillReceiveProps(props){
     //console.log('componentWillReceiveProps',props);
     this.setState({
-      data: props.crac,
+      data: props.crac.crac,
     })
 
   }
@@ -48,7 +48,7 @@ return(
                       <Button color="primary" href="#/createCRAC"><i className="fa fa-plus-square"></i>&nbsp; Add New CRAC</Button>
                         </CardHeader>
                         <CardBody>
-                              <TabTableCRAC id="tableCRAC" data={data} />
+                              <TabTableCRAC id="tableCRAC" data={data} props={()=> this.props.fetchCRAC}/>
                           </CardBody>
                       </Card>
                 </CardBody>

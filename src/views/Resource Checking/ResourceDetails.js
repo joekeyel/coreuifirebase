@@ -37,7 +37,8 @@ class ResourceDetails extends Component {
             formValues: '',
             open: false,
             message: '',
-            data: [],
+            dataRack: {},
+            dataPort: {},
           }
         
       }
@@ -46,16 +47,40 @@ class ResourceDetails extends Component {
       
         this.props.fetchRack();
         this.props.fetchPort();
-    
+        var siteName = this.props.match.params.id
+        
+        var filterRack = Object.values(this.props.rack).filter((r)=> r.SITE_NAME === siteName)
+        var filterPort = Object.values(this.props.port).filter((r)=> r.SITE_NAME === siteName)
+        //console.log('componentWillReceiveProps',filterRack,filterPort);
+        this.setState({
+            dataRack: filterRack,
+            dataPort: filterPort,
+        })
       }
     
-     
+      componentWillReceiveProps(props){
+        //console.log('componentWillReceiveProps',props);
+        var siteName = this.props.match.params.id
+        var filterRack = Object.values(props.rack).filter((r)=> r.SITE_NAME === siteName)
+        var filterPort = Object.values(props.port).filter((r)=> r.SITE_NAME === siteName)
+        //console.log('filter',filterRack,filterPort);
+        this.setState({
+            dataRack: filterRack,
+            dataPort: filterPort,
+        })
+      }
+      handleBackBtn(){
+        window.history.back();
+      }
     render(){
-        const rack = this.state.rack
-        const port = this.state.port
+        const rack = this.state.dataRack
+        const port = this.state.dataPort
     return(
         <div className="animated fadeIn" >
             <Row>
+            {/* <Button color="info" onClick={this.handleBackBtn}>
+                     <i className="fa fa-history"></i>&nbsp; Back
+                </Button>&nbsp;&nbsp;&nbsp; */}
                 <Card>
                     <CardHeader>
                         <strong>Rack Details</strong>
@@ -103,7 +128,7 @@ class ResourceDetails extends Component {
       const mapDispachToProps = dispatch => {
         return {
       
-          fetchRack: () => dispatch({ type: "FETCH_RACK"}),
+        fetchRack: () => dispatch({ type: "FETCH_RACK"}),
           fetchPort: () => dispatch({ type: "FETCH_PORT"}),
         
         };

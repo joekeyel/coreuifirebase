@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import { Badge, Card, CardBody, CardHeader, Col, ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText, Row, TabContent, TabPane
 ,Pagination, PaginationItem, PaginationLink, Table, Button,CardTitle, CardText, Input} from 'reactstrap';
 import { connect } from "react-redux";
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import {Link} from 'react-router-dom';
 import {TextField,Avatar} from '@material-ui/core';
 import auth from '../../../src/auth';
+import TableApproved from './TableAproved';
 
 class myTask extends Component {
 
@@ -21,14 +22,31 @@ class myTask extends Component {
       data2weeks:[],
       valueOPt: "All",
       inputValue: "",
-      colorSite: "",
+      colorSiteToday: "",
+      colorSite7days: "",
+      colorSite2week: "",
+      approved: {},
+      approvedData:{},
     };
   }
 
   componentDidMount(){
-    this.props.fetchBadge();
+    this.props.fetchPendingApproval();
     this.props.fetchUser();
+    this.props.fetchSite();
     this.getInboxList();
+    this.getApproved();
+  }
+
+  componentWillReceiveProps(props){
+      //console.log('componentWillReceiveProps',props);
+      var username = localStorage.getItem('username').toUpperCase();
+      var filtersite = Object.values(props.site).filter((r)=> r.SITE_VERIFIED_BY === username)
+      var filtersite2 = Object.values(filtersite).filter((r)=> r.SITE_VERIFIED_TAG === 'Y')
+      // console.log('componentWillReceiveProps2',filtersite,filtersite2);
+      this.setState({
+        approvedData: filtersite2
+      })
   }
 
   getInboxList(){
@@ -40,7 +58,7 @@ class myTask extends Component {
     .then(response => response.json())
     .then((pending) => {
         //var approver = Object.values(user.user).filter(u => u.USER_APPROVE === 'Y');
-        console.log('pending',pending); 
+        //console.log('pending',pending); 
         if(pending){
           this.setState({
             pendingApprove: pending.length,
@@ -51,23 +69,27 @@ class myTask extends Component {
 
         pending.map((d)=>{
           if(d.AGING === 0){
+
+            var dataToday = Object.values(pending).filter(u => u.AGING === 0);
+
             this.setState({
-              dataToday: d,
-              colorSite: 'green',
+              dataToday: dataToday,
+              colorSiteToday: 'green',
             })
           }
           if(d.AGING >= 1 && d.AGING <= 7){
+            var data7 = Object.values(pending).filter(u => u.AGING <= 7);
             this.setState({
-              data7days: d,
-              colorSite: 'yellow',
+              data7days: data7,
+              colorSite7days: 'yellow',
             })
           }
           if(d.AGING > 7){
            // console.log('2week',d);
-            
+           var data2w = Object.values(pending).filter(u => u.AGING > 7);
             this.setState({
-              data2weeks: d,
-              colorSite: 'red',
+              data2weeks: data2w,
+              colorSite2week: 'red',
             })
           }
         })
@@ -76,7 +98,16 @@ class myTask extends Component {
 
   }
 
+  getApproved(){
+    var username = localStorage.getItem('username').toUpperCase();
+    var filtersite = Object.values(this.props.site).filter((r)=> r.SITE_VERIFIED_BY === username)
+    var filtersite2 = Object.values(filtersite).filter((r)=> r.SITE_VERIFIED_TAG === 'Y')
+    // console.log('componentWillReceiveProps2',filtersite,filtersite2);
+    this.setState({
+      approvedData: filtersite2
+    })
 
+  }
   handleChange(e){
    // console.log('onchange',e.target.value);
     this.setState({
@@ -93,6 +124,11 @@ class myTask extends Component {
     }
   }
 
+  // handleChangeSite(e){
+  //   console.log('onchange',e.target.value);
+  //   //Object.values(pending).filter(u => u.AGING <= 7);
+
+  // }
   render() {
     const task = this.state.pendingApprove
     const valueOPt = this.state.valueOPt
@@ -101,7 +137,10 @@ class myTask extends Component {
     const data7days = this.state.data7days
     const data2weeks = this.state.data2weeks    
     //console.log('data2weeks',data2weeks);
-    
+    const color1 = this.state.colorSiteToday
+    const color2 = this.state.colorSite7days
+    const color3 = this.state.colorSite2week
+    const site = this.state.approvedData;
     return (
       <div className="animated fadeIn">
         <Row>
@@ -119,7 +158,7 @@ class myTask extends Component {
                     <ListGroup id="list-tab" role="tablist">
                      <ListGroupItem onClick={() => this.toggle(0)} action active={this.state.activeTab === 0} >Pending <i className="float-right fa fa-bell-o"><Badge color="danger">{task}</Badge></i></ListGroupItem>
                       <ListGroupItem onClick={() => this.toggle(1)} action active={this.state.activeTab === 1} >Approved</ListGroupItem>
-                      <ListGroupItem onClick={() => this.toggle(2)} action active={this.state.activeTab === 2} >All Workgroup</ListGroupItem>
+                      {/* <ListGroupItem onClick={() => this.toggle(2)} action active={this.state.activeTab === 2} >All Workgroup</ListGroupItem> */}
                     </ListGroup>
                   </Col>
                   <Col xs="6">
@@ -140,15 +179,31 @@ class myTask extends Component {
                           </Input>
                         </Col>
                         <Col xs='4'>
-                          <Input id="site" placeholder="Search Site"/>
+                          {/* <Input id="site" placeholder="Search Site" style={{textTransform: 'uppercases'}} onChange={(e)=>this.handleChangeSite(e)}/> */}
                         </Col>
                         </Row>
                             {
                             valueOPt==="All" ?
                              Object.values(dataAll).map((t)=> {
+
+                                if(t.AGING <= 3){
+
+                                  var color = 'green'
+
+                                }
+                                if(t.AGING > 3){
+
+                                  var color = 'yellow'
+
+                                }
+                                if(t.AGING > 7){
+
+                                  var color = 'red'
+
+                                }
                                 return(<div className="callout callout-info shadow-md m-4">
                                   <Card body>
-                                   <Avatar style={{backgroundColor: this.state.colorSite, width: '80px', height: '80px'}}><strong className="h5">{t.TYPE_NAME===null ? "" : t.TYPE_NAME}</strong></Avatar>
+                                   <Avatar style={{backgroundColor: color, width: '80px', height: '80px'}}><strong className="h5">{t.TYPE_NAME ? t.TYPE_NAME : ""}</strong></Avatar>
                                   <div className="chart-wrapper">
                                     <Row>
                                       Verified by:
@@ -160,21 +215,21 @@ class myTask extends Component {
                                       {t.AGING}{' '}<small> days ago</small>
                                     </Row>
                                     <Row>
-                                      <Button className="btn btn-pill" type='button' style={{cursor: 'pointer'}} color="success" size="sm" tag='a' 
-                                      href={"#/EditSite/" + t.FOREIGN_ID} >
+                                      <Link to={{pathname:"/ApproveSite/" + t.FOREIGN_ID+"/true"}}
+                                        className="btn btn-pill btn-success" size="sm">
                                         View Details
-                                      </Button>
+                                      </Link>
                                       </Row>
                                     </div>
                                     </Card>
                                   </div>)
                               })
                               :
-                              valueOPt==='Today' ?
+                              valueOPt === 'Today' ?
                               Object.values(dataToday).map((t)=> {
                                 return(<div className="callout callout-info shadow-md m-4">
                                   <Card body>
-                                   <Avatar style={{backgroundColor: this.state.colorSite, width: '80px', height: '80px'}}><strong className="h5">{t.TYPE_NAME===null ? "" : t.TYPE_NAME}</strong></Avatar>
+                                   <Avatar style={{backgroundColor: color1, width: '80px', height: '80px'}}><strong className="h5">{t.TYPE_NAME ? t.TYPE_NAME : ""}</strong></Avatar>
                                   <div className="chart-wrapper">
                                     <Row>
                                       Verified by:
@@ -193,11 +248,23 @@ class myTask extends Component {
                                   </div>)
                               })
                               :
-                              valueOPt==='7days' ?
+                              valueOPt === '7days' ?
                               Object.values(data7days).map((t)=> {
+                                if(t.AGING <= 3){
+
+                                  var color = 'green'
+
+                                }
+                                if(t.AGING > 3){
+
+                                  var color = 'yellow'
+
+                                }
+                                console.log('data2weeks',t);
+                                
                                 return(<div className="callout callout-info shadow-md m-4">
                                   <Card body>
-                                   <Avatar style={{backgroundColor: this.state.colorSite, width: '80px', height: '80px'}}><strong className="h5">{t.TYPE_NAME===null ? "" : t.TYPE_NAME}</strong></Avatar>
+                                   <Avatar style={{backgroundColor: color, width: '80px', height: '80px'}}><strong className="h5">{t.TYPE_NAME ? t.TYPE_NAME : ""}</strong></Avatar>
                                   <div className="chart-wrapper">
                                     <Row>
                                       Verified by:
@@ -219,13 +286,13 @@ class myTask extends Component {
                                   </div>)
                               })
                               :
-                              valueOPt==='2weeks' ?
+                              valueOPt === '2weeks' ?
                               Object.values(data2weeks).map((t)=> {
-                                //console.log('data2weeks',t);
+                                console.log('data2weeks',t);
                                 
                                 return(<div className="callout callout-info shadow-md m-4">
                                   <Card body>
-                                   <Avatar style={{backgroundColor: this.state.colorSite, width: '80px', height: '80px'}}><strong className="h5">{t.TYPE_NAME === null || t.TYPE_NAME === "" ? "" : t.TYPE_NAME}</strong></Avatar>
+                                   <Avatar style={{backgroundColor: color3, width: '80px', height: '80px'}}><strong className="h5">{t.TYPE_NAME ? t.TYPE_NAME : ""}</strong></Avatar>
                                   <div className="chart-wrapper">
                                     <Row>
                                       Verified by:
@@ -252,6 +319,9 @@ class myTask extends Component {
                         
                       </TabPane>
                       <TabPane tabId={1}>
+                      <TableApproved data={site} />
+                      </TabPane>
+                      {/* <TabPane tabId={2}>
                         <Table hover bordered striped responsive size="sm">
                             <thead>
                             <tr>
@@ -317,72 +387,7 @@ class myTask extends Component {
                             </Pagination>
                             </nav>
                       </TabPane>
-                      <TabPane tabId={2}>
-                        <Table hover bordered striped responsive size="sm">
-                            <thead>
-                            <tr>
-                                <th>Username</th>
-                                <th>Date registered</th>
-                                <th>Role</th>
-                                <th>Status</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td>Vishnu Serghei</td>
-                                <td>2012/01/01</td>
-                                <td>Member</td>
-                                <td>
-                                <Badge color="success">Active</Badge>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Zbyněk Phoibos</td>
-                                <td>2012/02/01</td>
-                                <td>Staff</td>
-                                <td>
-                                <Badge color="danger">Banned</Badge>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Einar Randall</td>
-                                <td>2012/02/01</td>
-                                <td>Admin</td>
-                                <td>
-                                <Badge color="secondary">Inactive</Badge>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Félix Troels</td>
-                                <td>2012/03/01</td>
-                                <td>Member</td>
-                                <td>
-                                <Badge color="warning">Pending</Badge>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Aulus Agmundr</td>
-                                <td>2012/01/21</td>
-                                <td>Staff</td>
-                                <td>
-                                <Badge color="success">Active</Badge>
-                                </td>
-                            </tr>
-                            </tbody>
-                            </Table>
-                            <nav>
-                            <Pagination>
-                                <PaginationItem><PaginationLink previous tag="button">Prev</PaginationLink></PaginationItem>
-                                <PaginationItem active>
-                                <PaginationLink tag="button">1</PaginationLink>
-                                </PaginationItem>
-                                <PaginationItem><PaginationLink tag="button">2</PaginationLink></PaginationItem>
-                                <PaginationItem><PaginationLink tag="button">3</PaginationLink></PaginationItem>
-                                <PaginationItem><PaginationLink tag="button">4</PaginationLink></PaginationItem>
-                                <PaginationItem><PaginationLink next tag="button">Next</PaginationLink></PaginationItem>
-                            </Pagination>
-                            </nav>
-                      </TabPane>
+                    */}
                    </TabContent>
                   </Col>
                 </Row>
@@ -397,16 +402,17 @@ class myTask extends Component {
 
 const mapStateToProps = state => {
     return {
-      badge:state.badge,
+      pendingApproval:state.pendingApproval,
       user: state.user,
-     
+      site: state.site,
     };
   };
   
   const mapDispachToProps = dispatch => {
     return {
-      fetchBadge: () => dispatch({ type: "FETCH_BADGE"}),
+      fetchPendingApproval: () => dispatch({ type: "FETCH_PENDINGAPPROVAL"}),
       fetchUser: () => dispatch({ type: "FETCH_USER"}),
+      fetchSite: () => dispatch({ type: "FETCH_DCSITE"}),
        
     };
   };

@@ -31,6 +31,7 @@ const CreateForm = (props) => {
           e.preventDefault();
          
           var $inputs = $('#formLocation :input');//get form values
+          var username = localStorage.getItem('username').toUpperCase();
   
           var values = {};
           $inputs.each(function () {
@@ -47,7 +48,8 @@ const CreateForm = (props) => {
                values['LOCN_RACK_UTIL_FILENAME'] = FnameRackUtil;
                values['LOCN_RACK_UTIL_FILESIZE'] = FsizeRackUtil;
                values['LOCN_STATE'] = '';
-               values['LOCN_CREATED_BY'] = 'DCOADMIN';
+               values['LOCN_CREATED_BY'] = username ? username : "TMIMS";
+               ;
            });
 
           // console.log('values',values);// save form value to state
@@ -226,7 +228,7 @@ const CreateForm = (props) => {
                   open={openSnackBar} autoHideDuration={1500} onClose={handleClose} 
                   anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
                     <Alert variant="filled"  onClose={handleClose} severity="success" >
-                       Data has been Crerated.
+                       Data has been Created.
                     </Alert>
               </Snackbar>
         </div >);

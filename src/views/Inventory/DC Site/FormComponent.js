@@ -61,27 +61,32 @@ const FormDCSite = (props) => {
     const [actionForm, setactionForm] = useState(props.actionForm);
     const [actionCreateBtn, setActionCreateBtn] = useState(false);
     const [actionSaveBtn, setActionSaveBtn] = useState(false);
+    const [actionApproveBtn, setActionApproveBtn] = useState(false);
+    const [actionDeleteBtn, setActionDeleteBtn] = useState(false);
     const [SideIDFlag, setSideIDFlag] = useState(true);
     const [borderColor, setBorderColor] = useState('');
     const [selectedCommDate, setSelectedCommDate] = useState(null)
     const [selectedDecommDate, setSelectedDecommDate] = useState(null)
     const [optionVerified, setOptionVerified] = useState([]);
     const [dataUSer, setDataUser] = useState([]);
+    const [dataSite,setDataSite] = useState({});
     const [userWorkgroup, setUserWorkgroup] = useState([]);
     const [approverList, setapproverList] = useState([]);
+    const [LovStreeType, setLovStreeType] = useState([]);
+    const [LovState, setLovState] = useState([]);
     const classes = useStyles();
     const theme = useTheme();
     const [state, setState] = useState({
-        approve: false,
+        SITE_VERIFIED_TAG: false,
       });
     
 
     
   useEffect(() => {
-    var username = auth.authenticated.username.toUpperCase();
+    var username = localStorage.getItem('username').toUpperCase();
 
     //get user(creator) detail
-    fetch(`/claritybqm/reportFetch/?scriptName=DC_USER&userid=${username}`)
+    fetch('/claritybqm/reportFetch/?scriptName=DC_USER&userid=' + username)
     .then(response => response.json())
     .then((user) => {
         //console.log('workgroup',user);
@@ -103,17 +108,65 @@ const FormDCSite = (props) => {
   },[]);
 
     useEffect(() => {
-        console.log('propsFormComponent', props);
-       
-        if (actionForm == 'CREATE') {
+        //console.log('propsFormLocationComponent', props);
+        if (actionForm === 'VIEW') {
             setActionSaveBtn(true);
-            
-        }
-        if (actionForm == 'EDIT') {
-
             setActionCreateBtn(true);
+            setActionDeleteBtn(true);
+            setDataSite(props.data);
+            if(props.approveFlag === false){
+                setActionApproveBtn(true);
+            }
+            if(props.data){
+                setSelectedCommDate(props.data.SITE_COMM_DT);
+                setSelectedDecommDate(props.data.SITE_DECOMM_DT);   
+        }  
+        }
+        if (actionForm === 'CREATE') {
+            setActionSaveBtn(true);
+            setActionDeleteBtn(true);
+            setLovStreeType(props.LovStreeType);
+            setLovState(props.LovState);
+            if(props.approveFlag === false){
+                setActionApproveBtn(true);
+            }
+        }
+        if (actionForm === 'EDIT') {
             setSideIDFlag(false);
-            //getRackDetail();
+            setActionCreateBtn(true);
+           //console.log('approveFlag',props.approveFlag);
+            if(props.approveFlag === true){
+                setActionSaveBtn(true);
+                setActionApproveBtn(false);
+            }
+
+            if(props.approveFlag === false){
+                setActionApproveBtn(true);
+            }
+            setDataSite(props.data);
+            if(props.data.SITE_VERIFIED_TAG === 'Y' || props.values.SITE_VERIFIED_TAG === 'Y'){
+                setState({SITE_VERIFIED_TAG: true})
+            }
+            if(props.data.SITE_VERIFIED_TAG === 'N' || props.values.SITE_VERIFIED_TAG === 'N'){
+                setState({SITE_VERIFIED_TAG: false})
+            }
+            if(props.onChangeFlag === true){
+                //console.log('dataUSer',props.values);
+                setDataSite([props.values]);
+                if(props.approvedSite === 'Y'){
+                    setState({SITE_VERIFIED_TAG: true})
+                }
+                if(props.approvedSite === 'N'){
+                    setState({SITE_VERIFIED_TAG: false})
+                }
+                
+            }
+            //console.log('dataUSer',props.data);
+            if(props.data){
+                    setSelectedCommDate(props.data.SITE_COMM_DT);
+                    setSelectedDecommDate(props.data.SITE_DECOMM_DT);   
+            }  
+               
         }
 
 
@@ -121,26 +174,46 @@ const FormDCSite = (props) => {
 
     const getWorkgroup = (user) => {
         
-        if(user){
-            console.log('dataUSer',user.workgroups);
-        }
+      console.log('dataUSer',user.workgroups);
+      setUserWorkgroup(user.workgroups)
         
     }
-
-    const handleChangeApprove = (event) => {
-        console.log('state',  event.target.checked);
-
-        setState({ ...state, [event.target.name]: event.target.checked });
-    };
 
     const handleBackBtn = () => {
         window.history.back();
     }
 
-    const handleChange = (event) => {
-        setOptionVerified(event.target.value);
-        };
     
+    const getStreetType = () =>{
+
+        axios.get('/claritybqm/reportFetch/?scriptName=DC_LOV&type=STREET_TYPE'
+        ).then((res) => {
+            //console.log('STREET_TYPE',res.data);
+            setLovStreeType(res.data);
+        })
+        .catch((err) => {
+          console.log('failed to create ', err);
+        });
+
+    }
+    const getState= () =>{
+
+        axios.get('/claritybqm/reportFetch/?scriptName=DC_LOV&type=STATE'
+        ).then((res) => {
+            //console.log('STREET_TYPE',res);
+            setLovState(res.data);
+        })
+        .catch((err) => {
+          console.log('failed to create ', err);
+        });
+
+    }
+    const handleResetData = () => {
+
+        setSelectedCommDate(null);
+        setSelectedDecommDate(null);   
+
+    }
     return (
         <div className="animated fadeIn" >
             <Row>
@@ -149,7 +222,7 @@ const FormDCSite = (props) => {
                         <Form id="formSite" onSubmit={props.onSubmit}>
                             <CardHeader>
                                 DC Site(<strong>{actionForm}</strong>)
-                    {/* <small> Form</small> */}
+                                <small><font color="red"> ( * ) is mandatoy field</font></small>
                             </CardHeader>
                             <CardBody>
                                 <Grid item>
@@ -159,20 +232,20 @@ const FormDCSite = (props) => {
                                             <Col xs="4">
                                                 <FormGroup hidden={SideIDFlag}>
                                                     <Label>DC Site ID</Label>
-                                                    <Input type="text" id="SITE_ID" name="SITE_ID" defaultValue={props.siteID} style={{ backgroundColor: backgcolor }} readOnly/>
+                                                    <Input bsSize="sm"  type="text" id="SITE_ID" name="SITE_ID" defaultValue={props.siteID} style={{ backgroundColor: backgcolor }} readOnly/>
                                                 </FormGroup>
                                                 <FormGroup error={props.hasError1} >
-                                                    <Label>DC Site</Label>
-                                                    <Input type="text" id="SITE_NAME" name="SITE_NAME" value={props.data.SITE_NAME} onChange={props.onChange} style={{ backgroundColor: backgcolor, border: borderColor }} />
+                                                    <Label>DC Site</Label> <font color="red">*</font>
+                                                    <Input bsSize="sm"  type="text" id="SITE_NAME" name="SITE_NAME" value={dataSite.SITE_NAME} onChange={props.onChange} style={{ backgroundColor: backgcolor, border: borderColor }} />
                                                     {props.hasError1 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
                                                 </FormGroup>
                                                 </Col>
                                             </Row>
-                                            <Row>
+                                            <Row >
                                             <Col xs="6">
                                             {/* <Fade timeout={timeout} in={fadeIn}> */}
                                                 <Card>
-                                                    <CardHeader>Address Details: <font color="red">*</font>
+                                                    <CardHeader>Address Details:
                                                     {/* <div className="card-header-actions"> */}
                                                             {/*eslint-disable-next-line*/}
                                                             {/* <a className="card-header-action btn btn-minimize" data-target="#collapseAddressDetails" onClick={toggle}><i className={iconCollapse}></i></a>
@@ -184,31 +257,31 @@ const FormDCSite = (props) => {
                                                         <Col>
                                                         <FormGroup>
                                                             <Label>House No.</Label>
-                                                            <Input type="text" id="ADDE_NO" name="ADDE_NO" value={props.data.ADDE_NO } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
+                                                            <Input bsSize="sm"  type="text" id="ADDE_NO" name="ADDE_NO" value={dataSite.ADDE_NO } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
                                                         </FormGroup>
                                                         </Col>
                                                         <Col>
                                                         <FormGroup>
                                                             <Label>Floor No.</Label>
-                                                            <Input type="text" id="ADDE_FLOOR" name="ADDE_FLOOR" value={props.data.ADDE_FLOOR } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
+                                                            <Input bsSize="sm"  type="text" id="ADDE_FLOOR" name="ADDE_FLOOR" value={dataSite.ADDE_FLOOR } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
                                                         </FormGroup>
                                                         </Col>
                                                         <Col>
-                                                        <FormGroup>
+                                                        <FormGroup onClick={getStreetType}>
                                                             <Label>Street Type</Label>
-                                                            <Input type="select" 
+                                                            <Input bsSize="sm"  type="select" 
                                                             id="ADDE_STTYPE" 
-                                                            name="ADDE_STTYPE" value={props.data.ADDE_STTYPE } 
+                                                            name="ADDE_STTYPE" value={dataSite.ADDE_STTYPE } 
                                                             onChange={props.onChange} 
                                                             style={{ backgroundColor: backgcolor }} 
                                                             >
                                                                  <option id="null" value="">Select Street Type</option>
                                                             {
-                                                                props.LovStreeType ? props.LovStreeType.map((d)=>{
+                                                                LovStreeType ? LovStreeType.map((d)=>{
                                                                      return(<option id={d.LOV_VALUE} value={d.LOV_DESC}>{d.LOV_DESC}</option>)
                                                                 })
                                                                 :
-                                                                <option id="None" value="">None</option>
+                                                                 <option id={props.data.ADDE_STTYPE} value={dataSite.ADDE_STTYPE}>{props.data.ADDE_STTYPE}</option>
                                                             }
                                                             </Input>
                                                         </FormGroup>
@@ -217,52 +290,56 @@ const FormDCSite = (props) => {
                                                         <Col>
                                                         <FormGroup>
                                                             <Label>Street Name</Label>
-                                                            <Input type="text" id="ADDE_STNAME" name="ADDE_STNAME" value={props.data.ADDE_STNAME } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
+                                                            <Input bsSize="sm"  type="text" id="ADDE_STNAME" name="ADDE_STNAME" value={dataSite.ADDE_STNAME } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
                                                         </FormGroup>
                                                         </Col>
                                                         <Col>
                                                         <FormGroup>
                                                             <Label>Building No.</Label>
-                                                            <Input type="text" id="ADDE_BUILDING" name="ADDE_BUILDING" value={props.data.ADDE_BUILDING } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
+                                                            <Input bsSize="sm"  type="text" id="ADDE_BUILDING" name="ADDE_BUILDING" value={dataSite.ADDE_BUILDING } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
                                                         </FormGroup>
                                                         </Col>
                                                         <Col>
                                                         <FormGroup>
                                                             <Label>Section</Label>
-                                                            <Input type="text" id="ADDE_SECTION" name="ADDE_SECTION" value={props.data.ADDE_SECTION} onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
+                                                            <Input bsSize="sm"  type="text" id="ADDE_SECTION" name="ADDE_SECTION" value={dataSite.ADDE_SECTION} onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
                                                         </FormGroup>
                                                         </Col>
                                                         <Row style={{marginLeft: '5px'}}>
                                                         <Col>
                                                         <FormGroup error={props.hasError2} >
-                                                            <Label>Postcode</Label>
-                                                            <Input type="number" id="ADDE_POSTCODE" name="ADDE_POSTCODE" value={props.data.ADDE_POSTCODE} onChange={props.onChange} style={{ backgroundColor: backgcolor,}} />
+                                                            <Label>Postcode</Label> <font color="red">*</font>
+                                                            <Input bsSize="sm"  type="number" id="ADDE_POSTCODE" name="ADDE_POSTCODE" value={dataSite.ADDE_POSTCODE} onChange={props.onChange} style={{ backgroundColor: backgcolor,}} />
                                                             {props.hasError2 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
                                                         </FormGroup>
                                                         </Col>
                                                         <Col>
                                                         <FormGroup>
                                                             <Label>City </Label>
-                                                            <Input type="text" id="ADDE_CITY" name="ADDE_CITY" value={props.data.ADDE_CITY } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
+                                                            <Input bsSize="sm"  type="text" id="ADDE_CITY" name="ADDE_CITY" value={dataSite.ADDE_CITY } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
                                                         </FormGroup>
                                                         </Col>
+                                                        </Row>
+                                                        <Row style={{marginLeft: '5px'}}>
                                                         <Col>
-                                                        <FormGroup error={props.hasError3} >
-                                                            <Label>State</Label>
-                                                            <Input type="select" 
+                                                        <FormGroup error={props.hasError3} onClick={getState}>
+                                                            <Label>State</Label> <font color="red">*</font>
+                                                            <Input bsSize="sm"  
+                                                            type="select" 
                                                             id="ADDE_STATE" 
                                                             name="ADDE_STATE" 
-                                                            value={props.data.ADDE_STATE } 
+                                                            value={dataSite.ADDE_STATE } 
                                                             onChange={props.onChange} 
                                                             style={{ backgroundColor: backgcolor }} 
                                                             >
-                                                              <option id="null" value="">Select State</option>
+                                                             <option id={dataSite.ADDE_STATE} value={dataSite.ADDE_STATE}>{dataSite.ADDE_STATE}</option>
+            
                                                             {
-                                                                props.LovState ? props.LovState.map((d)=>{
+                                                                LovState ? LovState.map((d)=>{
                                                                      return(<option id={d.LOV_VALUE} value={d.LOV_DESC}>{d.LOV_DESC}</option>)
                                                                 })
                                                                 :
-                                                                <option id="none" value="">None</option>
+                                                                <option id="null" value="">Select State</option>
                                                             }
                                                             </Input>
                                                             {props.hasError3 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
@@ -274,26 +351,28 @@ const FormDCSite = (props) => {
                                                 </Card>
                                                 {/* </Fade> */}
                                             </Col>
-                                            <Col xs="2">
+                                            <Col xs="3">
                                                 <Label>Total Space Capacity</Label>
-                                                <Input type="number" id="SITE_TOTAL_SPACE_CAP" name="SITE_TOTAL_SPACE_CAP" value={props.data.SITE_TOTAL_SPACE_CAP } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
+                                                <Input bsSize="sm"  type="number"  step="any" id="SITE_TOTAL_SPACE_CAP" name="SITE_TOTAL_SPACE_CAP" value={dataSite.SITE_TOTAL_SPACE_CAP } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
                                                 <Label>Total Power Capacity</Label>
-                                                <Input type="number" id="SITE_TOTAL_POWER_CAP" name="SITE_TOTAL_POWER_CAP" value={props.data.SITE_TOTAL_POWER_CAP } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
+                                                <Input bsSize="sm"  type="number"  step="any" id="SITE_TOTAL_POWER_CAP" name="SITE_TOTAL_POWER_CAP" value={dataSite.SITE_TOTAL_POWER_CAP } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
                                                 <Label>DC Manager</Label>
-                                                <Input type="text" id="SITE_MGR" name="SITE_MGR" value={props.data.SITE_MGR } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
+                                                <Input bsSize="sm"  type="text" id="SITE_MGR" name="SITE_MGR" value={dataSite.SITE_MGR } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
                                                 <Label>Telephone No.</Label>
-                                                <Input type="telephone" id="SITE_MGR_NO" name="SITE_MGR_NO" value={props.data.SITE_MGR_NO} onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
+                                                <Input bsSize="sm"  type="telephone" id="SITE_MGR_NO" name="SITE_MGR_NO" value={dataSite.SITE_MGR_NO} onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
                                                 <FormGroup error={props.hasError4} >
-                                                <Label>Commission Date</Label>
-                                                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                <Label>Commission Date</Label> <font color="red">*</font>
+                                                   <MuiPickersUtilsProvider utils={DateFnsUtils} style={{fontSize: '8px'}}>
                                                     <KeyboardDatePicker
                                                         id="SITE_COMM_DT" 
                                                         name="SITE_COMM_DT"
                                                         margin="normal"
+                                                        helperText={''}
                                                         //id="date-picker-dialog"
                                                         //filterDate={date => date.getDay() !== 6 && date.getDay() !== 0}
                                                         //label="Commission Date"
                                                         format="dd/MM/yyyy"
+                                                        placeholder="dd/mm/yyyy"
                                                         margin="normal"
                                                         value={selectedCommDate}
                                                         onChange={date => setSelectedCommDate(date)}
@@ -312,6 +391,8 @@ const FormDCSite = (props) => {
                                                         id="SITE_DECOMM_DT" 
                                                         name="SITE_DECOMM_DT"
                                                         margin="normal"
+                                                        helperText={''}
+                                                        size="small"
                                                         //id="date-picker-dialog"
                                                        // label="Decommission Date"
                                                         format="dd/MM/yyyy"
@@ -326,56 +407,96 @@ const FormDCSite = (props) => {
                                                     </MuiPickersUtilsProvider>
                                                  </FormGroup>
                                             </Col>
-                                            <Col xs='4'>
+                                            <Col xs='3'>
                                             <Label>Status</Label>
-                                                <Input type="select" name="SITE_STATUS" id="SITE_STATUS" value={props.data.SITE_STATUS } onChange={props.onChange} style={{ backgroundColor: backgcolor }} >
-                                                    <option value="">Please select</option>
-                                                    <option value="Active">Active</option>
-                                                    <option value="Not Active">Not Active</option>
-                                                    <option value="KIV">KIV</option>
+                                                <Input bsSize="sm"  type="select" name="SITE_STATUS" id="SITE_STATUS" value={dataSite.SITE_STATUS } onChange={props.onChange} style={{ backgroundColor: backgcolor }} >
+                                                   {
+                                                       actionForm === 'CREATE' ?
+                                                       <option value="Pending Approval">Pending Approval</option>
+                                                        :
+                                                        actionForm === 'EDIT' && dataSite.SITE_VERIFIED_TAG === 'Y'  ?
+                                                        <option value="Active">Active</option>
+                                                        :
+                                                        actionForm === 'EDIT' && dataSite.SITE_VERIFIED_TAG === 'N'  ?
+                                                        <option value="Pending Approval">Pending Approval</option>
+                                                        :
+                                                        actionForm === 'EDIT' && dataSite.SITE_VERIFIED_TAG === ''  ?
+                                                        <option value="Pending Approval">Pending Approval</option>
+                                                        :
+                                                        actionForm === 'EDIT' && dataSite.SITE_VERIFIED_TAG === 'Y' &&  dataSite.SITE_DECOMM_DT ?
+                                                        <option value="Inactive">Inactive</option>
+                                                        :
+                                                        <option value="null">null</option>
+                                                    }
+
                                                 </Input>
                                                 <Label>Description</Label>
-                                                <Input type="textarea" rows="4" id="SITE_DESC" name="SITE_DESC" value={props.data.SITE_DESC } onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
-                                                <Label>Verified by:</Label><br/>
-                                                <FormGroup className={classes.formControl} error={props.hasError5}>
-                                                    <Select
-                                                        //labelId="demo-mutiple-name-label"
-                                                        id="SITE_VERIFIED_BY"
-                                                        name="SITE_VERIFIED_BY"
-                                                        label="Verified by"
-                                                        //multiple
-                                                        value={optionVerified}
-                                                        onChange={handleChange}
-                                                        //input={<Input />}
-                                                        MenuProps={MenuProps}
-                                                        fullWidth
-                                                        renderValue={(selected) => (
-                                                            <MenuItem key={selected} value={selected}>{selected}</MenuItem>
-                                                          )}
-                                                        >
-                                                        { approverList ?
-                                                            approverList.map((user) => (
-                                                            <MenuItem key={user.ID} value={user.ID} classes={{ selected: classes.selected }} style={getStyles(user.NAME, optionVerified, theme)}>
-                                                            {user.NAME}
-                                                            </MenuItem>
+                                                <Input bsSize="sm"  type="textarea" rows="4" id="SITE_DESC" name="SITE_DESC" value={dataSite.SITE_DESC} onChange={props.onChange} style={{ backgroundColor: backgcolor }} />
+                                                <FormGroup className={classes.formControl} error={props.hasError5}>                                         
+                                                <Label>Workgroup :</Label> <font color="red">*</font><br/>
+                                                    <Input bsSize="sm"  
+                                                     id="SITE_WORKGROUP"
+                                                     name="SITE_WORKGROUP"
+                                                     type="select"
+                                                     style={{ backgroundColor: backgcolor }} 
+                                                     onChange={props.onChange}
+                                                     value={dataSite.SITE_WORKGROUP}
+                                                     > 
+                                                     {/* <option key='null' value="">Select Workgroup</option>   */}
+                                                     {/* <option key="DCO1" value="DCO1">DCO1</option>
+                                                     <option key="DCO2" value="DCO2">DCO2</option>
+                                                     <option key="DCO3" value="DCO3">DCO3</option>
+                                                     <option key="DCO4" value="DCO4">DCO41</option> */}
+                                                     {
+                                                         actionForm === 'CREATE' || dataSite.SITE_VERIFIED_TAG === 'N' ? 
+                                                         userWorkgroup.map((wrg) => (
+                                                            <option key={wrg} value={wrg}>
+                                                            {wrg}
+                                                            </option>
                                                         ))
                                                         :
-                                                        <MenuItem key="null" value="null">Select Verified by</MenuItem>
-                                                    }
-                                                    </Select>
-                                                    {props.hasError5 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
+                                                        <option key={dataSite.SITE_WORKGROUP} value={dataSite.SITE_WORKGROUP}>{dataSite.SITE_WORKGROUP}</option>
+                                                        
+                                                     }
+                                                     </Input>
+                                                     {props.hasError5 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
+                                                </FormGroup>    
+                                               <FormGroup hidden={props.flagVerified}>                                            
+                                                <Label>Verified by:</Label>
+                                                    <Input bsSize="sm"  
+                                                     id="SITE_VERIFIED_BY"
+                                                     name="SITE_VERIFIED_BY"
+                                                     type="text"
+                                                     style={{ backgroundColor: backgcolor }} 
+                                                     onChange={props.onChange}
+                                                     value={dataSite.SITE_VERIFIED_BY}
+                                                     > 
+                                                     {/* {
+                                                        actionForm === 'CREATE' ?
+                                                            approverList.map((user) => (
+                                                            <option key={user.ID} value={user.NAME}>
+                                                            {user.NAME}
+                                                            </option>
+                                                        ))
+                                                        :
+                                                        <option key={dataSite.SITE_VERIFIED_BY} value={dataSite.SITE_VERIFIED_BY}>{dataSite.SITE_VERIFIED_BY}</option>
+                                                        
+                                                    } */}
+                                                     </Input>
                                                 </FormGroup>
-                                                <FormControlLabel
+                                                {/* <FormControlLabel
+                                                    hidden={props.flagApprover}
                                                     control={
                                                     <Switch
-                                                        checked={state.approve}
-                                                        onChange={handleChangeApprove}
+                                                        checked={state.SITE_VERIFIED_TAG}
+                                                        onChange={props.onChange}///{handleChangeApprove}
+                                                        id="SITE_VERIFIED_TAG"
                                                         name="SITE_VERIFIED_TAG"
                                                         color="primary"
                                                     />
                                                     }
                                                     label="Approve"
-                                                />
+                                                /> */}
                                             </Col>
                                         </Row>
                                     </CardBody>
@@ -393,7 +514,16 @@ const FormDCSite = (props) => {
                                             <Button color="success" type="submit" hidden={actionSaveBtn}>
                                                 <i className="fa fa-save"></i>&nbsp; Save
                                             </Button>&nbsp;
-                                            <Button color="warning" type='reset' hidden={props.btnReset}>
+                                            <Button color="success" type="Approve" hidden={actionApproveBtn} id='SITE_VERIFIED_TAG' name='SITE_VERIFIED_TAG'>
+                                                <i className="fa fa-check-circle"></i>&nbsp; Approve
+                                            </Button>&nbsp;
+                                            <Button color="danger" type="submit" id="delete" 
+                                            onClick={(e)=> props.onSubmit(e,'delete')}
+                                            hidden={actionDeleteBtn}>
+                                                <i className="fa fa-trash"></i>&nbsp; Delete
+                                            </Button>&nbsp;
+                                            <Button color="warning" type='reset' onClick={handleResetData} 
+                                            hidden={props.btnReset}>
                                                 <i className="fa fa-refresh"></i>&nbsp; Reset
                                             </Button>
                                         </Col>
@@ -410,7 +540,8 @@ const FormDCSite = (props) => {
 
 const mapStateToProps = state => {
     return {
-        site: state.site
+        site: state.site,
+        user: state.user
     };
 };
 

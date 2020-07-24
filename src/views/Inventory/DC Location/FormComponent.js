@@ -61,6 +61,7 @@ const FormLocation = (props) => {
   const [actionForm, setactionForm] = useState(props.actionForm);
   const [actionCreateBtn, setActionCreateBtn] = useState(false);
   const [actionSaveBtn, setActionSaveBtn] = useState(false);
+  const [actionDeleteBtn, setActionDeleteBtn] = useState(false);
   const [LocIDFlag, setLocIDFlag] = useState(true);
   const [dataLocID, setdataLocID] = useState({});
   const [dcSiteList, setDCSiteList] = React.useState([]);
@@ -74,6 +75,7 @@ const FormLocation = (props) => {
   const [FileNameRack, setFileNameRack] = useState(null);
   const [FileSizeFloor, setFileSizeFloor] = useState(null);
   const [FileSizeRack, setFileSizeRack] = useState(null);
+
   const classes = useStyles();
   const theme = useTheme();
  
@@ -81,10 +83,25 @@ const FormLocation = (props) => {
     var siteExist = Object.values(props.site).filter((site)=> site.SITE_VERIFIED_TAG === 'Y')
     //console.log('siteExist',siteExist);
       setDCSiteList([siteExist]);
-    console.log('FormLocation', props);
-
+    //console.log('FormLocation', props);
+    if(actionForm === 'VIEW'){
+      setActionSaveBtn(true);
+      setActionCreateBtn(true);
+      setActionDeleteBtn(true);
+      setDCSite(props.dcSite);
+      setdataLocID(props.location);    
+      setImagePreviewFloor(props.imgPreviewFloor);
+      setImagePreviewRack(props.imgPreviewRack);     
+      setSelectedCommDate(props.selectedCommDate);
+      setSelectedDecommDate(props.selectedDecommDate);       
+      setFileNameFloor(props.FileNameFloor); 
+      setFileNameRack(props.FileNameRack); 
+      setFileSizeFloor(props.FileSizeFloor); 
+      setFileSizeRack(props.FileSizeRack); 
+    }
       if (actionForm == 'CREATE') {
           setActionSaveBtn(true);
+          setActionDeleteBtn(true);
           setImagePreviewFloor(props.imgPreviewFloor);
           setImagePreviewRack(props.imgPreviewRack);
           setFileNameFloor(props.FileNameFloor); 
@@ -148,8 +165,8 @@ const imageFloorPreview = ()=>{
   return(<div style={{justifyContent: 'right'}}>
     <Row>
     <Col>
-    <img src={imagePriviewFloor} alt='Rack Util' style={{width: 'auto', height: '150px'}} />
-    <Button type="button" color="danger" className="btn btn-pill" onClick={()=>handleDeleteImg('floor')}>
+    <img src={imagePriviewFloor} alt='Rack Util' style={{width: '200px', height: '150px'}} />
+    <Button type="button" color="danger" className="btn btn-pill" onClick={()=>handleDeleteImg('floor')} hidden={props.uploadBtn}>
     <span><i className="fa fa-trash" ></i></span>
     </Button>
     </Col>
@@ -173,8 +190,8 @@ const imageRackPreview = ()=>{
   return(<div style={{justifyContent: 'right'}}>
     <Row>
     <Col>
-    <img src={imagePriviewRack} alt='Rack Util' style={{width: 'auto', height: '150px'}} />
-    <Button type="button" color="danger" className="btn btn-pill" onClick={()=>handleDeleteImg('rack')}>
+    <img src={imagePriviewRack} alt='Rack Util' style={{width: '200px', height: '150px'}} />
+    <Button type="button" color="danger" className="btn btn-pill" onClick={()=>handleDeleteImg('rack')} hidden={props.uploadBtn} >
     <span><i className="fa fa-trash" ></i></span>
     </Button>
     </Col>
@@ -211,11 +228,18 @@ const handleChange = (e) =>{
   console.log('e',e);
   
 }
+
 const handleClickFloorImg=(e) =>{
   document.getElementById('LOCN_FLOOR_PLAN').click();
 }
 const handleClickRackImg=(e) =>{
   document.getElementById('LOCN_RACK_UTILIZATION').click();
+}
+const handleResetData = () => {
+
+  setSelectedCommDate(null);
+  setSelectedDecommDate(null);   
+
 }
 return(
     <div className="animated fadeIn" >
@@ -225,7 +249,7 @@ return(
             <Form id="formLocation" onSubmit={props.onSubmit}>
                 <CardHeader>
                     <strong>DC Location ({actionForm})</strong>
-                    {/* <small> Form</small> */}
+                    <small><font color="red"> ( * ) is mandatoy field</font></small>
                 </CardHeader>
                 <CardBody>
                  <Card>
@@ -233,47 +257,35 @@ return(
                 <Row>
                     <Col xs="4">
                       <FormControl className={classes.formControl} error={props.hasError1}>
-                      <InputLabel id="demo-controlled-open-select-label">DC Site</InputLabel>
-                      <Select
-                        labelId="demo-controlled-open-select-label"
-                        id="SITE_NAME"
-                        name="SITE_NAME"
-                        onClick={() => props.fetchSite()}
-                        value={dcSite}
-                        onChange={handleChangeSite}
-                        fullWidth
-                        renderValue={(selected) => (
-                          <div>
-                            {
-                            selected.map((value) => (
-                              <MenuItem key={value} value={value}>{value}</MenuItem>
-                            ))}
-                          </div>
-                        )}
-                      >
-                        <MenuItem  key="null" value=''/>
-                        {
-                          dcSiteList.map((site)=>( //console.log('site',site)
-                              <MenuItem key={site.SITE_ID} value={site.SITE_NAME} classes={{ selected: classes.selected }} style={getStyles(site.SITE_NAME, dcSite, theme)}>
-                                {site.SITE_NAME}
-                            </MenuItem>
-                          ))
-                        }
-                      </Select>
+                      <Label>DC Site<font color="red">*</font></Label>
+                            <Input bsSize="sm"  type="select" name="SITE_NAME" id="SITE_NAME" onChange={props.onChange} style={{ backgroundColor : backgcolor}} >
+                            {/*loop Dc site*/}
+                            {    actionForm === 'CREATE' ? 
+                                    dcSiteList.map(function(lov,index) {
+                                    return <option key={index} value={lov.SITE_NAME}>{lov.SITE_NAME}</option>
+                                    })
+                                    :
+                                    // dataRack.site.map(function(lov,index) {
+                                    //   return <option key={index} value={dataRack.SITE_NAME}>{dataRack.SITE_NAME}</option>
+                                    // })
+                                  <option key='id' value={dataLocID.SITE_NAME}>{dataLocID.SITE_NAME}</option>
+                                   
+                            }  
+                            </Input>
                       {props.hasError1 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
                     </FormControl>
                     <FormGroup error={props.hasError2}>
-                    <Label>Served DC Location</Label>
-                    <Input type="text" id='LOCN_NAME' name='LOCN_NAME' value={dataLocID.LOCN_NAME} onChange={props.onChange} style={{ backgroundColor : backgcolor}} />
+                    <Label>DC Location</Label><font color="red">*</font>
+                    <Input bsSize="sm"  type="text" id='LOCN_NAME' name='LOCN_NAME' value={dataLocID.LOCN_NAME} onChange={props.onChange} style={{ backgroundColor : backgcolor}} />
                         {props.hasError2 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
                     </FormGroup>
                     <FormGroup  hidden={LocIDFlag}>
                     <Label>DC Location ID :</Label>
-                    <Input type="text" id="LOCN_ID" name="LOCN_ID" value={props.locId} onChange={props.onChange} style={{ backgroundColor : backgcolor}} />
+                    <Input bsSize="sm"  type="text" id="LOCN_ID" name="LOCN_ID" value={props.locId} onChange={props.onChange} style={{ backgroundColor : backgcolor}} />
                     </FormGroup>
                     <FormGroup>
                     <Label>DC Location Type :</Label>
-                    <Input type="select"  id="LOCN_TYPE" name="LOCN_TYPE" value={dataLocID.LOCN_TYPE} onChange={props.onChange} style={{ backgroundColor : backgcolor}} >
+                    <Input bsSize="sm"  type="select"  id="LOCN_TYPE" name="LOCN_TYPE" value={dataLocID.LOCN_TYPE} onChange={props.onChange} style={{ backgroundColor : backgcolor}} >
                         <option id="null" value="">Please select</option>
                         {
                           Object.values(locType).map((type)=>{
@@ -284,29 +296,29 @@ return(
                         }
                       </Input>
                     </FormGroup>
+                    <Label>Space Capacity (sqft) :</Label>
+                    <Input bsSize="sm"  type="number" id="LOCN_SPACE_CAPACITY" value={dataLocID.LOCN_SPACE_CAPACITY} name="LOCN_SPACE_CAPACITY" onChange={props.onChange} style={{ backgroundColor : backgcolor}} />
                 </Col>
                 <Col xs="4">
-                    <Label>Space Capacity (sqft) :</Label>
-                    <Input type="number" id="LOCN_SPACE_CAPACITY" value={dataLocID.LOCN_SPACE_CAPACITY} name="LOCN_SPACE_CAPACITY" onChange={props.onChange} style={{ backgroundColor : backgcolor}} />
-                    <Label>Floor Plan :</Label>
+                   <Label>Floor Plan :</Label>
                     <Card body style={{borderColor: 'blue'}}>
                     { imagePriviewFloor ? imageFloorPreview() : <h6>No image found</h6> }
-                    <Button color="primary" onClick={handleClickFloorImg}>
+                    <Button color="primary" onClick={handleClickFloorImg} hidden={props.uploadBtn} >
                         Upload a file
                     </Button>
-                    <Input type="file" accept="image/*" id="LOCN_FLOOR_PLAN" name="LOCN_FLOOR_PLAN" style={{ backgroundColor : backgcolor, display: 'none'}} onChange={props.onChange} />
+                    <Input bsSize="sm" type="file" accept="image/*" id="LOCN_FLOOR_PLAN" name="LOCN_FLOOR_PLAN" style={{ backgroundColor : backgcolor, display: 'none'}} onChange={props.onChange} />
                     </Card>
                     <Label>Rack Utilization :</Label>
                     <Card body style={{borderColor: 'blue'}}>
                     { imagePriviewRack ? imageRackPreview() : <h6>No image found</h6> }
-                    <Button color="primary" onClick={handleClickRackImg}>
+                    <Button color="primary" onClick={handleClickRackImg} hidden={props.uploadBtn} >
                         Upload a file
                     </Button>
-                    <Input type="file" accept="image/*"  id="LOCN_RACK_UTILIZATION" name="LOCN_RACK_UTILIZATION" onChange={props.onChange} style={{ backgroundColor : backgcolor, display: 'none'}} />   
+                    <Input bsSize="sm"  type="file" accept="image/*"  id="LOCN_RACK_UTILIZATION" name="LOCN_RACK_UTILIZATION" onChange={props.onChange} style={{ backgroundColor : backgcolor, display: 'none'}} />   
                     </Card>
                 </Col>
                 <Col xs="4">
-                <Label>Commission Date :</Label>
+                <Label>Commission Date :</Label><font color="red">*</font>
                 <FormGroup>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <KeyboardDatePicker
@@ -315,6 +327,7 @@ return(
                     //id="date-picker-dialog"
                     //filterDate={date => date.getDay() !== 6 && date.getDay() !== 0}
                     //label="Commission Date"
+                    placeholder="dd/mm/yyyy"
                     format="dd/MM/yyyy"
                     margin="normal"
                     value={selectedCommDate}
@@ -346,14 +359,13 @@ return(
                 </MuiPickersUtilsProvider>
                 </FormGroup>
                     <Label>Status :</Label>
-                    <Input type="select" name="LOCN_STATUS" id="LOCN_STATUS" value={dataLocID.LOCN_STATUS}  onChange={props.onChange}   style={{ backgroundColor : backgcolor}} >
+                    <Input bsSize="sm"  type="select" name="LOCN_STATUS" id="LOCN_STATUS" value={dataLocID.LOCN_STATUS}  onChange={props.onChange}   style={{ backgroundColor : backgcolor}} >
                         <option value="">Please select</option>
                         <option value="Active">Active</option>
                         <option value="Not Active">Not Active</option>
-                        <option value="KIV">KIV</option>
                       </Input>
                     <Label>Description :</Label>
-                    <Input type="textarea" rows="4" id="LOCN_DESC" name="LOCN_DESC" value={dataLocID.LOCN_DESC} onChange={props.onChange} style={{ backgroundColor : backgcolor}} />
+                    <Input bsSize="sm"  type="textarea" rows="4" id="LOCN_DESC" name="LOCN_DESC" value={dataLocID.LOCN_DESC} onChange={props.onChange} style={{ backgroundColor : backgcolor}} />
                 </Col>
              </Row> 
                 </CardBody>
@@ -370,7 +382,12 @@ return(
                                   <Button color="success" type="submit" hidden={actionSaveBtn}>
                                       <i className="fa fa-save"></i>&nbsp; Save
                                   </Button>&nbsp;
-                                  <Button color="warning" type='reset' hidden={props.btnReset}>
+                                  <Button color="danger" type="submit" id="delete" 
+                                  onClick={(e)=> props.onSubmit(e,'delete')}
+                                  hidden={actionDeleteBtn}>
+                                      <i className="fa fa-trash"></i>&nbsp; Delete
+                                  </Button>&nbsp;
+                                  <Button color="warning" type='reset' hidden={props.btnReset} onClick={handleResetData} >
                                       <i className="fa fa-refresh"></i>&nbsp; Reset
                                   </Button>
                                 </Col>

@@ -34,6 +34,7 @@ export default function TableDCSite(props) {
                         'Your file has been deleted.',
                         'success'
                     )
+                    props.props();
                 }
 
             })
@@ -91,46 +92,73 @@ export default function TableDCSite(props) {
         field: 'SITE_DESC',
       },
       {
+        title: 'Approved',
+        field: 'SITE_VERIFIED_TAG',
+      },
+      {
         title: 'Commission Date',
-        field: 'SITE_COMM_DT',
+        field: 'SITE_COMM_DT_V',
       },
       {
         title: 'Decommission Date',
-        field: 'SITE_DECOMM_DT',
+        field: 'SITE_DECOMM_DT_V',
       },
     ],
   });
 
   return (
+    <div style={{ fontSize: '1em'}}>
     <MaterialTable
       title="DC Site"
-      hover={true}
       options={{    
           //hover: true,
           filtering: true,
+          pageSize: 10,
       }}
+      icons={{ Filter: () => <div /> }} 
       columns={state.columns}
       data={props.data}
       actions={[
+        {
+          icon: 'view',
+          tooltip: 'View data',
+          onClick: (event, rowData) => console.log('view',rowData)
+          //(event, rowData) => alert("You saved " + rowData.LOCN_ID)
+        },
         {
           icon: 'edit',
           tooltip: 'Edit data',
           onClick: (event, rowData) => console.log('edit',rowData)
           //(event, rowData) => alert("You saved " + rowData.LOCN_ID)
         },
-        {
-            icon: 'delete',
-            tooltip: 'Delete data',
-            onClick: (event, rowData) => console.log('delete',rowData)
-            //(event, rowData) => alert("You saved " + rowData.LOCN_ID)
-      }
+      //   {
+      //       icon: 'delete',
+      //       tooltip: 'Delete data',
+      //       onClick: (event, rowData) => console.log('delete',rowData)
+      //       //(event, rowData) => alert("You saved " + rowData.LOCN_ID)
+      // }
       ]}
       components={{
         Action: (props) => {
            //console.log('propsaction',props.data);
-            
+           if( props.action.icon === 'view'){                               
+            return(<Link to={"/ViewSite/" + props.data.SITE_ID}>
+            <Tooltip title="View" >
+            <Icon
+              //onClick={ }
+              color="primary"
+              variant="contained"
+              //style={{textTransform: 'none', tooltip: 'Edit'}}
+              size="small"
+            >
+              visibilityRound
+            </Icon>
+            </Tooltip>
+            </Link>)
+           }
             //display button based on action edit/delete
-            if( props.action.icon == 'edit'){                               
+            if( props.action.icon === 'edit'){       
+              if(props.data.SITE_VERIFIED_TAG !== 'Y' && props.data.SITE_DECOMM_DT_V === "" || props.data.SITE_DECOMM_DT_V === 'null' || props.data.SITE_DECOMM_DT_V === null){                                                   
                 return(<Link to={"/EditSite/" + props.data.SITE_ID}>
                 <Tooltip title="Edit" >
                 <Icon
@@ -144,24 +172,58 @@ export default function TableDCSite(props) {
                 </Icon>
                 </Tooltip>
                 </Link>)
-            }
-            if( props.action.icon == 'delete'){
+              }else{
                 return(
-                <Tooltip title="Delete" >
+                //<Link to={"/EditSite/" + props.data.SITE_ID}>
+                <Tooltip title="Edit" >
                 <Icon
-                  onClick={() => handleDelete(props.data)}
-                  color="primary"
+                  //onClick={ }
+                  color="disabled"
                   variant="contained"
-                  //style={{textTransform: 'none', tooltip: 'Delete'}}
+                  //style={{textTransform: 'none', tooltip: 'Edit'}}
                   size="small"
                 >
-                  delete
+                  edit
                 </Icon>
-                </Tooltip>)
+                </Tooltip>
+                //</Link>
+                )
+              }
             }
+        //     if( props.action.icon === 'delete'){
+      
+        //        if(props.data.SITE_VERIFIED_TAG === "Y" && props.data.SITE_DECOMM_DT_V !== null){
+        //         return(
+        //           <Tooltip title="Delete" >
+        //           <Icon
+        //             //onClick={() => handleDelete(props.data)}
+        //             color="disabled"
+        //             variant="contained"
+        //             //style={{textTransform: 'none', tooltip: 'Delete'}}
+        //             size="small"
+        //           >
+        //             delete
+        //           </Icon>
+        //           </Tooltip>)
+        //        }
+        //        else{
+        //         return(
+        //           <Tooltip title="Delete" >
+        //           <Icon
+        //             onClick={() => handleDelete(props.data)}
+        //             color="primary"
+        //             variant="contained"
+        //             //style={{textTransform: 'none', tooltip: 'Delete'}}
+        //             size="small"
+        //           >
+        //             delete
+        //           </Icon>
+        //           </Tooltip>)
+        //        }
+        //     }
           
         }
       }}
     />
-  );
+  </div>);
 }

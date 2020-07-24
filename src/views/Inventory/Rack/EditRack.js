@@ -6,7 +6,7 @@ import $ from 'jquery';
 import axios from 'axios';
 import Snackbar from '@material-ui/core/Snackbar'; 
 import Alert from '@material-ui/lab/Alert';
- 
+import Swal from 'sweetalert2';
 
 const EditForm = (props) => {
 
@@ -33,12 +33,13 @@ const EditForm = (props) => {
   },[])
 
   //to handle form submit validation
-  const onSubmit = (e)=> 
+  const onSubmit = (e,type)=> 
   {
       e.preventDefault();
      
       var $inputs = $('#formRack :input');//get form values
-
+      var username = localStorage.getItem('username').toUpperCase();
+  
       var values = {};
       $inputs.each(function () {
           if ($(this).is(':radio') == true || $(this).is(':checkbox') == true){
@@ -49,7 +50,7 @@ const EditForm = (props) => {
           }
           values['RACK_ID'] =  props.match.params.id;
           values['RACK_CONTRACTUAL_POWER'] = '';
-          values['RACK_UPDATE_BY'] = auth.authenticated.username ? auth.authenticated.username.toUpperCase() : "TMIMS_FORM";
+          values['RACK_UPDATE_BY'] = username ? username : "TMIMS_FORM";
 
        });
 
@@ -83,16 +84,43 @@ const EditForm = (props) => {
 
       if ( values.SITE_NAME && values.LOCN_NAME && values.RACK_NO && values.RACK_ROOM ){
 
-        axios.post('/claritybqm/reportFetchJ/?scriptName=DC_RACK_UPDATE', values).then((res) => {
-         //console.log('success to update : ', res.data,values);   
-           if(res.data == "success"){
-             setopenSnackBar(true);
-           }
-         })
-           .catch((err) => {
-           console.log('failed to update : ', err);
-           });
+          if(type === 'delete'){
+            if(values.RACK_DECOMM_DT === "" || values.RACK_DECOMM_DT === 'null' ){
+      
+              Swal.fire({
+               width: '30%',
+               icon: 'error',
+               fontsize: '8px',
+               text: 'Decommission Date cannot be null!',
+               //footer: '<a href>Why do I have this issue?</a>'
+             })
+            } 
+             else{
+              axios.post('/claritybqm/reportFetchJ/?scriptName=DC_RACK_UPDATE', values).then((res) => {
+                //console.log('success to update : ', res.data,values);   
+                  if(res.data == "success"){
+                    props.history.push('/ListRack')
+                  }
+                })
+                  .catch((err) => {
+                  console.log('failed to update : ', err);
+                  });
 
+             }
+
+          }else{
+            axios.post('/claritybqm/reportFetchJ/?scriptName=DC_RACK_UPDATE', values).then((res) => {
+              //console.log('success to update : ', res.data,values);   
+                if(res.data == "success"){
+                  setopenSnackBar(true);
+                  setTimeout(function(){ props.history.push('/ListRack') }, 2000);
+                }
+              })
+                .catch((err) => {
+                console.log('failed to update : ', err);
+                });
+     
+          }
       }     
  }
 
@@ -140,6 +168,7 @@ const handleChange = (e) => {
     hasError4={hasError4}
     dataRack={dataRack}
     flagDecommDate={false}
+    btnReset={true}
   />
   <Snackbar
         open={openSnackBar} autoHideDuration={1500} onClose={handleClose} 

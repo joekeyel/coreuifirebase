@@ -21,7 +21,10 @@ const FormNtwPort = (props)=> {
   const [PortData, setPortData] = useState({});
 
   useEffect(() => {
-
+    if(actionForm === 'VIEW'){
+      setActionSaveBtn(true);
+      setActionCreateBtn(true);
+    }
   
     if (actionForm == 'CREATE') {
         setActionSaveBtn(true);
@@ -65,15 +68,17 @@ return(
           <Col xs ='12'>
             <Form id="formNTWPort" onSubmit={props.onSubmit}>
           <Card>
-            <CardHeader>Network Port<strong>({actionForm})</strong></CardHeader>
+            <CardHeader>Network Port<strong>({actionForm})</strong>
+            <small><font color="red"> ( * ) is mandatoy field</font></small>
+            </CardHeader>
             <CardBody>
               <Card>
               <CardBody>
               <Row style={{marginLeft: '30px'}}>
                 <Col xs='3'>
                 <FormGroup>
-                <Label >DC Site</Label>
-                <Input type="select" onChange={props.onChange} name="SITE_NAME" id="SITE_NAME" style={{background: backgcolor}}>
+                <Label >DC Site</Label><font color="red">*</font>
+                <Input bsSize="sm"  type="select" onChange={props.onChange} name="SITE_NAME" id="SITE_NAME" style={{background: backgcolor}}>
                 {    dcSite ? 
                         dcSite.map(function(lov,index) {
                         return <option key={index} value={lov.SITE_NAME}>{lov.SITE_NAME}</option>
@@ -84,46 +89,46 @@ return(
                   }  
                 </Input>
                 <Label >Network Name</Label>
-                <Input type="select" onChange={props.onChange} value={PortData.NTW_NAME} name="NTW_NAME" id="NTW_NAME"  style={{background: backgcolor}}>
+                <Input bsSize="sm"  type="select" onChange={props.onChange} value={PortData.NTW_NAME} name="NTW_NAME" id="NTW_NAME"  style={{background: backgcolor}}>
                         <option value="">Please select</option>
                         <option value="E-LAN LINK 1GB">E-LAN LINK 1GB</option>
                 </Input>
                 </FormGroup>
                 <FormGroup hidden={NtwIDFlag}>
                 <Label>Port Ref ID</Label>
-                <Input type="text"  onChange={props.onChange} value={PortData.PORT_ID}  id="PORT_ID" name="PORT_ID"  style={{background: backgcolor}}/>
+                <Input bsSize="sm"  type="text"  onChange={props.onChange} value={PortData.NTW_ID}  id="NTW_ID" name="NTW_ID"  style={{background: backgcolor}}/>
                 </FormGroup>
                 <Label>Port No</Label>
-                <Input type="text" onChange={props.onChange} value={PortData.PORT_NO}  id="PORT_NO" name="PORT_NO"  style={{background: backgcolor}}/>
+                <Input bsSize="sm"  type="text" onChange={props.onChange} value={PortData.PORT_NO}  id="PORT_NO" name="PORT_NO"  style={{background: backgcolor}}/>
                 <Label>Data Cable Pre-Laid</Label>
-                <Input type="select" name="PORT_CAB_PRELAID" value={PortData.PORT_CAB_PRELAID}  id="PORT_CAB_PRELAID"  style={{background: backgcolor}}>
+                <Input bsSize="sm"  type="select" name="PORT_CAB_PRELAID" value={PortData.PORT_CAB_PRELAID}  id="PORT_CAB_PRELAID"  style={{background: backgcolor}}>
                         <option value="">Please select</option>
                         <option value="Yes">Yes</option>
                         <option value="No">No</option>
                 </Input>
                 <Label>Switch Name</Label>
-                <Input type="text" onChange={props.onChange} value={PortData.PORT_SWITCH_NAME}  id="PORT_SWITCH_NAME" name="PORT_SWITCH_NAME"  style={{background: backgcolor}}/>
+                <Input bsSize="sm"  type="text" onChange={props.onChange} value={PortData.PORT_SWITCH_NAME}  id="PORT_SWITCH_NAME" name="PORT_SWITCH_NAME"  style={{background: backgcolor}}/>
                 </Col>
                 <Row style={{marginLeft: '100px'}}></Row>
                 <Col xs='3'>
                 <Label>Network Type</Label>
-                <Input type="select" onChange={props.onChange} value={PortData.PORT_NTW_TYPE}  name="PORT_NTW_TYPE" id="PORT_NTW_TYPE"  style={{background: backgcolor}}> 
+                <Input bsSize="sm"  type="select" onChange={props.onChange} value={PortData.PORT_NTW_TYPE}  name="PORT_NTW_TYPE" id="PORT_NTW_TYPE"  style={{background: backgcolor}}> 
                         <option value="">Please select</option>
                         <option value="DCI">DCI</option>
                         <option value="MetroE Connect">MetroE Connect</option>
                 </Input>
                 <Label>Status</Label>
-                <Input type="select" onChange={props.onChange} value={PortData.PORT_STATUS}  name="PORT_STATUS" id="PORT_STATUS" style={{background: backgcolor}}>
+                <Input bsSize="sm"  type="select" onChange={props.onChange} value={PortData.PORT_STATUS}  name="PORT_STATUS" id="PORT_STATUS" style={{background: backgcolor}}>
                 <option value="">Please select</option>
                         <option value="Active">Active</option>
                         <option value="Not Active">Not Active</option>
-                        <option value="KIV3">KIV</option>
+                        <option value="KIV">KIV</option>
                 </Input>
                 <Col xs='4'></Col>
                 <Label>Description</Label>
-                <Input type="textarea" onChange={props.onChange} value={PortData.PORT_DESC}  size='6' id="PORT_DESC" name="PORT_DESC" style={{background: backgcolor}}/>
+                <Input bsSize="sm"  type="textarea" onChange={props.onChange} value={PortData.PORT_DESC}  size='6' id="PORT_DESC" name="PORT_DESC" style={{background: backgcolor}}/>
                 <FormGroup>
-                <Label>Commission Date</Label>
+                <Label>Commission Date</Label><font color="red">*</font>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <KeyboardDatePicker
                     helperText={''}

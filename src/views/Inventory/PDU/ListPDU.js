@@ -22,9 +22,9 @@ class PDUList extends Component {
   }
 
   componentWillReceiveProps(props){
-    //console.log('componentWillReceiveProps',props);
+    console.log('componentWillReceiveProps',props);
     this.setState({
-      data: props.pdu,
+      data: props.pdu.pdu,
     })
 
   }
@@ -48,7 +48,7 @@ return(
                       <Button color="primary" href="#/CreatePDU"><i className="fa fa-plus-square"></i>&nbsp; Add New PDU</Button>
                         </CardHeader>
                         <CardBody>
-                              <TablePDU id="tableSite" data={data} />
+                              <TablePDU id="TablePDU" data={data} props={()=> this.props.fetchPDU()}/>
                           </CardBody>
                       </Card>
                 </CardBody>

@@ -13,25 +13,42 @@ const EditForm = (props) => {
     const [formValues, setformValues]= useState({});
     const [openSnackBar, setopenSnackBar] = useState(false);
     const [PDUdata, setPDUdata] = useState({});
+    const [PDUJournal, setPDUJournal] = useState({});
     const [changeFlag,setchangeFlag] = useState(false);
   
   useEffect(()=>{
     //console.log('pdudata',PDUdata);
     
-      fetch('/claritybqm/reportFetch/?scriptName=DC_PDU')
+      fetch('/claritybqm/reportFetch/?scriptName=DC_PDU&id=' + props.match.params.id)
       .then(response => response.json())
       .then((data) => 
       {  
          
-            var filter = Object.values(data).filter((pdu)=> pdu.PDU_ID == props.match.params.id)
-            //console.log('filterPDU', filter);
-            setPDUdata(filter[0]);
+           // var filter = Object.values(data.pdu).filter((pdu)=> pdu.PDU_ID == props.match.params.id)
+            //console.log('pdudata', data.pdu[0]);
+            setPDUdata(data.pdu[0]);
+            setPDUJournal(data.journal);
 
       }
       );
 
   },[props]);
 
+  const getJournalList = ()=>{
+    fetch('/claritybqm/reportFetch/?scriptName=DC_PDU&id=' + props.match.params.id)
+    .then(response => response.json())
+    .then((data) => 
+    {  
+       
+         // var filter = Object.values(data.pdu).filter((pdu)=> pdu.PDU_ID == props.match.params.id)
+          //console.log('pdudata', data.pdu[0]);
+          //setPDUdata(data.pdu[0]);
+          setPDUJournal(data.journal);
+
+    }
+    );
+
+  }
 
   //to handle form submit validation
   const onSubmit = (e)=> 
@@ -39,7 +56,7 @@ const EditForm = (props) => {
       e.preventDefault();
      
       var $inputs = $('#formPDU :input');//get form values
-
+      var username = localStorage.getItem('username').toUpperCase();
       var values = {};
       $inputs.each(function () {
           if ($(this).is(':radio') == true || $(this).is(':checkbox') == true){
@@ -49,7 +66,7 @@ const EditForm = (props) => {
             values[this.name] = $(this).val() == undefined ? "" : $(this).val().toUpperCase();
           }
           values['PDU_ID'] =  props.match.params.id;
-          values['PDU_UPDATED_BY'] = auth.authenticated.username ? auth.authenticated.username.toUpperCase() : "TMIMS";
+          values['PDU_UPDATED_BY'] = username ? username : "TMIMS";
 
        });
 
@@ -65,6 +82,7 @@ const EditForm = (props) => {
             //console.log('success to update : ', res.data,values);   
               if(res.data == "success"){
                 setopenSnackBar(true);
+                getJournalList();
               } else{/**error from bqm api DC_PDU_UPDATE */
                 //console.log('error',res.data);
                 Swal.fire({
@@ -128,6 +146,7 @@ const handleChange = (e) => {
     PDUdata={PDUdata}
     btnReset={true}
     changeFlag={changeFlag}
+    PDUJournal={PDUJournal}
   />
   <Snackbar
         open={openSnackBar} autoHideDuration={1500} onClose={handleClose} 

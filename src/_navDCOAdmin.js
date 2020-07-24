@@ -40,7 +40,7 @@ export default {
             icon: 'icon-layers',
           },
           {
-            name: 'Netwrok Port',
+            name: 'Network Port',
             url: '/ListNEPort',
             icon: 'icon-layers',
           },

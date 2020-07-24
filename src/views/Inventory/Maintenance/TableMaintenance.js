@@ -16,23 +16,23 @@ export default function TableMaintenance(props) {
       },
       {
         text: 'Date',
-        dataField: 'UPS_ID',
+        dataField: 'DATE_JN',
         key: 'DATE'
       },
       {
         text: 'Maintenance Update',
-        dataField: 'UPS_NAME',
+        dataField: 'MAINTENANCE_UPD_JN',
         key: 'REMARK'
       },
      {
         text: 'Staff Name',
-        dataField: 'SITE_NAME',
-        key: 'USER_NAME'
+        dataField: 'STAFF_NAME',
+        key: 'STAFF_NAME'
       },
       {
         text: 'Staff ID',
-        dataField: 'LOCATION_NAME',
-        key: 'USER_ID'
+        dataField: 'STAFF_ID',
+        key: 'STAFF_ID'
       },
     ],
   });

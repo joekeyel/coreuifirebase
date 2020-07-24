@@ -69,7 +69,7 @@ class ResourceCheck extends Component {
     
     
     var siteSelected = e.target.value
-    if(siteSelected != ""){
+    if(siteSelected !== ""){
 
         fetch('/claritybqm/reportFetch/?scriptName=DC_LOCATION')
         .then(response => response.json())
@@ -106,8 +106,8 @@ class ResourceCheck extends Component {
         //console.log('loc',location);
       
         this.setState({
-            imageFloorPlan: location.FLOOR_PLAN,
-            imageRackUtil: location.RACK_UTILIZATION,
+            imageFloorPlan: location[0].FLOOR_PLAN,
+            imageRackUtil: location[0].RACK_UTILIZATION,
         })
     }
     );
@@ -120,7 +120,8 @@ class ResourceCheck extends Component {
     .then((site) => 
     {
         //console.log('site',JSON.stringify(site))
-        this.setState({ SiteOption : site})          
+        var siteExist = site.filter((site)=> site.SITE_VERIFIED_TAG === 'Y')
+        this.setState({ SiteOption : siteExist})          
        
     }
     );
@@ -373,7 +374,7 @@ class ResourceCheck extends Component {
                     <hr/>
                         <Row>
                             <Col xs='3'>
-                                <Button block color="info" className="btn-pill" href="#/resourceDetails"> Resource Details</Button>
+                                <Button block color="info" className="btn-pill" href={"#/resourceDetails/"+this.state.selectedSite}> Resource Details</Button>
                             </Col>
                         </Row>
                     </CardBody>

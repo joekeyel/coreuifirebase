@@ -96,11 +96,11 @@ class DefaultHeader extends Component {
   };
   render() {
     //console.log('render',this.state);
-    //console.log('props',this.props);
+    console.log('props',this.props);
     // eslint-disable-next-line
     const { children, ...attributes } = this.props;
     const task = this.state.PendingTask ? this.state.PendingTask.length : 0;
-    var pendingApproval = this.state.PendingApproval ? this.state.PendingApproval.length : 0;
+    var pendingApproval = this.props.pendingApproval ? this.props.pendingApproval.length : 0;
     return (
       <React.Fragment>
         <AppSidebarToggler className="d-lg-none" display="md" mobile />
@@ -155,7 +155,7 @@ class DefaultHeader extends Component {
             </DropdownMenu>
           </UncontrolledDropdown>
         </Nav>
-        <AppAsideToggler className="d-md-down-none" />
+        {/* <AppAsideToggler className="d-md-down-none" /> */}
         {/*<AppAsideToggler className="d-lg-none" mobile />*/}
         
         <Snackbar style={{marginBottom:'50px'}}

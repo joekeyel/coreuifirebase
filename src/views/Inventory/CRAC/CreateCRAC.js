@@ -24,7 +24,8 @@ const CreateForm = (props) => {
 
     //get values from FormComponent UPS
     var $inputs = $('#formCRAC :input');//get form values
-
+    var username = localStorage.getItem('username').toUpperCase();
+  
     var values = {};
   
     $inputs.each(function () {
@@ -37,7 +38,7 @@ const CreateForm = (props) => {
       
         values['CRAC_COMM_DT'] = "";
         values['CRAC_DECOMM_DT'] = "";
-        values['CRAC_CREATED_BY'] = auth.authenticated.username ? auth.authenticated.username.toUpperCase() : "TMIMS";
+        values['CRAC_CREATED_BY'] = username ? username : "TMIMS";
      });
 
      //console.log('onSubmit', values );
@@ -118,10 +119,10 @@ const CreateForm = (props) => {
        
      $inputs.each(function () {
          if ($(this).is(':radio') === true || $(this).is(':checkbox') === true){
-           values[this.name] = $('input[name=' + $(this).attr('name') + ']:checked').val() === undefined ? "" : $('input[name=' + $(this).attr('name') + ']:checked').val().toUpperCase();
+           values[this.name] = $('input[name=' + $(this).attr('name') + ']:checked').val() === undefined ? "" : $('input[name=' + $(this).attr('name') + ']:checked').val();
                } 
         else {
-           values[this.name] = $(this).val() === undefined ? "" : $(this).val().toUpperCase();
+           values[this.name] = $(this).val() === undefined ? "" : $(this).val();
          }
 
          if(values.CRAC_DESC){
@@ -149,7 +150,7 @@ const CreateForm = (props) => {
                   open={openSnackBar} autoHideDuration={1500} onClose={handleClose} 
                   anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
                     <Alert variant="filled"  onClose={handleClose} severity="success" >
-                       Data has been Crerated.
+                       Data has been Created.
                     </Alert>
               </Snackbar>
         </div >);

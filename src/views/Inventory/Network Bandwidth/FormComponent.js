@@ -21,7 +21,14 @@ const Bandwidth = (props) => {
   const [NtwIDFlag, setNtwIDFlag] = useState(true);
 
   useEffect(() => {
-
+    
+    if(actionForm === 'VIEW'){
+      setActionSaveBtn(true);
+      setActionCreateBtn(true);
+      setBandData(props.dataBand);
+      setSelectedCommDate(props.dataBand.NTW_COMM_DT);
+      setSelectedDecommDate(props.dataBand.NTW_DECOMM_DT);
+    }
     if (actionForm === 'CREATE') {
         setActionSaveBtn(true);
     }
@@ -63,13 +70,15 @@ return(
           <Col xs ='12'>
           <Card>
             <Form id="formNtwBand" onSubmit={props.onSubmit}>
-            <CardHeader>Network Bandwith</CardHeader>
+              <CardHeader>Network Bandwith<strong>({props.actionForm})</strong>
+            <small><font color="red"> ( * ) is mandatoy field</font></small>
+            </CardHeader>
             <CardBody>
-              <Row style={{marginLeft: '230px'}}>
-                <Col xs='3'>
+              <Row style={{marginLeft: '100px'}}>
+                <Col xs='5'>
                 <FormGroup  error={props.hasError1}>
-                <Label >DC Site</Label>
-                <Input type="select" name="SITE_NAME" id="SITE_NAME" onChange={props.onChange} style={{background: backgcolor}}>
+                <Label >DC Site<font color="red">*</font></Label>
+                <Input bsSize="sm"  type="select" name="SITE_NAME" id="SITE_NAME" onChange={props.onChange} style={{background: backgcolor}}>
                 {    dcSite ? 
                                     dcSite.map(function(lov,index) {
                                     return <option key={index} value={lov.SITE_NAME}>{lov.SITE_NAME}</option>
@@ -86,17 +95,16 @@ return(
                 </FormGroup>
                 <FormGroup  hidden={NtwIDFlag}>
                 <Label>Network Ref ID</Label>
-                <Input type="text" value={bandData.NTW_ID} id="NTW_ID" name="NTW_ID" onChange={props.onChange} style={{background: backgcolor}}/>
+                <Input bsSize="sm"  type="text" value={bandData.NTW_ID} id="NTW_ID" name="NTW_ID" onChange={props.onChange} style={{background: backgcolor}}/>
                 </FormGroup>
                 <Label>Network Name</Label>
-                <Input type="text" value={bandData.NTW_NAME} id="NTW_NAME"name="NTW_NAME" onChange={props.onChange} style={{background: backgcolor}}/>
+                <Input bsSize="sm"  type="text" value={bandData.NTW_NAME} id="NTW_NAME"name="NTW_NAME" onChange={props.onChange} style={{background: backgcolor}}/>
                 <Label>Bandwidth (MB)</Label>
-                <Input type="number" value={bandData.NTW_BANDWIDTH} id="NTW_BANDWIDTH" name="NTW_BANDWIDTH" onChange={props.onChange} style={{background: backgcolor}}/>
+                <Input bsSize="sm"  type="number" value={bandData.NTW_BANDWIDTH} id="NTW_BANDWIDTH" name="NTW_BANDWIDTH" onChange={props.onChange} style={{background: backgcolor}}/>
                 </Col>
-                <Row style={{marginLeft: '100px'}}></Row>
-                <Col xs='3'>
+                <Col xs='4'>
                 <FormGroup  error={props.hasError2}>
-                <Label>Commission Date</Label>
+                <Label>Commission Date<font color="red">*</font></Label>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <KeyboardDatePicker
                     helperText={''}
@@ -140,14 +148,14 @@ return(
                 </MuiPickersUtilsProvider>
                 </FormGroup>
                 <Label>Status</Label>
-                <Input type="select" value={bandData.NTW_STATUS}  name="NTW_STATUS" id="NTW_STATUS" onChange={props.onChange} style={{background: backgcolor}}>
+                <Input bsSize="sm"  type="select" value={bandData.NTW_STATUS}  name="NTW_STATUS" id="NTW_STATUS" onChange={props.onChange} style={{background: backgcolor}}>
                 <option value="0">Please select</option>
                         <option value="Active">Active</option>
                         <option value="Not Active">Not Active</option>
                         <option value="KIV">KIV</option>
                 </Input>
                 <Label>Description</Label>
-                <Input type="textarea" value={bandData.NTW_DESC} id="NTW_DESC" name="NTW_DESC" onChange={props.onChange} style={{background: backgcolor}}/>
+                <Input bsSize="sm"  type="textarea" value={bandData.NTW_DESC} id="NTW_DESC" name="NTW_DESC" onChange={props.onChange} style={{background: backgcolor}}/>
                 </Col> 
               </Row>
               </CardBody>

@@ -46,7 +46,7 @@ const useStyles = makeStyles({
     
     setUserID(user)
     //console.log('user',user);
-    fetch('https://10.54.5.141:3443/claritybqm/reportFetch/?scriptName=DC_USER&userid='+ user)
+    fetch('/claritybqm/reportFetch/?scriptName=DC_USER&userid='+ user)
     .then(resp => resp.json())
     .then((user)=>{
         //console.log('user',user.rights);
@@ -160,7 +160,7 @@ const useStyles = makeStyles({
                 />
                 <CardContent>
                 <Typography gutterBottom variant="h5" component="h2">
-                    Dashboad
+                    Dashboard
                 </Typography>
                 <Typography variant="body2" color="textSecondary" component="p">
                     As a Product Owner and DC Manager, I want system to be able to show DC resource utilization dashboard so that proper capacity planning can be implemented.

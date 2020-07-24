@@ -48,7 +48,7 @@ return(
                       <Button color="primary" href="#/CreateSite"><i className="fa fa-plus-square"></i>&nbsp; Add New DC Site</Button>
                         </CardHeader>
                         <CardBody>
-                              <TableDCSite id="tableSite" data={data}/>
+                              <TableDCSite id="tableSite" data={data} props={()=>this.props.fetchSite()}/>
                           </CardBody>
                       </Card>
                 </CardBody>

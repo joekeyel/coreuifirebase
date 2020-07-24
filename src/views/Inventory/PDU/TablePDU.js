@@ -5,22 +5,8 @@ import { Button, Tooltip } from '@material-ui/core';
 import Icon from '@material-ui/core/Icon';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-import { connect } from "react-redux";
 
-const mapStateToProps = state => {
-  return {
-    pdu: state.pdu
-  };
-};
-
-const mapDispachToProps = dispatch => {
-  return {
-
-    fetchPDU: () => dispatch({ type: "FETCH_PDU"}),
-  
-  };
-};
-const TablePDU = (props) => {
+export default function TablePDU(props){
   //console.log('table',props);
 
   //to handle delete row function
@@ -47,7 +33,7 @@ const TablePDU = (props) => {
                         'Your file has been deleted.',
                         'success'
                     )
-                    props.fetchPDU();
+                    props.props();
                 }
 
             })
@@ -110,31 +96,52 @@ const TablePDU = (props) => {
   return (
     <MaterialTable
       title='PDU'
-      hover={true}
+      icons={{ Filter: () => <div /> }} 
       options={{    
         //hover: true,
         filtering: true,
+        pageSize: 10,
     }}
       columns={state.columns}
       data={props.data}
       actions={[
+        {
+          icon: 'view',
+          tooltip: 'View data',
+          onClick: (event, rowData) => console.log(rowData)
+          //(event, rowData) => alert("You saved " + rowData.LOCN_ID)
+        },
         {
           icon: 'edit',
           tooltip: 'Edit data',
           onClick: (event, rowData) => console.log(rowData)
           //(event, rowData) => alert("You saved " + rowData.LOCN_ID)
         },
-        {
-          icon: 'delete',
-          tooltip: 'Delete data',
-          onClick: (event, rowData) => console.log('delete',rowData)
-          //(event, rowData) => alert("You saved " + rowData.LOCN_ID)
-       }
+      //   {
+      //     icon: 'delete',
+      //     tooltip: 'Delete data',
+      //     onClick: (event, rowData) => console.log('delete',rowData)
+      //     //(event, rowData) => alert("You saved " + rowData.LOCN_ID)
+      //  }
       ]}
       components={{
         Action: (props) => {
            //console.log('propsaction',props.data);
-            
+           if( props.action.icon === 'view'){                               
+            return(<Link to={"/ViewPDU/" + props.data.PDU_ID}>
+            <Tooltip title="View" >
+            <Icon
+              //onClick={ }
+              color="primary"
+              variant="contained"
+              //style={{textTransform: 'none', tooltip: 'Edit'}}
+              size="small"
+            >
+              visibilityRound
+            </Icon>
+            </Tooltip>
+            </Link>)
+           }
             //display button based on action edit/delete
             if( props.action.icon == 'edit'){                               
                 return(<Link to={"/EditPDU/" + props.data.PDU_ID} >
@@ -151,24 +158,23 @@ const TablePDU = (props) => {
                 </Tooltip>
                 </Link>)
             }
-            if( props.action.icon == 'delete'){
-                return(
-                <Tooltip title="Delete" >
-                <Icon
-                  onClick={() => handleDelete(props.data)}
-                  color="primary"
-                  variant="contained"
-                  //style={{textTransform: 'none', tooltip: 'Delete'}}
-                  size="small"
-                >
-                  delete
-                </Icon>
-                </Tooltip>)
-            }
+            // if( props.action.icon == 'delete'){
+            //     return(
+            //     <Tooltip title="Delete" >
+            //     <Icon
+            //       onClick={() => handleDelete(props.data)}
+            //       color="primary"
+            //       variant="contained"
+            //       //style={{textTransform: 'none', tooltip: 'Delete'}}
+            //       size="small"
+            //     >
+            //       delete
+            //     </Icon>
+            //     </Tooltip>)
+            // }
           
         }
       }}
     />
   );
 }
-export default connect(mapStateToProps,mapDispachToProps)(TablePDU)

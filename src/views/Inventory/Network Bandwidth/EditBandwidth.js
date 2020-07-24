@@ -126,6 +126,7 @@ const handleChange = (e) => {
     hasError1={hasError1}
     hasError2={hasError2}
     onChangeFlag={onChangeFlag}
+    btnReset={true}
   />
   <Snackbar
         open={openSnackBar} autoHideDuration={1500} onClose={handleClose} 

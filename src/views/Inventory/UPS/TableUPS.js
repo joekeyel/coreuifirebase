@@ -111,31 +111,52 @@ const TableUPS = (props)=>{
   return (
     <MaterialTable
       title='UPS'
-      hover={true}
+      icons={{ Filter: () => <div /> }} 
       options={{    
         //hover: true,
         filtering: true,
+        pageSize: 10,
     }}
       columns={state.columns}
       data={props.data}
       actions={[
+        {
+          icon: 'view',
+          tooltip: 'View data',
+          onClick: (event, rowData) => console.log(rowData)
+          //(event, rowData) => alert("You saved " + rowData.LOCN_ID)
+        },
         {
           icon: 'edit',
           tooltip: 'Edit data',
           onClick: (event, rowData) => console.log(rowData)
           //(event, rowData) => alert("You saved " + rowData.LOCN_ID)
         },
-        {
-          icon: 'delete',
-          tooltip: 'Delete data',
-          onClick: (event, rowData) => console.log('delete',rowData)
-          //(event, rowData) => alert("You saved " + rowData.LOCN_ID)
-       }
+      //   {
+      //     icon: 'delete',
+      //     tooltip: 'Delete data',
+      //     onClick: (event, rowData) => console.log('delete',rowData)
+      //     //(event, rowData) => alert("You saved " + rowData.LOCN_ID)
+      //  }
       ]}
       components={{
         Action: (props) => {
            //console.log('propsaction',props.data);
-            
+           if( props.action.icon === 'view'){                               
+            return(<Link to={"/ViewUPS/" + props.data.CRAC_ID}>
+            <Tooltip title="View" >
+            <Icon
+              //onClick={ }
+              color="primary"
+              variant="contained"
+              //style={{textTransform: 'none', tooltip: 'Edit'}}
+              size="small"
+            >
+              visibilityRound
+            </Icon>
+            </Tooltip>
+            </Link>)
+           }
             //display button based on action edit/delete
             if( props.action.icon == 'edit'){                               
                 return(<Link to={"/EditUPS/" + props.data.UPS_ID} >
@@ -152,20 +173,20 @@ const TableUPS = (props)=>{
                 </Tooltip>
                 </Link>)
             }
-            if( props.action.icon == 'delete'){
-                return(
-                <Tooltip title="Delete" >
-                <Icon
-                  onClick={() => handleDelete(props.data)}
-                  color="primary"
-                  variant="contained"
-                  //style={{textTransform: 'none', tooltip: 'Delete'}}
-                  size="small"
-                >
-                  delete
-                </Icon>
-                </Tooltip>)
-            }
+            // if( props.action.icon == 'delete'){
+            //     return(
+            //     <Tooltip title="Delete" >
+            //     <Icon
+            //       onClick={() => handleDelete(props.data)}
+            //       color="primary"
+            //       variant="contained"
+            //       //style={{textTransform: 'none', tooltip: 'Delete'}}
+            //       size="small"
+            //     >
+            //       delete
+            //     </Icon>
+            //     </Tooltip>)
+            // }
           
         }
       }}

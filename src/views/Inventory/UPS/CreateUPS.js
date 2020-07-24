@@ -25,7 +25,7 @@ const CreateForm = (props) => {
 
     //get values from FormComponent UPS
     var $inputs = $('#formUPS :input');//get form values
-
+    var username = localStorage.getItem('username').toUpperCase();
     var values = {};
   
     $inputs.each(function () {
@@ -35,7 +35,7 @@ const CreateForm = (props) => {
               else {
           values[this.name] = $(this).val() === undefined ? "" : $(this).val().toUpperCase();
         }
-        values['UPS_CREATED_BY'] = auth.authenticated.username ? auth.authenticated.username.toUpperCase() : "TMIMS";
+        values['UPS_CREATED_BY'] = username ? username : "TMIMS";
      });
 
      //console.log('onSubmit', values );
@@ -141,7 +141,7 @@ const CreateForm = (props) => {
               open={openSnackBar} autoHideDuration={1500} onClose={handleClose} 
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
                 <Alert variant="filled"  onClose={handleClose} severity="success" >
-                    Data has been Crerated.
+                    Data has been Created.
                 </Alert>
           </Snackbar>
         </div >);

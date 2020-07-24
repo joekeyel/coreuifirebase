@@ -52,8 +52,10 @@ const FormCRAC =(props) =>{
   const [actionForm, setactionForm] = useState(props.actionForm);
   const [actionCreateBtn, setactionCreateBtn] = useState(false);
   const [actionSaveBtn, setactionSaveBtn] = useState(false);
+  const [actionDeleteBtn, setActionDeleteBtn] = useState(false);
   const [locationData, setlocationData] = useState([]);
   const [dcSite, setDCSite] = React.useState([]);
+  const [dcSiteList, setDCSiteList] = React.useState([]);
   const [optionLocation, setoptionLocation] = useState([]);
   const [selectedCommDate, setSelectedCommDate] = useState(null)
   const [selectedDecommDate, setSelectedDecommDate] = useState(null)
@@ -66,10 +68,16 @@ const FormCRAC =(props) =>{
  //console.log('fromPDU',props);
  
   useEffect(()=> {
-    console.log('props',props);
+    //console.log('props',props);
     
+    if(actionForm === 'VIEW'){
+      setactionSaveBtn(true);
+      setactionCreateBtn(true);
+      setActionDeleteBtn(true);
+    }
     if(actionForm === 'CREATE'){
       setactionSaveBtn(true);
+      setActionDeleteBtn(true);
     }
          
     if(actionForm === 'EDIT'){
@@ -98,8 +106,20 @@ const FormCRAC =(props) =>{
      }
      
     }
-  
+    var siteExist = Object.values(props.site).filter((site)=> site.SITE_VERIFIED_TAG === 'Y')
+    //console.log('siteExist',siteExist);
+      setDCSiteList(siteExist);
+
   },[props]);
+  
+  useEffect(()=>{
+
+    props.fetchSite();
+    var siteExist = Object.values(props.site).filter((site)=> site.SITE_VERIFIED_TAG === 'Y')
+    //console.log('siteExist',siteExist);
+      setDCSiteList(siteExist);
+
+  },[]);
   
  const handleBackBtn =() =>{
     window.history.back();
@@ -116,7 +136,7 @@ const FormCRAC =(props) =>{
     .then(response => response.json())
     .then((location) => 
     {  
-        console.log('loc',location);
+       // console.log('loc',location);
         setlocationData(location)                   
     }
     );
@@ -131,123 +151,140 @@ return(
        <Row>
               <Col xs='12'>
               <Card>
-                  <CardHeader>CRAC<strong>({actionForm})</strong></CardHeader>
+                  <CardHeader>CRAC<strong>({actionForm})</strong>
+                  <small><font color="red"> ( * ) is mandatoy field</font></small>
+                  </CardHeader>
                   <CardBody>
                     <Form id="formCRAC" onSubmit={props.onSubmit}>
                     <Row style={{marginLeft: "50px"}}>
                         <Col xs="4">
-                        <FormControl className={classes.formControl} error={props.hasError1} onClick={() => props.fetchSite()}>
-                            <InputLabel id="demo-controlled-open-select-label">DC Site</InputLabel>
-                            <Select
-                              labelId="demo-controlled-open-select-label"
-                              id="SITE_NAME"
-                              name="SITE_NAME"
-                              value={dcSite}
-                              onChange={handleChangeSite}
-                              fullWidth
-                              renderValue={(selected) => (
-                                <div>
-                                  {
-                                  selected.map((value) => (
-                                    <MenuItem key={value} value={value}>{value}</MenuItem>
-                                  ))}
-                                </div>
-                              )}
-                            >
-                              <MenuItem value=''/>
-                              {
-                                Object.values(props.site).map((site)=>( //console.log('site',site)
-                                   <MenuItem key={site.SITE_ID} value={site.SITE_NAME} classes={{ selected: classes.selected }} style={getStyles(site.SITE_NAME, dcSite, theme)}>
-                                     {site.SITE_NAME}
-                                  </MenuItem>
-                                ))
-                              }
-                            </Select>
-                            {props.hasError1 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
-                          </FormControl>
-                        </Col>
-                    </Row>
-                    <Row  style={{marginLeft: "50px", marginTop: "10px"}}>
-                        <Col xs="4">
+                        <FormControl className={classes.formControl} error={props.hasError1}>
+                          <Label>DC Site<font color="red">*</font></Label>
+                                <Input bsSize="sm"  type="select" name="SITE_NAME" id="SITE_NAME" onChange={handleChangeSite} style={{ backgroundColor : backgcolor}} >
+                                {/*loop Dc site*/}
+                                {    actionForm === 'CREATE' ? 
+                                        dcSiteList.map(function(lov,index) {
+                                        return <option key={index} value={lov.SITE_NAME}>{lov.SITE_NAME}</option>
+                                        })
+                                        :
+                                        // dataRack.site.map(function(lov,index) {
+                                        //   return <option key={index} value={dataRack.SITE_NAME}>{dataRack.SITE_NAME}</option>
+                                        // })
+                                      <option key='id' value={CRACdata.SITE_NAME}>{CRACdata.SITE_NAME}</option>
+                                      
+                                }  
+                                </Input>
+                          {props.hasError1 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
+                        </FormControl>
+                        <Col></Col>
                         <FormGroup className={classes.formControl} error={props.hasError2}>
-                            <InputLabel id="demo-controlled-open-select-label">Served DC Location</InputLabel>
-                            <Select
-                                    required
-                                    labelId="demo-controlled-open-select-label"
-                                    id="LOCN_NAME"
-                                    name="LOCN_NAME"
-                                    multiple
-                                    value={optionLocation}
-                                    onChange={handleLocationChange}
-                                    fullWidth
-                                    renderValue={(selected) => (
-                                      <div className={classes.chips}>
-                                        {
-                                        selected.map((value) => (
-                                          <Chip key={value} label={value} className={classes.chip} />
-                                        ))}
-                                      </div>
-                                    )}
-                                    >
-                                    <MenuItem value="" />
-                                    {   locationData ? 
-                                        Object.values(locationData).map((d) => ( //console.log('d',d.SITE_NAME)
-                                        <MenuItem key={d.LOCN_ID} value={d.LOCN_NAME} classes={{ selected: classes.selected }} style={getStyles2(d.LOCN_NAME, optionLocation, theme)}>
-                                        {d.LOCN_NAME}
-                                        </MenuItem>
-                                    ))
-                                    :
-                                    <MenuItem value="" />
-                                  }
-                                </Select>
+                        <Label>Served DC Location: <font color="red">*</font></Label>
+                                <Input bsSize="sm"  type="select" name="SITE_NAME" id="SITE_NAME" onChange={handleLocationChange} style={{ backgroundColor : backgcolor}} >
+                                {/*loop Dc site*/}
+                                {    actionForm === 'CREATE' && dcSiteList ? 
+                                        Object.values(locationData).map(function(lov,index) {
+                                        return <option key={index} value={lov.LOCN_NAME}>{lov.LOCN_NAME}</option>
+                                        })
+                                        :
+                                        // dataRack.site.map(function(lov,index) {
+                                        //   return <option key={index} value={dataRack.SITE_NAME}>{dataRack.SITE_NAME}</option>
+                                        // })
+                                      <option key='id' value={CRACdata.LOCN_NAME}>{CRACdata.LOCN_NAME}</option>
+                                      
+                                }  
+                                </Input>
                                 {props.hasError2 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
                             </FormGroup>
                         </Col>
+                    <Col>
+                    <Label>Commission Date :</Label><font color="red">*</font>
+                    <FormGroup>
+                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <KeyboardDatePicker
+                        id="CRAC_COMM_DT" 
+                        name="CRAC_COMM_DT"
+                        //id="date-picker-dialog"
+                        //filterDate={date => date.getDay() !== 6 && date.getDay() !== 0}
+                        //label="Commission Date"
+                        format="dd/MM/yyyy"
+                        margin="normal"
+                        placeholder="dd/mm/yyyy"
+                        value={selectedCommDate}
+                        onChange={date => setSelectedCommDate(date)}
+                        KeyboardButtonProps={{
+                            'aria-label': 'change date',
+                        }}
+                        />
+                    </MuiPickersUtilsProvider>
+                    </FormGroup>
+                    </Col>
+                    <Col>
+                    <Label>Decommission Date :</Label>
+                    <FormGroup  hidden={props.flagDecommDate}>
+                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <KeyboardDatePicker
+                        id="CRAC_DECOMM_DT" 
+                        name="CRAC_DECOMM_DT"
+                        margin="normal"
+                        //id="date-picker-dialog"
+                        //label="Decommission Date"
+                        format="dd/MM/yyyy"
+                        margin="normal"
+                        placeholder="dd/mm/yyyy"
+                        value={selectedDecommDate}
+                        onChange={date => setSelectedDecommDate(date)}
+                        KeyboardButtonProps={{
+                            'aria-label': 'change date',
+                        }}
+                        />
+                    </MuiPickersUtilsProvider>
+                    </FormGroup>
+                     </Col>
                     </Row>
                     <Row  style={{marginLeft: "50px", marginTop: "10px"}}>
                         <Col xs='2'>
                             <FormGroup hidden={flagCRACid}>
                             <Label>CRAC Ref ID</Label>
-                            <Input type="text" id="CRAC_ID" name="CRAC_ID" value={props.CRACid} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} readOnly/>
+                            <Input bsSize="sm"  type="text" id="CRAC_ID" name="CRAC_ID" value={CRACdata.CRAC_ID} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} readOnly/>
                             </FormGroup>
                             <FormGroup  error={props.hasError3}>
                             <Label>CRAC Name</Label>
-                            <Input type="text" id="CRAC_NAME" name="CRAC_NAME" value={CRACdata.CRAC_NAME} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
+                            <Input bsSize="sm"  type="text" id="CRAC_NAME" name="CRAC_NAME" value={CRACdata.CRAC_NAME} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
                             {props.hasError3 && <FormHelperText style={{color: 'red'}}>This is required!</FormHelperText>}
                             </FormGroup>
                             <Label>Area/Zone</Label>
-                            <Input type="text" id="CRAC_AREA" name="CRAC_AREA" value={CRACdata.CRAC_AREA} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
+                            <Input bsSize="sm"  type="text" id="CRAC_AREA" name="CRAC_AREA" value={CRACdata.CRAC_AREA} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
                             <Label>kW/Unit</Label>
-                            <Input type="number" id="CRAC_KW" name="CRAC_KW" value={CRACdata.CRAC_KW} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
+                            <Input bsSize="sm"  type="number" id="CRAC_KW" name="CRAC_KW" value={CRACdata.CRAC_KW} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
                             <Label>Quantity</Label>
-                            <Input type="number" id="CRAC_QUANTITY" name="CRAC_QUANTITY" value={CRACdata.CRAC_QUANTITY} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
+                            <Input bsSize="sm"  type="number" id="CRAC_QUANTITY" name="CRAC_QUANTITY" value={CRACdata.CRAC_QUANTITY} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
                             <Label>Cooling Capacity(kW)</Label>
-                            <Input type="number" id="CRAC_COOL_CAPACITY" name="CRAC_COOL_CAPACITY" value={CRACdata.CRAC_COOL_CAPACITY} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
+                            <Input bsSize="sm"  type="number" id="CRAC_COOL_CAPACITY" name="CRAC_COOL_CAPACITY" value={CRACdata.CRAC_COOL_CAPACITY} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
                         </Col>
                         <Col xs='4'>
                             <Label>Brand</Label>
-                            <Input type="text" id="CRAC_BRAND" name="CRAC_BRAND" value={CRACdata.CRAC_BRAND} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
+                            <Input bsSize="sm"  type="text" id="CRAC_BRAND" name="CRAC_BRAND" value={CRACdata.CRAC_BRAND} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
                             <Label>Type</Label>
-                            <Input type="text" id="CRAC_TYPE" name="CRAC_TYPE" value={CRACdata.CRAC_TYPE} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
+                            <Input bsSize="sm"  type="text" id="CRAC_TYPE" name="CRAC_TYPE" value={CRACdata.CRAC_TYPE} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} />
                             <Label>Status</Label>
-                            <Input type="select" id="CRAC_STATUS" name="CRAC_STATUS" value={CRACdata.CRAC_STATUS} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} >
+                            <Input bsSize="sm"  type="select" id="CRAC_STATUS" name="CRAC_STATUS" value={CRACdata.CRAC_STATUS} onChange={props.onChange} style={{ backgroundColor : backgcolor, textTransform: 'uppercase'}} >
                                 <option value=''>Please Select</option>
                                 <option value='ACTIVE'>ACTIVE</option>
                                 <option value='INACTIVE'>INACTIVE</option>
                                 <option value='STANDBY'>STANDBY</option>
                             </Input>
                             <Label>Description</Label>
-                            <Input type="textarea" id="CRAC_DESC" name="CRAC_DESC" value={CRACdata.CRAC_DESC} rows="6" onChange={props.onChange} style={{ backgroundColor : backgcolor,}} />
+                            <Input bsSize="sm"  type="textarea" id="CRAC_DESC" name="CRAC_DESC" value={CRACdata.CRAC_DESC} rows="6" onChange={props.onChange} style={{ backgroundColor : backgcolor,}} />
                         </Col>
                         <Col xs='6'>
                           <FormGroup>
                             <Label>Maintenance Update</Label>
-                            <Input disabled={props.MaintenanceFlag} type="textarea" id="CRAC_MAINTENANCE_UPD" name="CRAC_MAINTENANCE_UPD"  rows="6" onChange={props.onChange}  style={{ backgroundColor : backgcolor}} />
+                            <Input bsSize="sm"  disabled={props.MaintenanceFlag} type="textarea" id="CRAC_MAINTENANCE_UPD" name="CRAC_MAINTENANCE_UPD"  rows="6" onChange={props.onChange}  style={{ backgroundColor : backgcolor}} />
                           </FormGroup>
                         <Card hidden={props.MaintenanceFlag}>
                             <CardHeader>Maintenance Update History:</CardHeader>
                                 <CardBody>
-                                     <TableMaintenance data=''/>
+                                     <TableMaintenance data={props.CRACJurnal ? props.CRACJurnal : ""}/>
                                 </CardBody>
                           </Card>
                          </Col>
@@ -264,8 +301,13 @@ return(
                         <Button color="success" type="submit" hidden={actionSaveBtn}>
                                         <i className="fa fa-save"></i>&nbsp; Save
                         </Button>&nbsp;
+                        <Button color="danger" type="submit" id="delete" 
+                        onClick={(e)=> props.onSubmit(e,'delete')}
+                        hidden={actionDeleteBtn}>
+                            <i className="fa fa-trash"></i>&nbsp; Delete
+                        </Button>&nbsp;
                         <Button color="warning" type='reset' hidden={props.btnReset}>
-                                        <i className="fa fa-refresh"></i>&nbsp; Reset
+                          <i className="fa fa-refresh"></i>&nbsp; Reset
                         </Button>
                                 </Col>
                             </Row>

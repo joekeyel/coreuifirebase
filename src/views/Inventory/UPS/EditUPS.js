@@ -12,15 +12,50 @@ const EditForm = (props) => {
     const [formValues, setformValues]= useState({});
     const [openSnackBar, setopenSnackBar] = useState(false);
     const [changeFlag,setchangeFlag] = useState(false);
+    const [UPSdata, setUPSdata] = useState({});
+    const [UPSJournal, setUPSJournal] = useState({});
  
-
+    useEffect(()=>{
+      //console.log('pdudata',PDUdata);
+      
+        fetch('/claritybqm/reportFetch/?scriptName=DC_UPS&id=' + props.match.params.id)
+        .then(response => response.json())
+        .then((data) => 
+        {  
+           
+             // var filter = Object.values(data.pdu).filter((pdu)=> pdu.PDU_ID == props.match.params.id)
+              //console.log('pdudata', data);
+              setUPSdata(data.ups[0]);
+              setUPSJournal(data.journal);
+  
+        }
+        );
+  
+    },[props]);
+  
+    const getJournalList = ()=>{
+      fetch('/claritybqm/reportFetch/?scriptName=DC_UPS&id=' + props.match.params.id)
+      .then(response => response.json())
+      .then((data) => 
+      {  
+         
+           // var filter = Object.values(data.pdu).filter((pdu)=> pdu.PDU_ID == props.match.params.id)
+            //console.log('pdudata', data.pdu[0]);
+            //setPDUdata(data.pdu[0]);
+            setUPSJournal(data.journal);
+  
+      }
+      );
+  
+    }
+  
   //to handle form submit validation
   const onSubmit = (e)=> 
   {
       e.preventDefault();
      
       var $inputs = $('#formUPS :input');//get form values
-
+      var username = localStorage.getItem('username').toUpperCase();
       var values = {};
       $inputs.each(function () {
           if ($(this).is(':radio') === true || $(this).is(':checkbox') === true){
@@ -29,7 +64,7 @@ const EditForm = (props) => {
                 else {
             values[this.name] = $(this).val() === undefined ? "" : $(this).val();
           }
-          values['UPS_CREATED_BY'] = auth.authenticated.username ? auth.authenticated.username.toUpperCase() : "TMIMS_FORM";
+          values['UPS_UPDATED_BY'] = username ? username.toUpperCase() : "TMIMS_FORM";
 
        });
 
@@ -44,6 +79,7 @@ const EditForm = (props) => {
               //console.log('success to update : ', res);   
                 if(res.data === "success"){
                   setopenSnackBar(true);
+                  getJournalList();
                 }
                 else{/**error from bqm api DC_UPS_UPDATE */
                   //console.log('error',res.data);
@@ -110,6 +146,8 @@ const handleChange = (e) => {
     onChange={handleChange}
     changeFlag={changeFlag}
     btnReset={true}
+    UPSdata={UPSdata}
+    UPSJournal={UPSJournal}
   />
   <Snackbar
         open={openSnackBar} autoHideDuration={1500} onClose={handleClose} 

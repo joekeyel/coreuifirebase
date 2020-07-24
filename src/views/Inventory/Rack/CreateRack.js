@@ -37,6 +37,7 @@ const CreateForm = (props) => {
           e.preventDefault();
          
           var $inputs = $('#formRack :input');//get form values
+          var username = localStorage.getItem('username').toUpperCase();
   
           var values = {};
           $inputs.each(function () {
@@ -48,7 +49,7 @@ const CreateForm = (props) => {
               }
               values['RACK_ID'] = '';
               values['RACK_CONTRACTUAL_POWER'] = '';
-              values['RACK_INSERT_BY'] = auth.authenticated.username ? auth.authenticated.username.toUpperCase() : "TMIMS_FORM";
+              values['RACK_INSERT_BY'] = username ? username : "TMIMS_FORM";
 
            });
              
@@ -161,7 +162,7 @@ const CreateForm = (props) => {
                   open={openSnackBar} autoHideDuration={1500} onClose={handleClose} 
                   anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
                     <Alert variant="filled"  onClose={handleClose} severity="success" >
-                       Data has been Crerated.
+                       Data has been Created.
                     </Alert>
               </Snackbar>
         </div >);

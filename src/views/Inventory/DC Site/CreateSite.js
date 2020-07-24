@@ -20,10 +20,11 @@ const CreateForm = (props) => {
     const [flagSubmit, setflagSubmit] = useState(true);
     const [LovStreeType, setLovStreeType] = useState([]);
     const [LovState, setLovState] = useState([]);
+    const [verifiedID,setverifiedID] = useState({});
 
       useEffect(()=>{
         //LOV street type 
-        axios.post('/claritybqm/reportFetchJ/?scriptName=DC_LOV&type=STREET_TYPE'
+        axios.get('/claritybqm/reportFetch/?scriptName=DC_LOV&type=STREET_TYPE'
         ).then((res) => {
             //console.log('STREET_TYPE',res);
             setLovStreeType(res.data);
@@ -33,7 +34,7 @@ const CreateForm = (props) => {
         });
   
         //LOV state 
-        axios.post('/claritybqm/reportFetchJ/?scriptName=DC_LOV&type=STATE'
+        axios.get('/claritybqm/reportFetch/?scriptName=DC_LOV&type=STATE'
         ).then((res) => {
             //console.log('STREET_TYPE',res);
             setLovState(res.data);
@@ -50,6 +51,7 @@ const CreateForm = (props) => {
           e.preventDefault();
          
           var $inputs = $('#formSite :input');//get form values
+          var username = localStorage.getItem('username').toUpperCase();
   
           var values = {};
           $inputs.each(function () {
@@ -61,9 +63,11 @@ const CreateForm = (props) => {
               }
                //values['RACK_ID'] = '';
                values['SITE_WORKGROUP'] = "DCO1";
-               values['SITE_CREATED_BY'] = auth.authenticated.username ? auth.authenticated.username.toUpperCase() : "TMIMS";
+               values['SITE_VERIFIED_BY'] = verifiedID;
+               values['SITE_CREATED_BY'] = username ? username : "TMIMS";
            });
 
+ 
            //console.log('values',values);
            setformValues(values); // save form value to state
            /** validate value is not null */
@@ -104,7 +108,12 @@ const CreateForm = (props) => {
           if(values.SITE_NAME && values.ADDE_POSTCODE && values.ADDE_STATE && values.SITE_COMM_DT && values.SITE_VERIFIED_BY){
             
             Swal.fire({
-              text: 'Are you sure to Create this DCSite ' + values.SITE_NAME + '?',
+              text: "Are you sure to Create this DCSite " + values.SITE_NAME + '?',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Yes,create it!'
               }).then((result) => {
 
               if(result.value){
@@ -112,7 +121,8 @@ const CreateForm = (props) => {
                   ).then((res) => {
                     //console.log('success to create ', res.data);   
                       if(res.data == "success"){
-                        this.setState({ openSnackBar: true});
+                        setopenSnackBar(true);
+                        props.history.push('/ListDCSite');
                       }
           
                   })
@@ -141,6 +151,7 @@ const CreateForm = (props) => {
                   else {
               values[this.name] = $(this).val() == undefined ? "" : $(this).val();
             }
+            values['SITE_VERIFIED_BY'] = verifiedID;
          });
 
         setformValues(values); // save form value to state
@@ -177,12 +188,15 @@ const CreateForm = (props) => {
                flagDecommDate={true}
                LovStreeType={LovStreeType}
                LovState={LovState}
+               flagApprover={true}
+               approveFlag={false}
+               flagVerified={true}
             />
             <Snackbar
                   open={openSnackBar} autoHideDuration={1500} onClose={handleClose} 
                   anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
                     <Alert variant="filled"  onClose={handleClose} severity="success" >
-                       Data has been Crerated.
+                       Data has been Created.
                     </Alert>
               </Snackbar>
         </div >);

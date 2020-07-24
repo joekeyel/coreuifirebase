@@ -105,33 +105,55 @@ export default function TableRack(props) {
   return (
     <MaterialTable
       title='Rack'
-      hover={true}
+      icons={{ Filter: () => <div /> }} 
       options={{    
         //hover: true,
         filtering: true,
+        pageSize: 10,
     }}
       columns={state.columns}
       data={props.data}
       actions={[
+        {
+          icon: 'view',
+          tooltip: 'View data',
+          onClick: (event, rowData) => console.log(rowData)
+          //(event, rowData) => alert("You saved " + rowData.LOCN_ID)
+        },
         {
           icon: 'edit',
           tooltip: 'Edit data',
           onClick: (event, rowData) => console.log(rowData)
           //(event, rowData) => alert("You saved " + rowData.LOCN_ID)
         },
-        {
-          icon: 'delete',
-          tooltip: 'Delete data',
-          onClick: (event, rowData) => console.log('delete',rowData)
-          //(event, rowData) => alert("You saved " + rowData.LOCN_ID)
-       }
+      //   {
+      //     icon: 'delete',
+      //     tooltip: 'Delete data',
+      //     onClick: (event, rowData) => console.log('delete',rowData)
+      //     //(event, rowData) => alert("You saved " + rowData.LOCN_ID)
+      //  }
       ]}
       components={{
         Action: (props) => {
            //console.log('propsaction',props.data);
-            
+           if( props.action.icon === 'view'){                               
+            return(<Link to={"/ViewRack/" + props.data.CRAC_ID}>
+            <Tooltip title="View" >
+            <Icon
+              //onClick={ }
+              color="primary"
+              variant="contained"
+              //style={{textTransform: 'none', tooltip: 'Edit'}}
+              size="small"
+            >
+              visibilityRound
+            </Icon>
+            </Tooltip>
+            </Link>)
+           }
             //display button based on action edit/delete
-            if( props.action.icon == 'edit'){                               
+            if( props.action.icon == 'edit'){     
+                if(props.data.RACK_DECOMM_DT_V === '' || props.data.RACK_DECOMM_DT_V === null){                        
                 return(<Link to={"/EditRack/" + props.data.RACK_ID} >
                 <Tooltip title="Edit" >
                 <Icon
@@ -145,21 +167,38 @@ export default function TableRack(props) {
                 </Icon>
                 </Tooltip>
                 </Link>)
-            }
-            if( props.action.icon == 'delete'){
-                return(
-                <Tooltip title="Delete" >
+                }else{
+                  return(
+                  //<Link to={"/EditRack/" + props.data.RACK_ID} >
+                <Tooltip title="Edit" >
                 <Icon
-                  onClick={() => handleDelete(props.data)}
-                  color="primary"
+                  //onClick={ }
+                  color="disabled"
                   variant="contained"
-                  //style={{textTransform: 'none', tooltip: 'Delete'}}
+                  //style={{textTransform: 'none', tooltip: 'Edit'}}
                   size="small"
                 >
-                  delete
+                  edit
                 </Icon>
-                </Tooltip>)
+                </Tooltip>
+                //</Link>
+                )
+                }
             }
+            // if( props.action.icon == 'delete'){
+            //     return(
+            //     <Tooltip title="Delete" >
+            //     <Icon
+            //       onClick={() => handleDelete(props.data)}
+            //       color="primary"
+            //       variant="contained"
+            //       //style={{textTransform: 'none', tooltip: 'Delete'}}
+            //       size="small"
+            //     >
+            //       delete
+            //     </Icon>
+            //     </Tooltip>)
+            // }
           
         }
       }}

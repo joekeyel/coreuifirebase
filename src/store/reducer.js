@@ -92,7 +92,7 @@ const reducer = (state=initialState, action) => {
 
             case 'FETCH_DATA_PENDINGAPPROVAL': 
 
-            newState.dashboard = action.value;
+            newState.pendingApproval = action.value;
             
             break;
          
